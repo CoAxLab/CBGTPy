@@ -54,9 +54,9 @@ def ModifyViaSelector(df, template, selector=None, orig='mvs'):
             if len(modified.merge(newdf)) == len(modified): #for action channels - do not copy the modified df if the new df is already correct
                 continue
             else:
-                newdf = newdf.append(modified)
+                newdf = pd.concat([newdf, modified]) #newdf.append(modified) 
         else:
-            newdf = newdf.append(row)
+            newdf = pd.concat([newdf, row.to_frame().transpose()]) #newdf.append(row) 
     if not validselector:
         raise Exception("The selector didn't select anything!")
     newdf = newdf.reset_index(drop=True)

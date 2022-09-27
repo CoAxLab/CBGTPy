@@ -138,75 +138,79 @@ def helper_init_Q_df(actionchannels, q_df=None):
 
 
 def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
-    
-    
+
     # Required to perform mathematical calculations with data frame values
     Q_support_params = untrace(Q_support_params)
-    
+    #Q_df = untrace(Q_df)
+    #print('Q_support_params.chosen_action[trial_num]', Q_support_params.chosen_action[trial_num])
+    print(
+        'Q_support_params.chosen_action[0]',
+        Q_support_params.chosen_action[0])
+    print('trial_num', trial_num)
 
-    #print('Qdf', Q_df)
-    trial_wise_q_df = Q_df.iloc[trial_num]  # trial wise Q data frame
-    trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
-    #print(trial_wise_chosen_action)
-    if trial_wise_chosen_action.values[0] == "none":
+    if Q_support_params.chosen_action[0] != 'stop' and Q_support_params.chosen_action[0] != 'none':
+
+        #print('Qdf', Q_df)
+        trial_wise_q_df = Q_df.iloc[trial_num]  # trial wise Q data frame
+        print('TRIAL WISE Q DF', trial_wise_q_df)
+        trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
+
+        # Probability of reward value to lie in an uniform distribution
+        # (bayes_unif_min, bayes_unif_max)
+        u_val = sp_st.uniform.pdf(
+            Q_support_params.reward_value,
+            Q_support_params.bayes_unif_min,
+            Q_support_params.bayes_unif_max)
+
+        # q value of the chosen action
+        q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
+        #print('trialwiseqdf', trial_wise_q_df)
+        #print('qvalchosen', q_val_chosen)
+
+        # probability of reward value to lie in a normal distribution with (mean =
+        # current q-value of the chosen action, variance = bayes_sF)
+        n_val = sp_st.norm.pdf(
+            Q_support_params.reward_value,
+            q_val_chosen,
+            Q_support_params.bayes_sF)
+
+        # Calculate the new CPP
+        # bayes_CPP = (u_val * Q_support_params.bayes_H) / ((u_val *
+        # Q_support_params.bayes_H) + (n_val * (1 - Q_support_params.bayes_H)))
+
+        # error = reward_calue - current q-value
+        q_error = Q_support_params.reward_value.values - q_val_chosen.values
+        #q_error = Q_support_params.reward_value.values - trial_wise_q_df
+        da_inc = Q_support_params.reward_value.values - np.max(trial_wise_q_df)
+        #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
+        #print('Q_support_params type', type(Q_support_params))
+
+        # Update the current q-value accordingly
+        q_val_updated = q_val_chosen.values + Q_support_params.q_alpha.values * q_error
+        #print('qvalUPDATED', type(q_val_updated))
+
+        # First append an dataframe for the new trial, with q-values copied from
+        # the previous trial
         new_data = pd.DataFrame(Q_df[-1:].values, columns=Q_df.columns)
+        #print('newdata', new_data)
         Q_df = Q_df.append(new_data)
-        dpmndefaults.dpmn_DAp = 0.0
-        return Q_df, Q_support_params, dpmndefaults
-    
-    
-    # Probability of reward value to lie in an uniform distribution
-    # (bayes_unif_min, bayes_unif_max)
-    u_val = sp_st.uniform.pdf(
-        Q_support_params.reward_value,
-        Q_support_params.bayes_unif_min,
-        Q_support_params.bayes_unif_max)
+        #print('newQdf', Q_df)
 
-    # q value of the chosen action
-    q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
-    #print('trialwiseqdf', trial_wise_q_df)
-    #print('qvalchosen', q_val_chosen)
+        # Update the correct value with q_val_updated
+        Q_df.iloc[trial_num + 1][trial_wise_chosen_action] = q_val_updated
+        #print('Qdf', Q_df)
+        #print('Qdf data types', Q_df.dtypes)
 
-    # probability of reward value to lie in a normal distribution with (mean =
-    # current q-value of the chosen action, variance = bayes_sF)
-    n_val = sp_st.norm.pdf(
-        Q_support_params.reward_value,
-        q_val_chosen,
-        Q_support_params.bayes_sF)
+        # update dopamine burst ?
+        #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
+        #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
+        dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
 
-    # Calculate the new CPP
-    #bayes_CPP = (u_val * Q_support_params.bayes_H) / ((u_val *
-                                                           #Q_support_params.bayes_H) + (n_val * (1 - Q_support_params.bayes_H)))
+    else:
 
-    # error = reward_value - current q-value
-    q_error = Q_support_params.reward_value.values - q_val_chosen.values
-    
-    #da_inc = Q_support_params.reward_value.values - np.max(trial_wise_q_df)
-    da_inc = Q_support_params.reward_value.values - q_val_chosen.values
-    
-    #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
-    #print('Q_support_params type', type(Q_support_params))
-
-    # Update the current q-value accordingly
-    q_val_updated = q_val_chosen.values + Q_support_params.q_alpha.values * q_error
-    #print('qvalUPDATED', type(q_val_updated))
-
-    # First append an dataframe for the new trial, with q-values copied from
-    # the previous trial
-    new_data = pd.DataFrame(Q_df[-1:].values, columns=Q_df.columns)
-    #print('newdata', new_data)
-    Q_df = Q_df.append(new_data)
-    #print('newQdf', Q_df)
-
-    # Update the correct value with q_val_updated
-    Q_df.iloc[trial_num + 1][trial_wise_chosen_action] = q_val_updated
-    #print('Qdf', Q_df)
-    #print('Qdf data types', Q_df.dtypes)
-
-
-    # update dopamine burst ?
-    #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
-    #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
-    dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
+        new_data = pd.DataFrame(Q_df[-1:].values, columns=Q_df.columns)
+        #print('newdata', new_data)
+        Q_df = Q_df.append(new_data)
+        #print('newQdf', Q_df)
 
     return Q_df, Q_support_params, dpmndefaults

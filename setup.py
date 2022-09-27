@@ -2,7 +2,13 @@ from setuptools import setup
 from Cython.Build import cythonize
 
 setup(
-    name='Hello world app',
-    ext_modules=cythonize("agent_timestep.pyx"),
+    name='plasticity',
+    ext_modules=cythonize("agent_timestep_plasticity.pyx"),
+    zip_safe=False,
+)
+
+setup(
+    name='stop signal',
+    ext_modules=cythonize("agent_timestep_stop_signal.pyx"),
     zip_safe=False,
 )
