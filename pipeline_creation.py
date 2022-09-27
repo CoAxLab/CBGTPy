@@ -3,16 +3,44 @@
 import cbgt as cbgt
 from frontendhelpers import * 
 from tracetype import *
-import init_params as par 
-import popconstruct as popconstruct
+#import init_params as par 
+#import popconstruct as popconstruct
 import qvalues as qval
 import generateepochs as gen
-import generate_stop_dataframe as gen_stop
-import generate_opt_dataframe as gen_opt
+#import mega_loop as ml
 from agentmatrixinit import *
-from agent_timestep import timestep_mutator, multitimestep_mutator
-import mega_loop as ml
 
+experiment_choice = None
+par = None
+popconstruct = None
+ml = None
+gen_stop = None
+gen_stop_2 = None
+# timestep_mutator = None
+# multitimestep_mutator = None
+
+def choose_pipeline(choice):
+    global experiment_choice
+    global par
+    global popconstruct
+    global ml
+    global gen_stop
+    global gen_stop_2
+#     global timestep_mutator
+#     global multitimestep_mutator
+    experiment_choice = choice
+    if choice == 'plastic':
+        import init_params_direct_indirect as par
+        import popconstruct_direct_indirect as popconstruct
+        import megaloop_plasticity as ml
+#         from agent_timestep_plasticity import timestep_mutator, multitimestep_mutator
+    if choice == 'stopsignal':
+        import init_params_hyperdirect as par
+        import popconstruct_hyperdirect as popconstruct
+        import megaloop_stop_signal as ml
+#         from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
+        import generate_stop_dataframe as gen_stop
+        import generate_stop_dataframe_2 as gen_stop_2
 
 # 2. NETWORK PIPELINE
 
@@ -21,6 +49,9 @@ import mega_loop as ml
 #MODIFIERS:
 
 #init_params.py: to modify the neuronal default values
+
+def codeblock_experimentchoice(self):
+    choose_pipeline(self.experimentchoice)
 
 def codeblock_modifycelldefaults(self):
     self.celldefaults = par.helper_cellparams(self.params)
@@ -85,44 +116,40 @@ def create_reward_pipeline(pl):
     return rsg
 
 
-def create_stop_pipeline(pl):
-    stop = cbgt.Pipeline() #rsg is short for 'reward schedule generator'
+def create_stop_pipeline(pl): #STN
+    stop = cbgt.Pipeline() 
 
     
-    (stop.stop_df, stop.stop_channels_df, stop.stop_amplitude_df, stop.stop_onset_df) = stop[gen_stop.GenStopSchedule](
+    (stop.stop_df, stop.stop_channels_df, stop.stop_amplitude_df, stop.stop_onset_df, stop.stop_duration_df) = stop[gen_stop.GenStopSchedule](
         stop.stop_signal_probability,
         pl.actionchannels,
         stop.n_trials,
         stop.stop_signal_channel,
         stop.stop_signal_amplitude,
         stop.stop_signal_onset,
-        stop.stop_signal_present
-     ).shape(4)
+        stop.stop_signal_present, stop.stop_signal_duration
+     ).shape(5)
     
     #print(stop)
     return stop
 
-def create_opt_pipeline(pl):
-    opt = cbgt.Pipeline() #rsg is short for 'reward schedule generator'
+
+def create_stop_pipeline_2(pl): #D2STR
+    stop_2 = cbgt.Pipeline() 
 
     
-    (opt.opt_df, opt.opt_channels_df, opt.opt_amplitude_df, opt.opt_onset_df,opt_populations_df) = opt[gen_opt.GenOptSchedule](
-        opt.opt_signal_probability,
+    (stop_2.stop_df_2, stop_2.stop_channels_df_2, stop_2.stop_amplitude_df_2, stop_2.stop_onset_df_2, stop_2.stop_duration_df_2) = stop_2[gen_stop_2.GenStopSchedule_2](
+        stop_2.stop_signal_probability_2,
         pl.actionchannels,
-        opt.n_trials,
-        opt.popdata,
-        opt.opt_signal_channel,
-        opt.opt_signal_amplitude,
-        opt.opt_signal_onset,
-        opt.opt_signal_present,
-        opt.opt_signal_population
+        stop_2.n_trials,
+        stop_2.stop_signal_channel_2,
+        stop_2.stop_signal_amplitude_2,
+        stop_2.stop_signal_onset_2,
+        stop_2.stop_signal_present_2, stop_2.stop_signal_duration_2
      ).shape(5)
     
     #print(stop)
-    return opt
-
-
-
+    return stop_2
 
 
 # 2.3 Create q-values pipeline 
@@ -133,7 +160,7 @@ def create_q_val_pipeline(pl):
 
     #Defining necessary function modules: 
     #qvalues.py
-    q_val_pipe.Q_support_params = q_val_pipe[qval.helper_init_Q_support_params](q_val_pipe.Q_support_params)
+    q_val_pipe.Q_support_params = q_val_pipe[qval.helper_init_Q_support_params]()
     q_val_pipe.Q_df = q_val_pipe[qval.helper_init_Q_df](pl.actionchannels)
 
     #rsg.reward_val = q_val_pipe[qval.get_reward_value](rsg.t1_epochs,rsg.t2_epochs,pl.chosen_action,pl.trial_num) 
@@ -143,20 +170,23 @@ def create_q_val_pipeline(pl):
     
 # 3. CREATE CBGT PIPELINE - MAIN
 
-def create_main_pipeline():
+def create_main_pipeline(runloop):
     
     pl = cbgt.Pipeline()
+    
+    pl.add(codeblock_experimentchoice)
+    
     pl.add(codeblock_modifyactionchannels)
     
     rsg = create_reward_pipeline(pl)
-    #stop = create_stop_pipeline(pl)
-    #opt = create_opt_pipeline(pl)
-    
     #Adding rsg pipeline to the network pipeline: 
     pl.add(rsg)
-    #if stop.stop_signal_present:
-    #pl.add(stop)
-    #pl.add(opt)
+    
+    if experiment_choice == 'stopsignal':
+        stop = create_stop_pipeline(pl)
+        stop_2 = create_stop_pipeline_2(pl)
+        pl.add(stop)
+        pl.add(stop_2)
     
     #to update the Q-values 
     pl.trial_num = 0 #first row of Q-values df - initialization data 
@@ -178,9 +208,6 @@ def create_main_pipeline():
     #popconstruct.py: default population parameters 
     pl.popdata = pl[popconstruct.helper_popconstruct](pl.actionchannels, pl.popspecific, pl.celldefaults, pl.receptordefaults, pl.basestim, pl.dpmndefaults, pl.d1defaults, pl.d2defaults)
     pl.pathways = pl[popconstruct.helper_poppathways](pl.popdata)
-    
-    opt = create_opt_pipeline(pl)
-    pl.add(opt)
 
     #popconstruct.py: to create connectivity grids
     pl.connectivity_AMPA, pl.meaneff_AMPA, pl.plastic_AMPA = pl[popconstruct.helper_connectivity]('AMPA', pl.popdata, pl.pathways).shape(3)
@@ -204,7 +231,8 @@ def create_main_pipeline():
     pl.add(q_val_pipe)
     
     # Agent mega loop - updated trial wise qvalues and chosen action
-    #mega_loop = ml.mega_loop(pl)
-    #pl.add(mega_loop)
+    if runloop:
+        mega_loop = ml.mega_loop
+        pl.add(mega_loop)
     
     return pl

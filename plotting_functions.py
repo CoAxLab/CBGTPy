@@ -1,13 +1,13 @@
-import cbgt as cbgt
-from frontendhelpers import *
+# import cbgt as cbgt
+# from frontendhelpers import *
 from tracetype import *
-import init_params as par
-import popconstruct as popconstruct
-import qvalues as qval
-import generateepochs as gen
-from agentmatrixinit import *
-from agent_timestep import timestep_mutator, multitimestep_mutator
-import pipeline_creation as pl_creat
+# import init_params as par
+# import popconstruct as popconstruct
+# import qvalues as qval
+# import generateepochs as gen
+# from agentmatrixinit import *
+# from agent_timestep import timestep_mutator, multitimestep_mutator
+# import pipeline_creation as pl_creat
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pylab as pl
@@ -16,22 +16,22 @@ import plotting_helper_functions as plt_help
 figure_dir = "./Figures/"
 data_dir = "./Data/"
 
-def rename_columns(results,smooth=False):
+# def rename_columns(results,smooth=False):
     
-    results['popdata']['newname'] = results['popdata']['name']+'_'+results['popdata']['action']
-    new_names = dict()
-    for i in results['popdata'].index[:-2]:
-        temp = untrace(results['popdata']['newname'].iloc[i])
-        #print(type(temp))
-        if 'LIP' in temp:
-            temp1 = "Cx_"+temp.split('_')[1]
-            temp = temp1
-        new_names[i] = temp
-    new_names[i+1]='FSI_common'
-    new_names[i+2]='CxI_common'
-    results['popfreqs'] = results['popfreqs'].rename(columns=new_names)
+#     results['popdata']['newname'] = results['popdata']['name']+'_'+results['popdata']['action']
+#     new_names = dict()
+#     for i in results['popdata'].index[:-2]:
+#         temp = untrace(results['popdata']['newname'].iloc[i])
+#         #print(type(temp))
+#         if 'LIP' in temp:
+#             temp1 = "Cx_"+temp.split('_')[1]
+#             temp = temp1
+#         new_names[i] = temp
+#     new_names[i+1]='FSI_common'
+#     new_names[i+2]='CxI_common'
+#     results['popfreqs'] = results['popfreqs'].rename(columns=new_names)
     
-    return results
+#     return results
 
 
 def smoothen_fr(results,win_len=50):
@@ -54,6 +54,24 @@ def plot_fr(results,seed,fig_dir=figure_dir):
         g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
         g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
         
+
+def plot_fr_stop(results, amplitude, onset):
+    
+    # Plot Population firing rates
+    col_order = ["Cx","CxI","FSI", "GPeP", "D1STR", "D2STR", "STNE", "GPi", "Th"] 
+    for i in np.arange(len(results)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        g1.fig.savefig(figure_dir_stop+'ActualFRs_stop_'+str(amplitude)+"_"+str(onset)+"_"+str(i)+".png", dpi=400)
+        
+def plot_fr_specific(results, amplitude, onset):
+    
+    # Plot Population firing rates
+    col_order = ["GPeP", "GPi", "STNE", "Th"] 
+                 
+    for i in np.arange(len(results)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=4,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        g1.fig.savefig(figure_dir_stop+'ActualFRs_stop_specific_'+str(amplitude)+"_"+str(onset)+"_"+str(i)+".png", dpi=400)
+    
         
 def plot_reward_Q_df(final_data,fig_dir=figure_dir):
 
@@ -129,6 +147,5 @@ def performance_all(performance=[],rt_dist=[],total_performance=[],fig_dir=figur
         hist.figure.savefig(fig_dir+"RT_distribution_"+post_fix+"_"+str(grp[0])+".png")
 
 
-    
     
     
