@@ -157,10 +157,10 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 
         # Probability of reward value to lie in an uniform distribution
         # (bayes_unif_min, bayes_unif_max)
-        u_val = sp_st.uniform.pdf(
-            Q_support_params.reward_value,
-            Q_support_params.bayes_unif_min,
-            Q_support_params.bayes_unif_max)
+#         u_val = sp_st.uniform.pdf(
+#             Q_support_params.reward_value,
+#             Q_support_params.bayes_unif_min,
+#             Q_support_params.bayes_unif_max)
 
         # q value of the chosen action
         q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
@@ -169,10 +169,10 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 
         # probability of reward value to lie in a normal distribution with (mean =
         # current q-value of the chosen action, variance = bayes_sF)
-        n_val = sp_st.norm.pdf(
-            Q_support_params.reward_value,
-            q_val_chosen,
-            Q_support_params.bayes_sF)
+#         n_val = sp_st.norm.pdf(
+#             Q_support_params.reward_value,
+#             q_val_chosen,
+#             Q_support_params.bayes_sF)
 
         # Calculate the new CPP
         # bayes_CPP = (u_val * Q_support_params.bayes_H) / ((u_val *
@@ -181,7 +181,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         # error = reward_calue - current q-value
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
         #q_error = Q_support_params.reward_value.values - trial_wise_q_df
-        da_inc = Q_support_params.reward_value.values - np.max(trial_wise_q_df)
+        da_inc = Q_support_params.reward_value.values - q_val_chosen.values   #np.max(trial_wise_q_df)
         #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
         #print('Q_support_params type', type(Q_support_params))
 
