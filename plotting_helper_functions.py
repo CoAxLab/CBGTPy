@@ -1,4 +1,4 @@
-# import cbgt as cbgt
+import cbgt as cbgt
 # from frontendhelpers import *
 from tracetype import *
 # import init_params as par
@@ -15,8 +15,8 @@ import os
 import pickle
 import glob
 
-figure_dir = "./Figures/"
-data_dir = "./Data/"
+# figure_dir = "./Figures/"
+# data_dir = "./Data/"
 
 
 def rename_columns(results,smooth=False):
@@ -51,41 +51,41 @@ def save_dataframes(firing_rates,reward_q_df, performance, rt_distribution,total
     
 
     
-def pool_data(src_dir=data_dir):
-    # For now only reaction time distribution and performance is pooled
+# def pool_data(src_dir=data_dir):
+#     # For now only reaction time distribution and performance is pooled
     
-    seeds = [x   for x in os.listdir(src_dir) if os.path.isdir(src_dir+x) and (x !="competition") and (x!="short")]
-    print(seeds)
-    performance = pd.DataFrame()
-    total_performance = pd.DataFrame()
-    cp_aligned_B = pd.DataFrame()
-    rt_dist = pd.DataFrame()
+#     seeds = [x   for x in os.listdir(src_dir) if os.path.isdir(src_dir+x) and (x !="competition") and (x!="short")]
+#     print(seeds)
+#     performance = pd.DataFrame()
+#     total_performance = pd.DataFrame()
+#     cp_aligned_B = pd.DataFrame()
+#     rt_dist = pd.DataFrame()
     
-    for s in seeds:
-        perf = pd.read_csv(src_dir+s+"/performance.csv")
-        performance = performance.append(perf)
+#     for s in seeds:
+#         perf = pd.read_csv(src_dir+s+"/performance.csv")
+#         performance = performance.append(perf)
         
-        rt = pd.read_csv(src_dir+s+"/rt_dist.csv")
-        rt_dist = rt_dist.append(rt)
+#         rt = pd.read_csv(src_dir+s+"/rt_dist.csv")
+#         rt_dist = rt_dist.append(rt)
         
-        tot_perf = pd.read_csv(src_dir+s+"/total_performance.csv")
-        total_performance = total_performance.append(tot_perf)
+#         tot_perf = pd.read_csv(src_dir+s+"/total_performance.csv")
+#         total_performance = total_performance.append(tot_perf)
     
     
     
-    if "condition" in performance.columns:
-        performance = performance.fillna("Control")
+#     if "condition" in performance.columns:
+#         performance = performance.fillna("Control")
 
-    if "condition" in rt_dist.columns:
-        rt_dist = rt_dist.fillna("Control")
+#     if "condition" in rt_dist.columns:
+#         rt_dist = rt_dist.fillna("Control")
 
-    if "condition" in total_performance.columns:
-        total_performance = total_performance.fillna("Control")
+#     if "condition" in total_performance.columns:
+#         total_performance = total_performance.fillna("Control")
     
-    print(performance)
-    performance.to_csv(src_dir+"performance_all.csv")
-    rt_dist.to_csv(src_dir+"rt_distribution_all.csv")
-    total_performance.to_csv(src_dir+"total_performance_all.csv")
+#     print(performance)
+#     performance.to_csv(src_dir+"performance_all.csv")
+#     rt_dist.to_csv(src_dir+"rt_distribution_all.csv")
+#     total_performance.to_csv(src_dir+"total_performance_all.csv")
     
 
 def extract_relevant_frames(results,seed,src_dir=data_dir):
@@ -108,7 +108,7 @@ def extract_relevant_frames(results,seed,src_dir=data_dir):
             condition = "Control"
             
         exp_params = cbgt.comparisonTable(results[i], ['n_trials','volatility','conflict'])
-        results[i] = rename_columns(results[i])
+        results[i] = rename_columns(results[i]) # Overwrites the column names in popfreqs
         results_local = results[i]['popfreqs'].copy()
     
         results_local_melt = results_local.melt("Time (ms)")
@@ -167,7 +167,7 @@ def extract_relevant_frames(results,seed,src_dir=data_dir):
         final_data["seed"] = [str(seed)+"_"+str(i)  for j in np.arange(len(final_data))]
         final_data["n_trials"] = [float(exp_params["n_trials"]) for j in np.arange(len(final_data))] 
         final_data["volatility"] = [float(exp_params["volatility"]) for j in np.arange(len(final_data))] 
-        final_data["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(final_data))] 
+        #final_data["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(final_data))] 
         final_data["conflict"] = [float(exp_params["conflict"]) for j in np.arange(len(final_data))] 
         final_data["condition"] = [condition for j in np.arange(len(final_data))] 
         
@@ -191,9 +191,9 @@ def extract_relevant_frames(results,seed,src_dir=data_dir):
         perf["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(perf))]
         perf["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(perf))]
         perf["volatility"] = [ float(exp_params["volatility"]) for j in np.arange(len(perf))]
-        perf["volatility/num_trials"] = [ (float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(perf))]
+        #perf["volatility/num_trials"] = [ (float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(perf))]
         perf["conflict"] = [float(exp_params["conflict"]) for j in np.arange(len(perf))]
-        perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale for j in np.arange(len(perf))]
+#         perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale for j in np.arange(len(perf))]
         perf["condition"] = [ condition for j in np.arange(len(perf))]
         
         performance = performance.append(perf)
@@ -203,9 +203,9 @@ def extract_relevant_frames(results,seed,src_dir=data_dir):
         total_perf["%_correct_actions"] = [overall_perf]
         total_perf["seed"] = [str(seed)]
         total_perf["volatility"] = [float(exp_params["volatility"])]
-        total_perf["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100]
+        #total_perf["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100]
         total_perf["conflict"] = [float(exp_params["conflict"])]
-        total_perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale ]
+        #total_perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale ]
         total_perf["condition"] = [ condition ]
         
         total_performance = total_performance.append(total_perf)
@@ -217,16 +217,16 @@ def extract_relevant_frames(results,seed,src_dir=data_dir):
         rt["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(rt))]
         rt["volatility"] = [float(exp_params["volatility"]) for j in np.arange(len(rt))]
         rt["conflict"] = [ float(exp_params["conflict"]) for j in np.arange(len(rt))]
-        rt["volatility/num_trials"] = [(float(exp_params["volatility"])/exp_params["n_trials"])*100 for j in np.arange(len(rt))]
+        #rt["volatility/num_trials"] = [(float(exp_params["volatility"])/exp_params["n_trials"])*100 for j in np.arange(len(rt))]
         rt["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(rt))]
-        rt["Q_val->dopamine_scale"] = [dpmn_cpp_scale for j in np.arange(len(rt))]
+        #rt["Q_val->dopamine_scale"] = [dpmn_cpp_scale for j in np.arange(len(rt))]
         rt["condition"] = [condition for j in np.arange(len(rt))]
 
         rt_distribution = rt_distribution.append(rt)
         
     #print(q_df)   
     #print(performance)
-    save_dataframes(firing_rates,q_df, performance, rt_distribution,total_performance, seed,src_dir)
+    #save_dataframes(firing_rates,q_df, performance, rt_distribution,total_performance, seed,src_dir)
         
     return firing_rates, q_df, performance, rt_distribution, total_performance
 
