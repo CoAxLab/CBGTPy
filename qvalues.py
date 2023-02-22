@@ -58,9 +58,9 @@ def helper_init_Q_support_params(q_support=None):
                                  'bayes_unif_max': 2.0,
                                  'bayes_H': 0.05,
                                  'bayes_sF': 1.25,
-                                 'q_alpha': 0.45, # 0.05 in original value, in working version 0.45
+                                 'q_alpha': 0.25, # 0.05 in original value, in working version 0.45
                                  #'dpmn_CPP_scale': 35.,
-                                 'dpmn_CPP_scale': 15.,
+                                 'dpmn_CPP_scale': 100.,
                                  #'dpmn_CPP_scale': 25.,
                                  'reward_value': -1.,
                                  'chosen_action': 1})
