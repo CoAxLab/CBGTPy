@@ -65,7 +65,7 @@ def helper_init_Q_support_params(q_support=None):
                                  'reward_value': -1.,
                                  'chosen_action': 1})
     
-    print("q_support", q_support)
+#     print("q_support", q_support)
     if q_support is not None:
 
         Q_support_params = ModifyViaSelector(Q_support_params, q_support)
@@ -143,40 +143,22 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
     Q_support_params = untrace(Q_support_params)
     #Q_df = untrace(Q_df)
     #print('Q_support_params.chosen_action[trial_num]', Q_support_params.chosen_action[trial_num])
-    print(
-        'Q_support_params.chosen_action[0]',
-        Q_support_params.chosen_action[0])
+#     print(
+#         'Q_support_params.chosen_action[0]',
+#         Q_support_params.chosen_action[0])
     print('trial_num', trial_num)
 
     if Q_support_params.chosen_action[0] != 'stop' and Q_support_params.chosen_action[0] != 'none':
 
         #print('Qdf', Q_df)
         trial_wise_q_df = Q_df.iloc[trial_num]  # trial wise Q data frame
-        print('TRIAL WISE Q DF', trial_wise_q_df)
-        trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
 
-        # Probability of reward value to lie in an uniform distribution
-        # (bayes_unif_min, bayes_unif_max)
-#         u_val = sp_st.uniform.pdf(
-#             Q_support_params.reward_value,
-#             Q_support_params.bayes_unif_min,
-#             Q_support_params.bayes_unif_max)
+        trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
 
         # q value of the chosen action
         q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
         #print('trialwiseqdf', trial_wise_q_df)
         #print('qvalchosen', q_val_chosen)
-
-        # probability of reward value to lie in a normal distribution with (mean =
-        # current q-value of the chosen action, variance = bayes_sF)
-#         n_val = sp_st.norm.pdf(
-#             Q_support_params.reward_value,
-#             q_val_chosen,
-#             Q_support_params.bayes_sF)
-
-        # Calculate the new CPP
-        # bayes_CPP = (u_val * Q_support_params.bayes_H) / ((u_val *
-        # Q_support_params.bayes_H) + (n_val * (1 - Q_support_params.bayes_H)))
 
         # error = reward_calue - current q-value
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
