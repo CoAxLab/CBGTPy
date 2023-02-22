@@ -37,58 +37,9 @@ def rename_columns(results,smooth=False):
     return results
 
 
-def save_dataframes(firing_rates,reward_q_df, performance, rt_distribution,total_performance, seed,src_dir=data_dir):
-    if os.path.exists(src_dir) == False:
-        os.mkdir(src_dir)
-    if os.path.exists(src_dir+str(seed)) == False:
-        os.mkdir(src_dir+str(seed)+"/")
-        
-    pickle.dump(firing_rates, open(src_dir+str(seed)+"/"+"firing_rates.pickle","wb"))
-    pickle.dump(reward_q_df,open(src_dir+str(seed)+"/"+"reward_b_cpp.pickle","wb"))
-    performance.to_csv(src_dir+str(seed)+"/"+"performance.csv")
-    rt_distribution.to_csv(src_dir+str(seed)+"/"+"rt_dist.csv")
-    total_performance.to_csv(src_dir+str(seed)+"/"+"total_performance.csv")
     
 
-    
-# def pool_data(src_dir=data_dir):
-#     # For now only reaction time distribution and performance is pooled
-    
-#     seeds = [x   for x in os.listdir(src_dir) if os.path.isdir(src_dir+x) and (x !="competition") and (x!="short")]
-#     print(seeds)
-#     performance = pd.DataFrame()
-#     total_performance = pd.DataFrame()
-#     cp_aligned_B = pd.DataFrame()
-#     rt_dist = pd.DataFrame()
-    
-#     for s in seeds:
-#         perf = pd.read_csv(src_dir+s+"/performance.csv")
-#         performance = performance.append(perf)
-        
-#         rt = pd.read_csv(src_dir+s+"/rt_dist.csv")
-#         rt_dist = rt_dist.append(rt)
-        
-#         tot_perf = pd.read_csv(src_dir+s+"/total_performance.csv")
-#         total_performance = total_performance.append(tot_perf)
-    
-    
-    
-#     if "condition" in performance.columns:
-#         performance = performance.fillna("Control")
-
-#     if "condition" in rt_dist.columns:
-#         rt_dist = rt_dist.fillna("Control")
-
-#     if "condition" in total_performance.columns:
-#         total_performance = total_performance.fillna("Control")
-    
-#     print(performance)
-#     performance.to_csv(src_dir+"performance_all.csv")
-#     rt_dist.to_csv(src_dir+"rt_distribution_all.csv")
-#     total_performance.to_csv(src_dir+"total_performance_all.csv")
-    
-
-def extract_relevant_frames(results,seed,src_dir=data_dir):
+def extract_relevant_frames(results,seed):
 
     t_epochs = cbgt.collateVariable(results,'t_epochs')
     Q_df = cbgt.collateVariable(results,'Q_df')
