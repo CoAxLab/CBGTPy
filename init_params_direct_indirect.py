@@ -327,10 +327,10 @@ def helper_dpmn(dpmns=None):
 def helper_d1(d1=None):
 
     d1defaults = ParamSet('d1defaults', {'dpmn_type': 1,
-                                         'dpmn_alphaw': (55 / 3.0)*1.9,  # ??? 80 in original paper, balladron 12, decrease them
+                                         'dpmn_alphaw': 39.5,
                                          #'dpmn_alphaw': (55 / 3.0)*3,  # ??? 80 in original paper, balladron 12, decrease them
                                          #'dpmn_alphaw': 12.,
-                                         'dpmn_wmax':0.06,
+                                         'dpmn_wmax':0.055,
                                          'dpmn_a': 1.0,
                                          'dpmn_b': 0.1,
                                          'dpmn_c': 0.05, })
@@ -355,10 +355,9 @@ def helper_d1(d1=None):
 def helper_d2(d2=None):
 
     d2defaults = ParamSet('d2defaults', {'dpmn_type': 2,
-                                         'dpmn_alphaw': (-45 / 3.0)*1.9, # -55 in original paper, balladron = -11
-                                         #'dpmn_alphaw': (-45 / 3.0)*3, # -55 in original paper, balladron = -11
-                                         #'dpmn_alphaw': -11.,
-                                         'dpmn_wmax':0.03,
+                                         'dpmn_alphaw': -38.2,
+                                                                                 
+                                         'dpmn_wmax':0.035,
                                          'dpmn_a': 0.5,
                                          'dpmn_b': 0.005,
                                          'dpmn_c': 0.05, })
