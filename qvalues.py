@@ -101,7 +101,7 @@ def helper_update_Q_support_params(
 # outputs:  Q_df = Q-value data frame
 
 
-def helper_init_Q_df(actionchannels, q_df=None):
+def helper_init_Q_df(actionchannels, Q_df_set=None):
 
     #print(actionchannels)
     num_actions = len(actionchannels["action"])
@@ -114,8 +114,10 @@ def helper_init_Q_df(actionchannels, q_df=None):
         {column: 0.5 for column in Q_df.columns}, ignore_index=True)
     # Different initial values for Q_df should be taken care when calling this function with q_df and non-None value
     # eg. q_df = pd.DataFrame({1: 0.5, 2: 0.6})
-
-    if q_df is not None:
+    print("in helper init Q_df")
+    print("Q_df_set",Q_df_set)
+    if Q_df_set is not None:
+        print("q_df not None")
         Q_df = pd.DataFrame(
             columns=[
                 untrace(
@@ -123,9 +125,9 @@ def helper_init_Q_df(actionchannels, q_df=None):
         print("Q_df", Q_df)
         Q_df = Q_df.append(
             {column: 0.5 for column in Q_df.columns}, ignore_index=True)
-
-        Q_df = ModifyViaSelector(Q_df, q_df)
-
+        print("Q_df", Q_df)
+        Q_df = untrace(ModifyViaSelector(Q_df, Q_df_set))
+        print("Q_df", Q_df)
     return Q_df
 
 # ---------------------- helper_update_Q_df() FUNCTION  -------------------
@@ -162,7 +164,9 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 
         # error = reward_calue - current q-value
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
+        
         #q_error = Q_support_params.reward_value.values - trial_wise_q_df
+        print("q_val_chosen",q_val_chosen.values)
         da_inc = Q_support_params.reward_value.values - q_val_chosen.values   #np.max(trial_wise_q_df)
         #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
         #print('Q_support_params type', type(Q_support_params))
@@ -186,7 +190,12 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         # update dopamine burst ?
         #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
         #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
+        print("da_inc",da_inc)
+        
         dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
+        
+        print("Q_df updated")
+        print(Q_df)
 
     else:
 
