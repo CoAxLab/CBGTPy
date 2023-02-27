@@ -72,7 +72,8 @@ def extract_relevant_frames(results,seed):
         results_local_melt = results_local_melt.rename(columns={"value":"firing_rate"})
         results_local_melt["seed"] = [ str(seed)+"_"+str(i) for j in np.arange(len(results_local_melt)) ]
         results_local_melt["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(results_local_melt))]
-        results_local_melt["volatility"] = [float(exp_params["volatility"]) for j in np.arange(len(results_local_melt))]
+        results_local_melt["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(results_local_melt))]
+        results_local_melt["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(results_local_melt))]
         results_local_melt["conflict"] = [float(exp_params["conflict"]) for j in np.arange(len(results_local_melt))]
                 
         firing_rates.append(results_local_melt)
@@ -117,7 +118,8 @@ def extract_relevant_frames(results,seed):
         
         final_data["seed"] = [str(seed)+"_"+str(i)  for j in np.arange(len(final_data))]
         final_data["n_trials"] = [float(exp_params["n_trials"]) for j in np.arange(len(final_data))] 
-        final_data["volatility"] = [float(exp_params["volatility"]) for j in np.arange(len(final_data))] 
+        final_data["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(final_data))] 
+        final_data["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(final_data))] 
         #final_data["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(final_data))] 
         final_data["conflict"] = [float(exp_params["conflict"]) for j in np.arange(len(final_data))] 
         final_data["condition"] = [condition for j in np.arange(len(final_data))] 
@@ -141,7 +143,8 @@ def extract_relevant_frames(results,seed):
             perf = perf.append({'%_rewarded_actions':rr,"block":grp[0][0], "actions":grp[0][1],"%_action":num},ignore_index=True)
         perf["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(perf))]
         perf["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(perf))]
-        perf["volatility"] = [ float(exp_params["volatility"]) for j in np.arange(len(perf))]
+        perf["volatility"] = [ float(exp_params["volatility"][0][0]) for j in np.arange(len(perf))]
+        perf["volatility_type"] = [ exp_params["volatility"][0][1] for j in np.arange(len(perf))]
         #perf["volatility/num_trials"] = [ (float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(perf))]
         perf["conflict"] = [float(exp_params["conflict"]) for j in np.arange(len(perf))]
 #         perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale for j in np.arange(len(perf))]
@@ -153,7 +156,8 @@ def extract_relevant_frames(results,seed):
         overall_perf = (len(datatables[i].loc[datatables[i]["correctdecision"]==datatables[i]["decision"]])/len(datatables[i]))*100
         total_perf["%_correct_actions"] = [overall_perf]
         total_perf["seed"] = [str(seed)]
-        total_perf["volatility"] = [float(exp_params["volatility"])]
+        total_perf["volatility"] = [float(exp_params["volatility"][0][0])]
+        total_perf["volatility_type"] = [exp_params["volatility"][0][1]]
         #total_perf["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100]
         total_perf["conflict"] = [float(exp_params["conflict"])]
         #total_perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale ]
@@ -165,7 +169,8 @@ def extract_relevant_frames(results,seed):
         rt = pd.DataFrame()
         rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
         rt["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(rt))]
-        rt["volatility"] = [float(exp_params["volatility"]) for j in np.arange(len(rt))]
+        rt["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(rt))]
+        rt["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(rt))]
         rt["conflict"] = [ float(exp_params["conflict"]) for j in np.arange(len(rt))]
         #rt["volatility/num_trials"] = [(float(exp_params["volatility"])/exp_params["n_trials"])*100 for j in np.arange(len(rt))]
         rt["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(rt))]

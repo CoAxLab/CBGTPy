@@ -114,20 +114,20 @@ def helper_init_Q_df(actionchannels, Q_df_set=None):
         {column: 0.5 for column in Q_df.columns}, ignore_index=True)
     # Different initial values for Q_df should be taken care when calling this function with q_df and non-None value
     # eg. q_df = pd.DataFrame({1: 0.5, 2: 0.6})
-    print("in helper init Q_df")
-    print("Q_df_set",Q_df_set)
+    
+    
     if Q_df_set is not None:
-        print("q_df not None")
+#         print("q_df not None")
         Q_df = pd.DataFrame(
             columns=[
                 untrace(
                     actionchannels.iloc[na]["action"]) for na in np.arange(num_actions)])
-        print("Q_df", Q_df)
+#         print("Q_df", Q_df)
         Q_df = Q_df.append(
             {column: 0.5 for column in Q_df.columns}, ignore_index=True)
-        print("Q_df", Q_df)
+#         print("Q_df", Q_df)
         Q_df = untrace(ModifyViaSelector(Q_df, Q_df_set))
-        print("Q_df", Q_df)
+#         print("Q_df", Q_df)
     return Q_df
 
 # ---------------------- helper_update_Q_df() FUNCTION  -------------------

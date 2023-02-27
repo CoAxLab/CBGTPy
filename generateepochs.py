@@ -78,9 +78,14 @@ def define_reward(opt_p,  actionchannels, n_trials=100, reward_mu=1, reward_std=
 # cp_indicator = array of length n_trials to track wether there is a
 # change point (1) or not (0)
 
-def define_changepoints(n_trials, cp_lambda):  #reward_t1, reward_t2,
+def define_changepoints(n_trials,volatility):  #reward_t1, reward_t2,
+    
 
+    cp_lambda = volatility[0]
+    change_point_type = volatility[1] # "exact" or "poisson"
     # find approximate number of change points
+    
+    
     n_cps = int(n_trials / cp_lambda)
     #cp_base = np.cumsum(np.random.poisson(lam=cp_lambda,size=n_cps))  # calculate cp indices
     
@@ -88,7 +93,12 @@ def define_changepoints(n_trials, cp_lambda):  #reward_t1, reward_t2,
     # Just to test, deterministic blocks
     #print("cp_base",cp_base)
     # cumsum - return the cumulative sum of the elements along a given axis
-    cp_base = np.arange(cp_lambda,n_trials-1+cp_lambda,cp_lambda) 
+    if change_point_type == "exact":
+        cp_base = np.arange(cp_lambda,n_trials-1+cp_lambda,cp_lambda) 
+    elif change_point_type == "poisson":
+        cp_base = np.cumsum(np.random.poisson(lam=cp_lambda,size=n_cps))
+    else:
+        print("error")
     cp_idx = np.insert(cp_base, 0, 0)  # add 0
     cp_idx = np.append(cp_idx, n_trials - 1)  # add 0
     
