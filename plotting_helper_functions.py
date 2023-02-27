@@ -161,7 +161,6 @@ def extract_relevant_frames(results,seed):
         
         total_performance = total_performance.append(total_perf)
         
-        #print(total_performance)
         
         rt = pd.DataFrame()
         rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
@@ -174,12 +173,46 @@ def extract_relevant_frames(results,seed):
         rt["condition"] = [condition for j in np.arange(len(rt))]
 
         rt_distribution = rt_distribution.append(rt)
+  
+    return firing_rates, q_df, performance, rt_distribution, total_performance
+
+
+def extract_relevant_frames_stop(results,seed):
+
+    t_epochs = cbgt.collateVariable(results,'t_epochs')
+    datatables = cbgt.collateVariable(results,'datatables')
+    
+    firing_rates = []
+    rt_distribution = pd.DataFrame()
         
     #print(q_df)   
     #print(performance)
     #save_dataframes(firing_rates,q_df, performance, rt_distribution,total_performance, seed,src_dir)
+    for i in np.arange(len(results)):
+       
+        results[i] = rename_columns(results[i]) # Overwrites the column names in popfreqs
+        results_local = results[i]['popfreqs'].copy()
+    
+        results_local_melt = results_local.melt("Time (ms)")
+    
+    
+        results_local_melt["nuclei"] = [ x.split('_')[0]  for x in results_local_melt["variable"]]
+        results_local_melt["channel"] = [ x.split('_')[1]  for x in results_local_melt["variable"]]
         
-    return firing_rates, q_df, performance, rt_distribution, total_performance
+       
+        results_local_melt = results_local_melt.rename(columns={"value":"firing_rate"})
+        results_local_melt["seed"] = [ str(seed)+"_"+str(i) for j in np.arange(len(results_local_melt)) ]
+        
+                
+        firing_rates.append(results_local_melt)
+        
+        rt = pd.DataFrame()
+        rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
+        rt["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(rt))]
+        
+        rt_distribution = rt_distribution.append(rt)
+
+    return firing_rates, rt_distribution
 
     
     

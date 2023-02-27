@@ -6,10 +6,8 @@ from tracetype import *
 import init_params_hyperdirect as par
 import popconstruct_hyperdirect as popconstruct
 import qvalues as qval
-# import generateepochs as gen
 from agentmatrixinit import *
 from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
-# import pipeline_creation as pl_creat
 
 # 2. TIMESTEP LOOP
 
@@ -91,7 +89,6 @@ def mega_loop(self):
     agent.hist_Xpost = []
     
     agent.hist_w = []
-    #agent.hist_w_all = []
     agent.hist_w_std = []
     agent.hist_w_min = []
     agent.hist_w_max = []
@@ -153,16 +150,9 @@ def mega_loop(self):
         agent.hist_DAp.append([agent.dpmn_DAp[popid].mean() for popid in agent.str_popids])
         agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids   ])
-        agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids  ]) #to print cg
-        agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean() for popid in agent.stop_popids_2  ]) #GPeA cg 
-        #agent.hist_Apre.append([agent.dpmn_APRE[popid].mean() for popid in agent.str_popids])
-        #agent.hist_Apost.append([agent.dpmn_APOST[popid].mean() for popid in agent.str_popids])
-        
-        #agent.hist_Xpre.append([agent.dpmn_XPRE[popid].mean() for popid in agent.str_popids])
-        #agent.hist_Xpost.append([agent.dpmn_XPOST[popid].mean() for popid in agent.str_popids])
-        
-        
-        #agent.hist_w_all.append([[agent.AMPA_eff[src][targ] for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+        agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids  ])
+        agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean() for popid in agent.stop_popids_2  ])
+      
         agent.hist_w_std.append([[agent.AMPA_eff[src][targ].std() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         agent.hist_w_min.append([[agent.AMPA_eff[src][targ].min() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         agent.hist_w_max.append([[agent.AMPA_eff[src][targ].max() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
@@ -181,8 +171,6 @@ def mega_loop(self):
                     
             if len(thresholds_crossed) > 0 or agent.phasetimer > 300: #500 #1000 ms
                         
-                print('phasetimer',agent.phasetimer)
-                print('globaltimer',agent.globaltimer)
                 print('gateFRs',gateFRs)
                 print('thresholds_crossed',thresholds_crossed)
                 agent.phase = 1
@@ -194,7 +182,6 @@ def mega_loop(self):
                 if len(thresholds_crossed) > 0:
                     agent.motor_queued = thresholds_crossed[0]
                     agent.other_action = list(set([0,1]) - set([agent.motor_queued]))[0]
-                    print("other_action",agent.other_action)
 
                     datatables_decision = agent.motor_queued
 
@@ -206,9 +193,7 @@ def mega_loop(self):
                                 
         if agent.phase == 1:
             if agent.phasetimer > 300:
-                agent.phase = 2
-                print('phasetimer',agent.phasetimer)
-                print('globaltimer',agent.globaltimer)
+                agent.phase = 2              
                 print('trial_num',self.trial_num)
                 agent.phasetimer = 0
                 agent.gain = np.zeros(len(actionchannels))
@@ -225,7 +210,7 @@ def mega_loop(self):
                     self.chosen_action = untrace(actionchannels.iloc[agent.motor_queued,0])
                 datatables_decision = self.chosen_action
                 datatables_correctdecision = self.block[self.trial_num]
-                print("chosen_action",self.chosen_action)
+                print("chosen_action:",self.chosen_action)
                 agent.motor_queued = None
 
                 
