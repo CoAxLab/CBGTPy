@@ -1,21 +1,8 @@
-# import cbgt as cbgt
-# from frontendhelpers import *
 from tracetype import *
-# import init_params as par
-# import popconstruct as popconstruct
-# import qvalues as qval
-# import generateepochs as gen
-# from agentmatrixinit import *
-# from agent_timestep import timestep_mutator, multitimestep_mutator
-# import pipeline_creation as pl_creat
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pylab as pl
 import plotting_helper_functions as plt_help
-
-# figure_dir = "./Figures/"
-# data_dir = "./Data/"
-
 
 
 def smoothen_fr(results,win_len=50):
@@ -32,7 +19,21 @@ def smoothen_fr(results,win_len=50):
 def plot_fr(results):
     
     # Plot Population firing rates
-    col_order = ["D1STR", "GPeP", "GPi","D2STR", "STNE", "Th", "Cx","CxI","FSI"] # To ease comparison with reference Figure 
+    col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
+                 
+    fig_handles = []
+    for i in np.arange(len(results)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
+        fig_handles.append(g1)
+    
+    return fig_handles
+
+
+def plot_fr_stop(results):
+    
+    # Plot Population firing rates
+    col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
                  
     fig_handles = []
     for i in np.arange(len(results)):
@@ -42,24 +43,6 @@ def plot_fr(results):
     
     return fig_handles
         
-
-def plot_fr_stop(results, amplitude, onset):
-    
-    # Plot Population firing rates
-    col_order = ["Cx","CxI","FSI", "GPeP", "D1STR", "D2STR", "STNE", "GPi", "Th"] 
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
-        g1.fig.savefig(figure_dir_stop+'ActualFRs_stop_'+str(amplitude)+"_"+str(onset)+"_"+str(i)+".png", dpi=400)
-        
-def plot_fr_specific(results, amplitude, onset):
-    
-    # Plot Population firing rates
-    col_order = ["GPeP", "GPi", "STNE", "Th"] 
-                 
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=4,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
-        g1.fig.savefig(figure_dir_stop+'ActualFRs_stop_specific_'+str(amplitude)+"_"+str(onset)+"_"+str(i)+".png", dpi=400)
-    
         
 def plot_reward_Q_df(final_data):
 
