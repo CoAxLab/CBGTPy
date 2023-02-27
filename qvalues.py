@@ -58,14 +58,14 @@ def helper_init_Q_support_params(q_support=None):
                                  'bayes_unif_max': 2.0,
                                  'bayes_H': 0.05,
                                  'bayes_sF': 1.25,
-                                 'q_alpha': 0.45, # 0.05 in original value, in working version 0.45
+                                 'q_alpha': 0.25, # 0.05 in original value, in working version 0.45
                                  #'dpmn_CPP_scale': 35.,
-                                 'dpmn_CPP_scale': 15.,
+                                 'dpmn_CPP_scale': 100.,
                                  #'dpmn_CPP_scale': 25.,
                                  'reward_value': -1.,
                                  'chosen_action': 1})
     
-    print("q_support", q_support)
+#     print("q_support", q_support)
     if q_support is not None:
 
         Q_support_params = ModifyViaSelector(Q_support_params, q_support)
@@ -101,7 +101,7 @@ def helper_update_Q_support_params(
 # outputs:  Q_df = Q-value data frame
 
 
-def helper_init_Q_df(actionchannels, q_df=None):
+def helper_init_Q_df(actionchannels, Q_df_set=None):
 
     #print(actionchannels)
     num_actions = len(actionchannels["action"])
@@ -114,8 +114,10 @@ def helper_init_Q_df(actionchannels, q_df=None):
         {column: 0.5 for column in Q_df.columns}, ignore_index=True)
     # Different initial values for Q_df should be taken care when calling this function with q_df and non-None value
     # eg. q_df = pd.DataFrame({1: 0.5, 2: 0.6})
-
-    if q_df is not None:
+    print("in helper init Q_df")
+    print("Q_df_set",Q_df_set)
+    if Q_df_set is not None:
+        print("q_df not None")
         Q_df = pd.DataFrame(
             columns=[
                 untrace(
@@ -123,9 +125,9 @@ def helper_init_Q_df(actionchannels, q_df=None):
         print("Q_df", Q_df)
         Q_df = Q_df.append(
             {column: 0.5 for column in Q_df.columns}, ignore_index=True)
-
-        Q_df = ModifyViaSelector(Q_df, q_df)
-
+        print("Q_df", Q_df)
+        Q_df = untrace(ModifyViaSelector(Q_df, Q_df_set))
+        print("Q_df", Q_df)
     return Q_df
 
 # ---------------------- helper_update_Q_df() FUNCTION  -------------------
@@ -143,44 +145,28 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
     Q_support_params = untrace(Q_support_params)
     #Q_df = untrace(Q_df)
     #print('Q_support_params.chosen_action[trial_num]', Q_support_params.chosen_action[trial_num])
-    print(
-        'Q_support_params.chosen_action[0]',
-        Q_support_params.chosen_action[0])
+#     print(
+#         'Q_support_params.chosen_action[0]',
+#         Q_support_params.chosen_action[0])
     print('trial_num', trial_num)
 
     if Q_support_params.chosen_action[0] != 'stop' and Q_support_params.chosen_action[0] != 'none':
 
         #print('Qdf', Q_df)
         trial_wise_q_df = Q_df.iloc[trial_num]  # trial wise Q data frame
-        print('TRIAL WISE Q DF', trial_wise_q_df)
-        trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
 
-        # Probability of reward value to lie in an uniform distribution
-        # (bayes_unif_min, bayes_unif_max)
-#         u_val = sp_st.uniform.pdf(
-#             Q_support_params.reward_value,
-#             Q_support_params.bayes_unif_min,
-#             Q_support_params.bayes_unif_max)
+        trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
 
         # q value of the chosen action
         q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
         #print('trialwiseqdf', trial_wise_q_df)
         #print('qvalchosen', q_val_chosen)
 
-        # probability of reward value to lie in a normal distribution with (mean =
-        # current q-value of the chosen action, variance = bayes_sF)
-#         n_val = sp_st.norm.pdf(
-#             Q_support_params.reward_value,
-#             q_val_chosen,
-#             Q_support_params.bayes_sF)
-
-        # Calculate the new CPP
-        # bayes_CPP = (u_val * Q_support_params.bayes_H) / ((u_val *
-        # Q_support_params.bayes_H) + (n_val * (1 - Q_support_params.bayes_H)))
-
         # error = reward_calue - current q-value
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
+        
         #q_error = Q_support_params.reward_value.values - trial_wise_q_df
+        print("q_val_chosen",q_val_chosen.values)
         da_inc = Q_support_params.reward_value.values - q_val_chosen.values   #np.max(trial_wise_q_df)
         #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
         #print('Q_support_params type', type(Q_support_params))
@@ -204,7 +190,12 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         # update dopamine burst ?
         #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
         #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
+        print("da_inc",da_inc)
+        
         dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
+        
+        print("Q_df updated")
+        print(Q_df)
 
     else:
 

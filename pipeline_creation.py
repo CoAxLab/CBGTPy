@@ -94,7 +94,7 @@ def codeblock_update_Q_support_params(self,reward_val, chosen_action):
     self.Q_support_params = qval.helper_update_Q_support_params(self.Q_support_params,self.reward_val,pl.chosen_action)
 
 def codeblock_init_Q_df(self):
-    self.Q_df = qval.helper_init_Q_df(self.channels)
+    self.Q_df = qval.helper_init_Q_df(self.channels,self.Q_df_set)
 
 def codeblock_update_Q_df(self):
     self.Q_df, self.Q_support_params, self.dpmndefaults = qval.helper_update_Q_df(self.Q_df, self.Q_support_params, self.dpmndefaults,pl.trial_num)
@@ -161,7 +161,7 @@ def create_q_val_pipeline(pl):
     #Defining necessary function modules: 
     #qvalues.py
     q_val_pipe.Q_support_params = q_val_pipe[qval.helper_init_Q_support_params]()
-    q_val_pipe.Q_df = q_val_pipe[qval.helper_init_Q_df](pl.actionchannels)
+    q_val_pipe.Q_df = q_val_pipe[qval.helper_init_Q_df](pl.actionchannels,pl.Q_df_set)
 
     #rsg.reward_val = q_val_pipe[qval.get_reward_value](rsg.t1_epochs,rsg.t2_epochs,pl.chosen_action,pl.trial_num) 
     #q_val_pipe.Q_support_params = q_val_pipe[qval.helper_update_Q_support_params](q_val_pipe.Q_support_params,rsg.reward_val,pl.chosen_action)

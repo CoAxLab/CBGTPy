@@ -92,10 +92,10 @@ def define_changepoints(n_trials, cp_lambda):  #reward_t1, reward_t2,
     cp_idx = np.insert(cp_base, 0, 0)  # add 0
     cp_idx = np.append(cp_idx, n_trials - 1)  # add 0
     
-    print("cp_idx",cp_idx)
+#     print("cp_idx",cp_idx)
     
     cp_idx = cp_idx[cp_idx < n_trials]
-    print("cp_idx",cp_idx)
+    print("change points:",cp_idx)
     #cp_idx = cp_idx.sort()
        
     # to remove possible equal elements

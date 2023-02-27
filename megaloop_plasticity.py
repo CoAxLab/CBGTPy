@@ -44,7 +44,7 @@ def mega_loop(self):
     agent.extstim = np.zeros(len(actionchannels))
     agent.ramping_extstim = np.zeros(len(actionchannels))
     agent.in_popids = np.where(popdata['name'] == 'LIP')[0]
-    print(agent.in_popids)
+
     agent.out_popids = np.where(popdata['name'] == 'Th')[0]
     agent.str_popids = np.where(untrace(popdata)['name'].str.contains("STR"))[0]
     agent.d1_popids = np.where(popdata['name'] == 'D1STR')[0]
@@ -165,7 +165,7 @@ def mega_loop(self):
             if len(thresholds_crossed) > 0 or agent.phasetimer > 1000:
 
                 print('phasetimer',agent.phasetimer)
-                print('globaltimer',agent.globaltimer)
+                #print('globaltimer',agent.globaltimer)
                 print('gateFRs',gateFRs)
                 print('thresholds_crossed',thresholds_crossed)
                 agent.phase = 1
@@ -177,7 +177,7 @@ def mega_loop(self):
                 if len(thresholds_crossed) > 0:
                     agent.motor_queued = thresholds_crossed[0]
                     agent.other_action = list(set([0,1]) - set([agent.motor_queued]))[0]
-                    print("other_action",agent.other_action)
+#                     print("other_action",agent.other_action)
                     
                     datatables_decision = agent.motor_queued
 
@@ -191,12 +191,12 @@ def mega_loop(self):
         if agent.phase == 1:
             if agent.phasetimer > 300:
                 agent.phase = 2
-                print('phasetimer',agent.phasetimer)
+                #print('phasetimer',agent.phasetimer)
                 print('globaltimer',agent.globaltimer)
                 print('trial_num',self.trial_num)
                 agent.phasetimer = 0
                 agent.gain = np.zeros(len(actionchannels))
-                print(actionchannels)
+                #print(actionchannels)
                 datatables_rewardtime = agent.globaltimer
                 datatables_decisiondurationplusdelay = agent.globaltimer - datatables_stimulusstarttime
                 if agent.motor_queued == -1:
@@ -287,7 +287,7 @@ def mega_loop(self):
             datatables_reward = np.sign(self.reward_val)
             self.Q_support_params = qval.helper_update_Q_support_params(self.Q_support_params,self.reward_val,self.chosen_action)
             (self.Q_df, self.Q_support_params, self.dpmndefaults) = qval.helper_update_Q_df(self.Q_df,self.Q_support_params,self.dpmndefaults,self.trial_num)
-            print("self.dpmndefaults['dpmn_DAp'].values[0]",self.dpmndefaults['dpmn_DAp'].values[0])
+            print("scaled dopamine signal",self.dpmndefaults['dpmn_DAp'].values[0])
             
             # Shouldn't this be just for chosen action ?
             
