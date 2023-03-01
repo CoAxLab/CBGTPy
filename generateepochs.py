@@ -60,7 +60,7 @@ def define_reward(conflict,  actionchannels, n_trials=100, reward_mu=1, reward_s
     
     reward = pd.DataFrame(reward)
     reward = reward.rename(columns = {0 : actionchannels.iloc[0]["action"], 1: actionchannels.iloc[1]["action"]})
-    print(reward)
+    #print(reward)
     return reward #reward_t1, reward_t2
 
 
