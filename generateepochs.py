@@ -23,27 +23,30 @@ np.random.seed(0)
 # reward_t2 = array of n_trial length containing the amount of the reward
 # associated to action t2. Each position on the array stands for a
 # different trial
-def define_reward(opt_p,  actionchannels, n_trials=100, reward_mu=1, reward_std=0):
+def define_reward(conflict,  actionchannels, n_trials=100, reward_mu=1, reward_std=0):
     #print(actionchannels)
     trial_index = np.arange(n_trials)
 
     # define suboptimal choice reward probability
-    subopt_p = 1 - opt_p
-
+    opt_p = conflict[0]
+    subopt_p = conflict[1]#1 - opt_p
+    print("conflict",(opt_p,subopt_p))
     # sample rewards
     reward_values = np.random.normal(loc=reward_mu, scale=reward_std, size=n_trials)
-    print("reward_values",reward_values)
+    
 
     # calculate n_trials based on probabilities
     n_opt_reward_trials = int(opt_p * n_trials)
     n_subopt_reward_trials = int(subopt_p * n_trials)
 
     # find indices for optimal and suboptimal choices
-    opt_reward_idx = np.random.choice(
-        trial_index, size=n_opt_reward_trials, replace=False)
+    opt_reward_idx = np.random.choice(trial_index, size=n_opt_reward_trials, replace=False)
     # return the sorted, unique values that are in only one (not both) of the
     # input arrays
-    subopt_reward_idx = np.setxor1d(trial_index, opt_reward_idx)
+    if subopt_p == (1-opt_p):
+        subopt_reward_idx = np.setxor1d(trial_index, opt_reward_idx)
+    else:
+        subopt_reward_idx = np.random.choice(trial_index, size=n_subopt_reward_trials, replace=False)
 
     # intialize reward vectors
     reward = np.zeros((n_trials, len(actionchannels)))
@@ -54,10 +57,10 @@ def define_reward(opt_p,  actionchannels, n_trials=100, reward_mu=1, reward_std=
     #reward_t1[opt_reward_idx] = reward_values[opt_reward_idx]
     #reward_t2[subopt_reward_idx] = reward_values[subopt_reward_idx]
     reward[subopt_reward_idx, 1] = reward_values[subopt_reward_idx]
-        
+    
     reward = pd.DataFrame(reward)
     reward = reward.rename(columns = {0 : actionchannels.iloc[0]["action"], 1: actionchannels.iloc[1]["action"]})
-    
+    print(reward)
     return reward #reward_t1, reward_t2
 
 
@@ -140,7 +143,7 @@ def define_changepoints(n_trials,volatility):  #reward_t1, reward_t2,
 # volatile_pattern =  list of n trials indicating which action (0 or 1) is
 # the best action for that epoch
 
-def define_epochs(n_trials, reward, cp_idx, opt_p, actionchannels):  #reward_t1, reward_t2,
+def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels):  #reward_t1, reward_t2,
     
     #print("define_epochs")
     #print(actionchannels)
@@ -157,8 +160,10 @@ def define_epochs(n_trials, reward, cp_idx, opt_p, actionchannels):  #reward_t1,
     reward_p = []
 
     volatile_pattern = []
-
-    subopt_p = 1 - opt_p
+    
+    opt_p = conflict[0]
+    subopt_p = conflict[1]#1 - opt_p
+    print("conflict",(opt_p,subopt_p))
 
     block = []  # female greeble is always first
     # returns an integer representing the unicode character
