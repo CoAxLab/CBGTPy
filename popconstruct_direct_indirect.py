@@ -99,7 +99,8 @@ def helper_poppathways(popdata, newpathways=None):
             ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
             ['LIP', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
             ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
-            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.035, False],#
+#             ['LIP', 'Th', 'NMDA', 'syn', 1, 0.035, False],#
+            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.02, False],#
 
             ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],#
             ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
