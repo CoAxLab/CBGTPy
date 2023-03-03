@@ -208,11 +208,8 @@ def create_main_pipeline(runloop):
     #popconstruct.py: default population parameters 
     pl.popdata = pl[popconstruct.helper_popconstruct](pl.actionchannels, pl.popspecific, pl.celldefaults, pl.receptordefaults, pl.basestim, pl.dpmndefaults, pl.d1defaults, pl.d2defaults)
     pl.pathways = pl[popconstruct.helper_poppathways](pl.popdata)
-
+  
     #popconstruct.py: to create connectivity grids
-    pl.connectivity_AMPA, pl.meaneff_AMPA, pl.plastic_AMPA = pl[popconstruct.helper_connectivity]('AMPA', pl.popdata, pl.pathways).shape(3)
-    pl.connectivity_GABA, pl.meaneff_GABA, pl.plastic_GABA = pl[popconstruct.helper_connectivity]('GABA', pl.popdata, pl.pathways).shape(3)
-    pl.connectivity_NMDA, pl.meaneff_NMDA, pl.plastic_NMDA = pl[popconstruct.helper_connectivity]('NMDA', pl.popdata, pl.pathways).shape(3)
     
     #Adding codeblocks to the newtork pipeline: 
     pl.add(codeblock_modifycelldefaults)
@@ -224,6 +221,12 @@ def create_main_pipeline(runloop):
     pl.add(codeblock_modifyd2defaults)
     pl.add(codeblock_popconstruct)
     pl.add(codeblock_poppathways)
+    
+    
+    
+    pl.connectivity_AMPA, pl.meaneff_AMPA, pl.plastic_AMPA = pl[popconstruct.helper_connectivity]('AMPA', pl.popdata, pl.pathways).shape(3)
+    pl.connectivity_GABA, pl.meaneff_GABA, pl.plastic_GABA = pl[popconstruct.helper_connectivity]('GABA', pl.popdata, pl.pathways).shape(3)
+    pl.connectivity_NMDA, pl.meaneff_NMDA, pl.plastic_NMDA = pl[popconstruct.helper_connectivity]('NMDA', pl.popdata, pl.pathways).shape(3)
     
     q_val_pipe = create_q_val_pipeline(pl)
     
