@@ -148,7 +148,7 @@ def helper_poppathways(popdata, newpathways=None):
     simplepathways = trace(simplepathways, 'init')
 
     if len(newpathways) != 0:
-
+#         print("newpathways not NONE")
         simplepathways.update(newpathways)
 
     pathways = simplepathways.copy()
@@ -161,7 +161,7 @@ def helper_poppathways(popdata, newpathways=None):
             pathways.loc[idx, 'biselector'] = NamePathwaySelector(
                 row['src'], row['dest'])
     pathways = trace(pathways, 'auto')
-
+#     print(pathways.loc[pathways["src"]=="D1STR"][["src","dest","eff"]])
     return pathways
 
 # ----------------------  helper_connectivity FUNCTION  ------------------

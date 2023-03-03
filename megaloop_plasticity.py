@@ -52,13 +52,19 @@ def mega_loop(self):
     agent.stop_popids = np.where(popdata['name'] == 'STNE')[0]
     
     agent.opt_popids = np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[0]))[0]
+    print("agent.opt_popids",agent.opt_popids)
+    agent.optstim_backup_basestim = np.zeros(len(agent.opt_popids))
     agent.ramping_stopstim_current = np.zeros(len(actionchannels))
-    agent.ramping_optstim_current = np.zeros(len(actionchannels))
+#     agent.ramping_optstim_current = np.zeros(len(actionchannels))
     agent.ramping_stopstim_target = np.zeros(len(actionchannels))
-    agent.ramping_optstim_target = np.zeros(len(actionchannels))
+#     agent.ramping_optstim_target = np.zeros(len(actionchannels))
     agent.stopsignal_applied = np.zeros(len(actionchannels))
     agent.optstim_applied = np.zeros(len(actionchannels))
-
+    
+    trial_wise_opt_duration = self.opt_signal_duration #500.
+    opt_amp = self.opt_signal_amplitude
+    opt_onset = self.opt_signal_onset
+    
     presented_stimulus = 1
     self.chosen_action = None
 
@@ -69,12 +75,17 @@ def mega_loop(self):
     for action_idx in range(len(actionchannels)):
         popid = agent.in_popids[action_idx]
         agent.FreqExt_AMPA[popid] = np.zeros(len(agent.FreqExt_AMPA[popid]))
-        
-        
-    for action_idx in range(len(actionchannels)):
+
+    for action_idx in range(len(agent.opt_popids)):
         popid = agent.opt_popids[action_idx]
-        agent.ramping_optstim_current[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
-        agent.ramping_optstim_target[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
+        agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]
+        
+        
+    for action_idx in range(len(agent.opt_popids)):
+        popid = agent.opt_popids[action_idx]
+#         agent.ramping_optstim_current[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
+#         agent.ramping_optstim_target[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
+        agent.optstim_backup_basestim[action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
         
 
     multitimestep_mutator(agent,popdata,5000)
@@ -96,6 +107,7 @@ def mega_loop(self):
     agent.hist_w_min = []
     agent.hist_w_max = []
     agent.inp = []
+    agent.opt_inp = []
 
     datatables_decision = None
     datatables_stimulusstarttime = agent.globaltimer
@@ -120,16 +132,19 @@ def mega_loop(self):
         
         for action_idx in range(len(actionchannels)):
             popid = agent.in_popids[action_idx]
+            
             agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_extstim[action_idx]
-
             
-        # Ramping for STOP signal
-        agent.ramping_optstim_current = agent.ramping_optstim_current * 0.9 + agent.ramping_optstim_target * 0.1
-        for action_idx in range(len(actionchannels)):
-            popid = agent.opt_popids[action_idx]
-            agent.FreqExt_AMPA[popid] = np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_optstim_current[action_idx]
-
             
+        if self.opt_signal_present == True:
+            if agent.opttimer == opt_onset and self.trial_num in self.opt_list_trials:
+                print("opt stim started")
+     
+                for action_idx in range(len(agent.opt_popids)):
+                    popid = agent.opt_popids[action_idx]
+#                     print("agent.FreqExt_AMPA[popid]",agent.FreqExt_AMPA[popid])
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp
+#                     print("agent.FreqExt_AMPA[popid]",agent.FreqExt_AMPA[popid])
             
         multitimestep_mutator(agent,popdata,5)
       
@@ -147,6 +162,7 @@ def mega_loop(self):
             
         agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids   ])
+        agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids ])
 #         agent.hist_Apre.append([agent.dpmn_APRE[popid].mean() for popid in agent.str_popids])
 #         agent.hist_Apost.append([agent.dpmn_APOST[popid].mean() for popid in agent.str_popids])
         
@@ -251,7 +267,14 @@ def mega_loop(self):
         if agent.phase == 0 and self.trial_num == self.n_trials:
             break
 
-            
+
+        if self.opt_signal_present:   
+            if agent.opttimer >=trial_wise_opt_duration + opt_onset:
+                for action_idx in range(len(agent.opt_popids)):
+                    popid = agent.opt_popids[action_idx]
+                    #print("agent.FreqExt_AMPA[popid]",agent.FreqExt_AMPA[popid])
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                    #print("agent.FreqExt_AMPA[popid]",agent.FreqExt_AMPA[popid])
             
 #         if self.opt_signal_present:    
 #             # stop signal

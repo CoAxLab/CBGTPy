@@ -7,6 +7,7 @@ from tracetype import *
 #import popconstruct as popconstruct
 import qvalues as qval
 import generateepochs as gen
+import generate_opt_dataframe as gen_opt
 #import mega_loop as ml
 from agentmatrixinit import *
 
@@ -152,6 +153,26 @@ def create_stop_pipeline_2(pl): #D2STR
     return stop_2
 
 
+def create_opt_pipeline(pl):
+    opt = cbgt.Pipeline() #rsg is short for 'reward schedule generator'
+    
+    (opt.opt_df, opt.opt_channels_df, opt.opt_amplitude_df, opt.opt_onset_df,opt.opt_populations_df,opt.opt_list_trials) = opt[gen_opt.GenOptSchedule](
+        opt.opt_signal_probability,
+        pl.actionchannels,
+        opt.n_trials,
+        opt.popdata,
+        opt.opt_signal_channel,
+        opt.opt_signal_amplitude,
+        opt.opt_signal_onset,
+        opt.opt_signal_duration,
+        opt.opt_signal_present,
+        opt.opt_signal_population
+     ).shape(6)
+    
+    #print(stop)
+    return opt
+
+
 # 2.3 Create q-values pipeline 
 
 def create_q_val_pipeline(pl): 
@@ -210,6 +231,9 @@ def create_main_pipeline(runloop):
     pl.pathways = pl[popconstruct.helper_poppathways](pl.popdata)
   
     #popconstruct.py: to create connectivity grids
+    opt = create_opt_pipeline(pl)
+    pl.add(opt)
+    
     
     #Adding codeblocks to the newtork pipeline: 
     pl.add(codeblock_modifycelldefaults)
