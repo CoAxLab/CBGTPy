@@ -102,10 +102,7 @@ def mega_loop(self):
     agent.hist_Xpost = []
     
     agent.hist_w = []
-    #agent.hist_w_all = []
-    agent.hist_w_std = []
-    agent.hist_w_min = []
-    agent.hist_w_max = []
+
     agent.inp = []
     agent.opt_inp = []
 
@@ -121,6 +118,7 @@ def mega_loop(self):
     self.datatables = pd.DataFrame([], columns=["decision", "stimulusstarttime", "decisiontime", "decisionduration", "decisiondurationplusdelay", "rewardtime", "correctdecision", "reward"])
     self.datatables.index.name = 'trial'
 
+    
     
     while self.trial_num < self.n_trials:
         if agent.phase == 0:
@@ -154,16 +152,19 @@ def mega_loop(self):
         agent.opttimer += 1
         agent.FRs = np.concatenate((agent.FRs,[agent.rollingbuffer.mean(1) / untrace(list(popdata['N'])) / agent.dt * 1000]))
 
-        agent.hist_E.append([agent.dpmn_E[popid].mean() for popid in agent.str_popids])
-        agent.hist_DAp.append([agent.dpmn_DAp[popid].mean() for popid in agent.str_popids])
-        agent.hist_fDA_D1.append([ agent.dpmn_fDA_D1[popid].mean() for popid in agent.d1_popids])
-        agent.hist_fDA_D2.append([ agent.dpmn_fDA_D2[popid].mean() for popid in agent.d2_popids])
+#         agent.hist_E.append([agent.dpmn_E[popid].mean() for popid in agent.str_popids])
+#         agent.hist_DAp.append([agent.dpmn_DAp[popid].mean() for popid in agent.str_popids])
+#         agent.hist_fDA_D1.append([ agent.dpmn_fDA_D1[popid].mean() for popid in agent.d1_popids])
+#         agent.hist_fDA_D2.append([ agent.dpmn_fDA_D2[popid].mean() for popid in agent.d2_popids])
         
+        if "weight" in self.record_variables:    
             
-        agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids   ])
-        agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids ])
-#         agent.hist_Apre.append([agent.dpmn_APRE[popid].mean() for popid in agent.str_popids])
+            agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+            
+#         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids   ])
+#         agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids ])
+
+        #         agent.hist_Apre.append([agent.dpmn_APRE[popid].mean() for popid in agent.str_popids])
 #         agent.hist_Apost.append([agent.dpmn_APOST[popid].mean() for popid in agent.str_popids])
         
 #         agent.hist_Xpre.append([agent.dpmn_XPRE[popid].mean() for popid in agent.str_popids])
@@ -171,9 +172,9 @@ def mega_loop(self):
         
         
         #agent.hist_w_all.append([[agent.AMPA_eff[src][targ] for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        agent.hist_w_std.append([[agent.AMPA_eff[src][targ].std() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        agent.hist_w_min.append([[agent.AMPA_eff[src][targ].min() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        agent.hist_w_max.append([[agent.AMPA_eff[src][targ].max() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+#         agent.hist_w_std.append([[agent.AMPA_eff[src][targ].std() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+#         agent.hist_w_min.append([[agent.AMPA_eff[src][targ].min() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+#         agent.hist_w_max.append([[agent.AMPA_eff[src][targ].max() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
 
         if agent.phase == 0:
             gateFRs = agent.rollingbuffer[agent.out_popids].mean(1) / untrace(list(popdata['N'][agent.out_popids])) / agent.dt * 1000
@@ -316,7 +317,7 @@ def mega_loop(self):
             
             for popid in agent.str_popids:
                 agent.dpmn_DAp[popid] *=0
-                agent.dpmn_DAp[popid] += self.dpmndefaults['dpmn_DAp'].values[0] #* agent.dt
+                agent.dpmn_DAp[popid] += untrace(self.dpmndefaults['dpmn_DAp'].values[0]) #* agent.dt
             self.chosen_action = None
 
             

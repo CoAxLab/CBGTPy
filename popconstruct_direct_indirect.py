@@ -97,10 +97,11 @@ def helper_poppathways(popdata, newpathways=None):
             ['LIP', 'D1STR', 'NMDA', 'syn', 1, 0.02, False],#
             ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.015, True],#
             ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
-            ['LIP', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
+#             ['LIP', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
+            ['LIP', 'FSI', 'AMPA', 'all', 1, 0.19, False],#            
             ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
 #             ['LIP', 'Th', 'NMDA', 'syn', 1, 0.035, False],#
-            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.02, False],#
+            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.029, False],#
 
             ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],#
             ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
@@ -112,8 +113,11 @@ def helper_poppathways(popdata, newpathways=None):
 
             
             ['FSI', 'FSI', 'GABA', 'all', 1, 3.25833, False],#
-            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.77760, False],#
-            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.66987, False],#
+#             ['FSI', 'D1STR', 'GABA', 'all', 1, 1.77760, False],#
+#             ['FSI', 'D2STR', 'GABA', 'all', 1, 1.66987, False],#
+            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.2, False],#
+            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.1, False],#
+            
 
             ['GPeP', 'GPeP', 'GABA', 'all', 0.0667, 1.75, False],#
             ['GPeP', 'STNE', 'GABA', 'syn', 0.0667, 0.35, False],#

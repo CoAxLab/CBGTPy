@@ -30,7 +30,7 @@ def CreateSynapses(popdata, cons, effs, plasticity):
             connection[idx1][idx2] = condata
             efficacy[idx1][idx2] = effdata
 
-            print(idx1,idx2,con)
+            #print(idx1,idx2,con)
     return connection,efficacy
 
 
