@@ -33,6 +33,26 @@ def extract_recording_variables(results,list_variables,seed):
             
             recorded_variables[var_name] = weights_df
     
+        elif var_name == "optogenetic_input":
+            opt_inp_df = pd.DataFrame()
+            for i in np.arange(len(results)):
+                opt_inp = np.array(results[i]['agent'].opt_inp)
+                opt_pop = results[i]['opt_signal_population'][0]
+                temp = pd.DataFrame()
+                if np.shape(opt_inp)[1] > 1:
+                    temp[opt_pop+"_left"] = opt_inp[:,0]
+                    temp[opt_pop+"_right"] = opt_inp[:,1]
+                else:
+                    temp[opt_pop] = opt_inp[:,0]
+                temp["seed"] = str(seed)+"_"+str(i)
+                temp["Time(ms)"] = np.arange(len(opt_inp))
+                opt_inp_df = opt_inp_df.append(temp)
+            
+            opt_inp_df = opt_inp_df.reset_index()
+            recorded_variables[var_name] = opt_inp_df
+                
+
+    
     
     return recorded_variables
             

@@ -53,6 +53,7 @@ def mega_loop(self):
     
     agent.opt_popids = np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[0]))[0]
     print("agent.opt_popids",agent.opt_popids)
+    
     agent.optstim_backup_basestim = np.zeros(len(agent.opt_popids))
     agent.ramping_stopstim_current = np.zeros(len(actionchannels))
 #     agent.ramping_optstim_current = np.zeros(len(actionchannels))
@@ -158,11 +159,14 @@ def mega_loop(self):
 #         agent.hist_fDA_D2.append([ agent.dpmn_fDA_D2[popid].mean() for popid in agent.d2_popids])
         
         if "weight" in self.record_variables:    
-            
+           
             agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
+
+        if "optogenetic_input" in self.record_variables:
+            agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids ])
             
 #         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids   ])
-#         agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids ])
+
 
         #         agent.hist_Apre.append([agent.dpmn_APRE[popid].mean() for popid in agent.str_popids])
 #         agent.hist_Apost.append([agent.dpmn_APOST[popid].mean() for popid in agent.str_popids])
