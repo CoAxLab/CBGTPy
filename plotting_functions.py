@@ -1,4 +1,5 @@
 from tracetype import *
+import cbgt as cbgt
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pylab as pl
@@ -20,34 +21,63 @@ def smoothen_fr(results,win_len=50):
                 
     return results
         
-def plot_fr(results):
+def plot_fr(results, datatables):
     
     # Plot Population firing rates
-    col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
+    col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green']))
+    col_list = dict()
+    col_list['left'] = colors[0]
+    col_list['right'] = colors[1]
+    col_list['common'] = colors[2]
                  
     fig_handles = []
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
-        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
-        fig_handles.append(g1)
     
+    for i in np.arange(len(results)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
+       
+        for j in np.arange(len(datatables[i])):
+            for ax in g1.axes.flat:
+                ax.axvline(datatables[i].stimulusstarttime[j], color='silver')
+                ax.axvline(datatables[i].rewardtime[j], color='silver')
+                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].rewardtime[j]):
+                    ax.axvline(k,color='whitesmoke', alpha=0.02)
+        
+        fig_handles.append(g1)
+       
     return fig_handles
         
 
-
-
-def plot_fr_stop(results):
+def plot_fr_stop(results, datatables):
     
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green']))
+    col_list = dict()
+    col_list['left'] = colors[0]
+    col_list['right'] = colors[1]
+    col_list['common'] = colors[2]
+
                  
     fig_handles = []
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
-        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
-        fig_handles.append(g1)
     
+    for i in np.arange(len(results)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        
+        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
+        for j in np.arange(len(datatables[i])):
+            for ax in g1.axes.flat:
+                ax.axvline(datatables[i].stimulusstarttime[j], color='silver')
+                ax.axvline(datatables[i].rewardtime[j], color='silver')
+                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].rewardtime[j]):
+                    ax.axvline(k,color='whitesmoke', alpha=0.02)
+        
+        fig_handles.append(g1)
+        #g1.fig.savefig('ActualFR_'+str(i)+".png", dpi=400)
     return fig_handles
+
+
 
 def plot_fr_flex(firing_rates, channel, nuclei, interval):
     
