@@ -50,9 +50,43 @@ def extract_recording_variables(results,list_variables,seed):
             
             opt_inp_df = opt_inp_df.reset_index()
             recorded_variables[var_name] = opt_inp_df
-                
-
-    
+            
+        elif var_name == "stop_input_1":
+            stop_inp_1_df = pd.DataFrame()
+            for i in np.arange(len(results)):
+                stop_inp_1 = np.array(results[i]['agent'].inp_stop)
+                stop_pop_1 = "STNE"
+                temp = pd.DataFrame()
+                if np.shape(stop_inp_1)[1] > 1:
+                    temp[stop_pop_1+"_left"] = stop_inp_1[:,0]
+                    temp[stop_pop_1+"_right"] = stop_inp_1[:,1]
+                else:
+                    temp[stop_pop_1] = stop_inp_1[:,0]
+                temp["seed"] = str(seed)+"_"+str(i)
+                temp["Time(ms)"] = np.arange(len(stop_inp_1))
+                stop_inp_1_df = stop_inp_1_df.append(temp)
+            
+            stop_inp_1_df = stop_inp_1_df.reset_index()
+            recorded_variables[var_name] = stop_inp_1_df
+            
+        elif var_name == "stop_input_2":
+            stop_inp_2_df = pd.DataFrame()
+            for i in np.arange(len(results)):
+                stop_inp_2 = np.array(results[i]['agent'].inp_stop_2)
+                stop_pop_2 = "D2STR"
+                temp = pd.DataFrame()
+                if np.shape(stop_inp_2)[1] > 1:
+                    temp[stop_pop_2+"_left"] = stop_inp_2[:,0]
+                    temp[stop_pop_2+"_right"] = stop_inp_2[:,1]
+                else:
+                    temp[stop_pop_2] = stop_inp_2[:,0]
+                temp["seed"] = str(seed)+"_"+str(i)
+                temp["Time(ms)"] = np.arange(len(stop_inp_2))
+                stop_inp_2_df = stop_inp_2_df.append(temp)
+            
+            stop_inp_2_df = stop_inp_2_df.reset_index()
+            recorded_variables[var_name] = stop_inp_2_df
+                   
     
     return recorded_variables
             
