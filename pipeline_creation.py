@@ -96,6 +96,16 @@ def codeblock_modifyexperimentdefaults(self):
         self.inter_trial_interval = 600
     if self.thalamic_threshold == None:
         self.thalamic_threshold = 30.
+    if self.movement_time == None:
+        self.trial_wise_movement_times = np.round(np.random.normal(250.,1.5,self.n_trials),0)
+        print("trial wise mt",self.trial_wise_movement_times)
+        #self.movement_time_type = "mean"
+    elif isinstance(self.movement_time,list):
+#         self.movement_time_type = self.movement_time[0]
+        if self.movement_time[0] == "mean":
+            self.trial_wise_movement_times = np.round(np.random.normal(self.movement_time[1],1.5,self.n_trials),0)
+        elif self.movement_time[0] == "constant":
+            self.trial_wise_movement_times = np.hstack([self.movement_time[1]]*self.n_trials)
         
 #     else:
 #         self.inter_trial_interval = pl.inter_trial_interval

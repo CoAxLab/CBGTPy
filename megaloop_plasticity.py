@@ -119,9 +119,12 @@ def mega_loop(self):
     self.datatables = pd.DataFrame([], columns=["decision", "stimulusstarttime", "decisiontime", "decisionduration", "decisiondurationplusdelay", "rewardtime", "correctdecision", "reward"])
     self.datatables.index.name = 'trial'
 
-    print("inter trial interval",self.inter_trial_interval)
+        
     
     while self.trial_num < self.n_trials:
+         
+     
+        
         if agent.phase == 0:
             agent.extstim = agent.gain * presented_stimulus * self.maxstim  # TODO: make 3.0 a param
             agent.ramping_extstim = agent.ramping_extstim * 0.9 + agent.extstim * 0.1
@@ -210,10 +213,10 @@ def mega_loop(self):
 
                 
         if agent.phase == 1:
-            if agent.phasetimer > 300:
+            if agent.phasetimer > self.trial_wise_movement_times[self.trial_num]: #300:
                 agent.phase = 2
                 #print('phasetimer',agent.phasetimer)
-                print('globaltimer',agent.globaltimer)
+                #print('globaltimer',agent.globaltimer)
                 print('trial_num',self.trial_num)
                 agent.phasetimer = 0
                 agent.gain = np.zeros(len(actionchannels))

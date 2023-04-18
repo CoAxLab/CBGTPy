@@ -232,7 +232,7 @@ def mega_loop(self):
                
                                 
         if agent.phase == 1:
-            if agent.phasetimer > 300:
+            if agent.phasetimer > self.trial_wise_movement_times[self.trial_num]:
                 agent.phase = 2              
                 print('trial_num',self.trial_num)
                 agent.phasetimer = 0
