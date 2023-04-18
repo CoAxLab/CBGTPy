@@ -182,7 +182,7 @@ def mega_loop(self):
 
         if agent.phase == 0:
             gateFRs = agent.rollingbuffer[agent.out_popids].mean(1) / untrace(list(popdata['N'][agent.out_popids])) / agent.dt * 1000
-            thresholds_crossed = np.where(gateFRs > 30)[0]
+            thresholds_crossed = np.where(gateFRs > self.thalamic_threshold)[0]
             if len(thresholds_crossed) > 0 or agent.phasetimer > 1000:
 
                 print('phasetimer',agent.phasetimer)

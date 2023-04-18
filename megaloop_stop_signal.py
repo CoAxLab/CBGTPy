@@ -200,7 +200,7 @@ def mega_loop(self):
         if agent.phase == 0:
             gateFRs = agent.rollingbuffer[agent.out_popids].mean(1) / untrace(list(popdata['N'][agent.out_popids])) / agent.dt * 1000
             
-            thresholds_crossed = np.where(gateFRs > 30)[0]
+            thresholds_crossed = np.where(gateFRs > self.thalamic_threshold)[0]
             
             if self.decision_channel != 'all' and len(thresholds_crossed) > 0: #CG 1-channel working
                 n = int(self.decision_channel)
@@ -257,7 +257,7 @@ def mega_loop(self):
                 
         if agent.phase == 2:
 
-            if agent.phasetimer > self.inter_trial_interval:#600:
+            if agent.phasetimer > self.inter_trial_interval:
                 self.dpmndefaults['dpmn_DAp'] = 0
                 self.trial_num += 1
                 agent.phase = 0

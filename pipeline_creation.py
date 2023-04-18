@@ -94,6 +94,8 @@ def codeblock_modifyactionchannels(self):
 def codeblock_modifyexperimentdefaults(self):
     if self.inter_trial_interval == None:
         self.inter_trial_interval = 600
+    if self.thalamic_threshold == None:
+        self.thalamic_threshold = 30.
         
 #     else:
 #         self.inter_trial_interval = pl.inter_trial_interval
