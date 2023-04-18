@@ -119,7 +119,7 @@ def mega_loop(self):
     self.datatables = pd.DataFrame([], columns=["decision", "stimulusstarttime", "decisiontime", "decisionduration", "decisiondurationplusdelay", "rewardtime", "correctdecision", "reward"])
     self.datatables.index.name = 'trial'
 
-    
+    print("inter trial interval",self.inter_trial_interval)
     
     while self.trial_num < self.n_trials:
         if agent.phase == 0:
@@ -234,7 +234,7 @@ def mega_loop(self):
                 
         if agent.phase == 2:
 
-            if agent.phasetimer > 600:
+            if agent.phasetimer > self.inter_trial_interval:
                 self.dpmndefaults['dpmn_DAp'] = 0
                 self.trial_num += 1
                 agent.phase = 0

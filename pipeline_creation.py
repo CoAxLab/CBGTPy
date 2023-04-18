@@ -10,9 +10,10 @@ import generateepochs as gen
 import generate_opt_dataframe as gen_opt
 #import mega_loop as ml
 from agentmatrixinit import *
+import pdb
 
 experiment_choice = None
-par = None
+par = "Taco"#None
 popconstruct = None
 ml = None
 gen_stop = None
@@ -20,7 +21,10 @@ gen_stop_2 = None
 # timestep_mutator = None
 # multitimestep_mutator = None
 
+
+
 def choose_pipeline(choice):
+    print("in choose pipeline")
     global experiment_choice
     global par
     global popconstruct
@@ -31,9 +35,14 @@ def choose_pipeline(choice):
 #     global multitimestep_mutator
     experiment_choice = choice
     if choice == 'plastic':
-        import init_params_direct_indirect as par
-        import popconstruct_direct_indirect as popconstruct
-        import megaloop_plasticity as ml
+        #import init_params_direct_indirect as par
+        par =  __import__("init_params_direct_indirect")
+        #par = importlib.import_module("init_params_direct_indirect.py")
+        #import popconstruct_direct_indirect as popconstruct
+        popconstruct = __import__("popconstruct_direct_indirect")
+        ml = __import__("megaloop_plasticity")
+        #import megaloop_plasticity as ml
+        
 #         from agent_timestep_plasticity import timestep_mutator, multitimestep_mutator
     if choice == 'stopsignal':
         import init_params_hyperdirect as par
@@ -42,7 +51,8 @@ def choose_pipeline(choice):
 #         from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
         import generate_stop_dataframe as gen_stop
         import generate_stop_dataframe_2 as gen_stop_2
-
+    
+#     print("par in choose_pipeline",par)
 # 2. NETWORK PIPELINE
 
 # 2.1. Defining necessary codeblocks:
@@ -52,9 +62,11 @@ def choose_pipeline(choice):
 #init_params.py: to modify the neuronal default values
 
 def codeblock_experimentchoice(self):
+#     print("codeblock_experimentchoice, thread_id",self.thread_id)
     choose_pipeline(self.experimentchoice)
 
 def codeblock_modifycelldefaults(self):
+#     print("par in modifycelldefaults, thread_id",self.thread_id,par)
     self.celldefaults = par.helper_cellparams(self.params)
 
 def codeblock_modifypopspecific(self):
@@ -76,7 +88,15 @@ def codeblock_modifyd2defaults(self):
     self.d2defaults = par.helper_d2(self.d2)
 
 def codeblock_modifyactionchannels(self):
+#     print("par in modifyactionchannels, thread_id",self.thread_id,par)
     self.actionchannels = par.helper_actionchannels(self.channels)
+    
+def codeblock_modifyexperimentdefaults(self):
+    if self.inter_trial_interval == None:
+        self.inter_trial_interval = 600
+        
+#     else:
+#         self.inter_trial_interval = pl.inter_trial_interval
 
 #popconstruct.py: to modify population parameters
 
@@ -113,7 +133,8 @@ def create_reward_pipeline(pl):
         rsg.reward_mu,
         rsg.reward_std, pl.actionchannels
     ).shape(6)
-    
+        
+    print("in reward pipeline")
     return rsg
 
 
@@ -189,15 +210,40 @@ def create_q_val_pipeline(pl):
     #(q_val_pipe.Q_df, q_val_pipe.Q_support_params, pl.dpmndefaults) = q_val_pipe[qval.helper_update_Q_df](q_val_pipe.Q_df,q_val_pipe.Q_support_params,pl.dpmndefaults,pl.trial_num).shape(3)
     return q_val_pipe
     
+    
+    
+def create_test_pipeline(runloop):
+    
+    pl = cbgt.Pipeline()
+    pl.add(codeblock_experimentchoice)
+    pl.add(codeblock_modifyactionchannels)
+    pl.add(codeblock_modifycelldefaults)
+#     pl.celldefaults = par.helper_cellparams()
+    
+#     rsg = create_reward_pipeline(pl)
+#     #Adding rsg pipeline to the network pipeline: 
+#     pl.add(rsg)
+
+#     if runloop:
+#         mega_loop = ml.mega_loop
+#         pl.add(mega_loop)
+    
+    return pl
+    
+    
+    
 # 3. CREATE CBGT PIPELINE - MAIN
 
 def create_main_pipeline(runloop):
     
     pl = cbgt.Pipeline()
     
-    pl.add(codeblock_experimentchoice)
     
+    pl.add(codeblock_experimentchoice)
+        
     pl.add(codeblock_modifyactionchannels)
+    
+    pl.add(codeblock_modifyexperimentdefaults)
     
     rsg = create_reward_pipeline(pl)
     #Adding rsg pipeline to the network pipeline: 
@@ -212,6 +258,12 @@ def create_main_pipeline(runloop):
     #to update the Q-values 
     pl.trial_num = 0 #first row of Q-values df - initialization data 
     pl.chosen_action = None # 2 #chosen action for the current trial
+    
+    
+    # Default experimental parameters
+#     if pl.inter_trial_interval == None:
+#         pl.inter_trial_interval = 600
+        
     
     #Defining necessary function modules: 
 

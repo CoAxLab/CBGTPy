@@ -257,7 +257,7 @@ def mega_loop(self):
                 
         if agent.phase == 2:
 
-            if agent.phasetimer > 600:
+            if agent.phasetimer > self.inter_trial_interval:#600:
                 self.dpmndefaults['dpmn_DAp'] = 0
                 self.trial_num += 1
                 agent.phase = 0
