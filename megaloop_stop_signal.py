@@ -209,7 +209,7 @@ def mega_loop(self):
                 else: 
                     thresholds_crossed = []
                     
-            if len(thresholds_crossed) > 0 or agent.phasetimer > 300: 
+            if len(thresholds_crossed) > 0 or agent.phasetimer > self.choice_timeout: 
                         
                 print('gateFRs',gateFRs)
                 print('thresholds_crossed',thresholds_crossed)

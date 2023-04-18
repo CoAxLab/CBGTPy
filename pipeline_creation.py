@@ -106,9 +106,9 @@ def codeblock_modifyexperimentdefaults(self):
             self.trial_wise_movement_times = np.round(np.random.normal(self.movement_time[1],1.5,self.n_trials),0)
         elif self.movement_time[0] == "constant":
             self.trial_wise_movement_times = np.hstack([self.movement_time[1]]*self.n_trials)
-        
-#     else:
-#         self.inter_trial_interval = pl.inter_trial_interval
+    
+    if self.choice_timeout == None:
+        self.choice_timeout = 1000.
 
 #popconstruct.py: to modify population parameters
 
