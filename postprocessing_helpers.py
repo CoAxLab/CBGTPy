@@ -29,7 +29,7 @@ def extract_recording_variables(results,list_variables,seed):
                     temp["trials"] = np.arange(0,len(datatables[i])-1)
                     temp["nuclei"] = nuc_list[j]
                     temp["seed"] = str(seed) +"_"+str(i)
-                    weights_df = weights_df.append(temp)
+                    weights_df = pd.concat([weights_df,temp])#weights_df.append(temp)
             
             recorded_variables[var_name] = weights_df
     
@@ -46,7 +46,7 @@ def extract_recording_variables(results,list_variables,seed):
                     temp[opt_pop] = opt_inp[:,0]
                 temp["seed"] = str(seed)+"_"+str(i)
                 temp["Time(ms)"] = np.arange(len(opt_inp))
-                opt_inp_df = opt_inp_df.append(temp)
+                opt_inp_df = pd.concat([opt_inp_df,temp])#opt_inp_df.append(temp)
             
             opt_inp_df = opt_inp_df.reset_index()
             recorded_variables[var_name] = opt_inp_df
@@ -64,7 +64,7 @@ def extract_recording_variables(results,list_variables,seed):
                     temp[stop_pop_1] = stop_inp_1[:,0]
                 temp["seed"] = str(seed)+"_"+str(i)
                 temp["Time(ms)"] = np.arange(len(stop_inp_1))
-                stop_inp_1_df = stop_inp_1_df.append(temp)
+                stop_inp_1_df = pd.concat([stop_inp_1_df,temp])#stop_inp_1_df.append(temp)
             
             stop_inp_1_df = stop_inp_1_df.reset_index()
             recorded_variables[var_name] = stop_inp_1_df
@@ -82,7 +82,7 @@ def extract_recording_variables(results,list_variables,seed):
                     temp[stop_pop_2] = stop_inp_2[:,0]
                 temp["seed"] = str(seed)+"_"+str(i)
                 temp["Time(ms)"] = np.arange(len(stop_inp_2))
-                stop_inp_2_df = stop_inp_2_df.append(temp)
+                stop_inp_2_df = pd.concat([stop_inp_2_df,temp]) #stop_inp_2_df.append(temp)
             
             stop_inp_2_df = stop_inp_2_df.reset_index()
             recorded_variables[var_name] = stop_inp_2_df

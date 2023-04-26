@@ -313,18 +313,27 @@ def mega_loop(self):
         #if self.chosen_action is None:
         #    self.chosen_action = np.array(["left","right"])[np.random.randint(0,2,1)[0]]
         if self.chosen_action is not None:
+            
+            if self.corticostriatal_plasticity_present == "off":
+                chosen_action_backup = self.chosen_action
+                self.chosen_action = "none"
+                #print("replacing by none",self.chosen_action)
+            
             #self.reward_val = qval.get_reward_value(self.t1_epochs,self.t2_epochs,self.chosen_action,self.trial_num)
             self.reward_val = qval.get_reward_value(self.t_epochs,self.chosen_action,self.trial_num)
             datatables_reward = np.sign(self.reward_val)
             self.Q_support_params = qval.helper_update_Q_support_params(self.Q_support_params,self.reward_val,self.chosen_action)
             (self.Q_df, self.Q_support_params, self.dpmndefaults) = qval.helper_update_Q_df(self.Q_df,self.Q_support_params,self.dpmndefaults,self.trial_num)
             print("scaled dopamine signal",self.dpmndefaults['dpmn_DAp'].values[0])
+            if self.corticostriatal_plasticity_present == "off":
+                self.chosen_action = chosen_action_backup
+                #print("replacing by original",self.chosen_action)
             
             # Shouldn't this be just for chosen action ?
-            
-            for popid in agent.str_popids:
-                agent.dpmn_DAp[popid] *=0
-                agent.dpmn_DAp[popid] += untrace(self.dpmndefaults['dpmn_DAp'].values[0]) #* agent.dt
+            if self.corticostriatal_plasticity_present == "on":
+                for popid in agent.str_popids:
+                    agent.dpmn_DAp[popid] *=0
+                    agent.dpmn_DAp[popid] += untrace(self.dpmndefaults['dpmn_DAp'].values[0]) #* agent.dt
             self.chosen_action = None
 
             

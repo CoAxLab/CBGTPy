@@ -3,6 +3,7 @@ from tracetype import *
 import copy
 import pdb
 import numpy as np
+import pandas as pd
 import scipy.stats as sp_st
 
 
@@ -179,7 +180,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         # the previous trial
         new_data = pd.DataFrame(Q_df[-1:].values, columns=Q_df.columns)
         #print('newdata', new_data)
-        Q_df = Q_df.append(new_data)
+        Q_df = pd.concat([Q_df,new_data])#Q_df.append(new_data)
         #print('newQdf', Q_df)
 
         # Update the correct value with q_val_updated
@@ -195,13 +196,13 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
         
         print("Q_df updated")
-        print(Q_df)
+        #print(Q_df)
 
     else:
 
         new_data = pd.DataFrame(Q_df[-1:].values, columns=Q_df.columns)
         #print('newdata', new_data)
-        Q_df = Q_df.append(new_data)
+        Q_df = pd.concat([Q_df,new_data])
         #print('newQdf', Q_df)
 
     return Q_df, Q_support_params, dpmndefaults
