@@ -39,9 +39,12 @@ def plot_fr(results, datatables):
        
         for j in np.arange(len(datatables[i])):
             for ax in g1.axes.flat:
-                ax.axvline(datatables[i].stimulusstarttime[j], color='silver')
+                ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
+                ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
                 ax.axvline(datatables[i].rewardtime[j], color='silver')
-                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].rewardtime[j]):
+                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
+                    ax.axvline(k,color='mistyrose', alpha=0.02)
+                for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='whitesmoke', alpha=0.02)
         
         fig_handles.append(g1)
@@ -68,9 +71,12 @@ def plot_fr_stop(results, datatables):
         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
         for j in np.arange(len(datatables[i])):
             for ax in g1.axes.flat:
-                ax.axvline(datatables[i].stimulusstarttime[j], color='silver')
+                ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
+                ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
                 ax.axvline(datatables[i].rewardtime[j], color='silver')
-                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].rewardtime[j]):
+                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
+                    ax.axvline(k,color='mistyrose', alpha=0.02)
+                for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='whitesmoke', alpha=0.02)
         
         fig_handles.append(g1)
@@ -112,8 +118,11 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
             for j in np.arange(len(datatables)):
                 for ax in g1.axes.flat:
                     ax.axvline(datatables.stimulusstarttime[j], color='silver')
+                    ax.axvline(datatables.decisiontime[j], color='mistyrose')
                     ax.axvline(datatables.rewardtime[j], color='silver')
-                    for k in np.arange(datatables.stimulusstarttime[j], datatables.rewardtime[j]):
+                    for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
+                        ax.axvline(k,color='mistyrose', alpha=0.02)
+                    for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
                         ax.axvline(k,color='whitesmoke', alpha=0.02)
                             
             fig_handles.append(g1)
@@ -146,15 +155,21 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
             for j in np.arange(len(datatables)):
                 for ax in g1.axes.flat:
                     ax.axvline(datatables.stimulusstarttime[j], color='silver')
+                    ax.axvline(datatables.decisiontime[j], color='mistyrose')
                     ax.axvline(datatables.rewardtime[j], color='silver')
-                    for k in np.arange(datatables.stimulusstarttime[j], datatables.rewardtime[j]):
+                    for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
+                        ax.axvline(k,color='mistyrose', alpha=0.02)
+                    for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
                         ax.axvline(k,color='whitesmoke', alpha=0.02)
             
             for j in np.arange(len(datatables)):
                 for ax in g2.axes.flat:
                     ax.axvline(datatables.stimulusstarttime[j], color='silver')
+                    ax.axvline(datatables.decisiontime[j], color='mistyrose')
                     ax.axvline(datatables.rewardtime[j], color='silver')
-                    for k in np.arange(datatables.stimulusstarttime[j], datatables.rewardtime[j]):
+                    for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
+                        ax.axvline(k,color='mistyrose', alpha=0.02)
+                    for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
                         ax.axvline(k,color='whitesmoke', alpha=0.02)
                         
             fig_handles.append(g1)

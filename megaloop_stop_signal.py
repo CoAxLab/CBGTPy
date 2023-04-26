@@ -189,6 +189,12 @@ def mega_loop(self):
         if "optogenetic_input" in self.record_variables:
             agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids])
             
+        if "stop_input_1" in self.record_variables:
+            agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids ])
+            
+        if "stop_input_2" in self.record_variables:
+            agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids_2 ])
+            
         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids])
         agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids])
         agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean() for popid in agent.stop_popids_2])
