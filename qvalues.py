@@ -59,9 +59,9 @@ def helper_init_Q_support_params(q_support=None):
                                  'bayes_unif_max': 2.0,
                                  'bayes_H': 0.05,
                                  'bayes_sF': 1.25,
-                                 'q_alpha': 0.25, # 0.05 in original value, in working version 0.45
+                                 'q_alpha': 0.1, # 0.05 in original value, in working version 0.45
                                  #'dpmn_CPP_scale': 35.,
-                                 'dpmn_CPP_scale': 100.,
+                                 'dpmn_CPP_scale': 80.,
                                  #'dpmn_CPP_scale': 25.,
                                  'reward_value': -1.,
                                  'chosen_action': 1})
@@ -167,7 +167,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
         
         #q_error = Q_support_params.reward_value.values - trial_wise_q_df
-        print("q_val_chosen",q_val_chosen.values)
+        #print("q_val_chosen",q_val_chosen.values)
         da_inc = Q_support_params.reward_value.values - q_val_chosen.values   #np.max(trial_wise_q_df)
         #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
         #print('Q_support_params type', type(Q_support_params))
@@ -191,7 +191,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         # update dopamine burst ?
         #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
         #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
-        print("da_inc",da_inc)
+        #print("da_inc",da_inc)
         
         dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
         

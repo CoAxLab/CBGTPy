@@ -25,11 +25,13 @@ def plot_fr(results, datatables):
     
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green']))
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick']))
     col_list = dict()
     col_list['left'] = colors[0]
     col_list['right'] = colors[1]
     col_list['common'] = colors[2]
+    col_list['down'] = colors[3]
+    
                  
     fig_handles = []
     
@@ -43,9 +45,9 @@ def plot_fr(results, datatables):
                 ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
                 ax.axvline(datatables[i].rewardtime[j], color='silver')
                 for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
-                    ax.axvline(k,color='mistyrose', alpha=0.02)
+                    ax.axvline(k,color='mistyrose', alpha=0.01)
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
-                    ax.axvline(k,color='whitesmoke', alpha=0.02)
+                    ax.axvline(k,color='whitesmoke', alpha=0.01)
         
         fig_handles.append(g1)
        
