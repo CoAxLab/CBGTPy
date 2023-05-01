@@ -314,7 +314,7 @@ def mega_loop(self):
         #    self.chosen_action = np.array(["left","right"])[np.random.randint(0,2,1)[0]]
         if self.chosen_action is not None:
             
-            if self.corticostriatal_plasticity_present == "off":
+            if self.corticostriatal_plasticity_present == False:
                 chosen_action_backup = self.chosen_action
                 self.chosen_action = "none"
                 #print("replacing by none",self.chosen_action)
@@ -330,7 +330,7 @@ def mega_loop(self):
                 #print("replacing by original",self.chosen_action)
             
             # Shouldn't this be just for chosen action ?
-            if self.corticostriatal_plasticity_present == "on":
+            if self.corticostriatal_plasticity_present == True:
                 for popid in agent.str_popids:
                     agent.dpmn_DAp[popid] *=0
                     agent.dpmn_DAp[popid] += untrace(self.dpmndefaults['dpmn_DAp'].values[0]) #* agent.dt
