@@ -10,6 +10,7 @@ import plotting_helper_functions as plt_help
 
 
 
+
 def smoothen_fr(results,win_len=50):
     
     win = np.ones(win_len)/float(win_len)
@@ -22,7 +23,8 @@ def smoothen_fr(results,win_len=50):
     return results
         
 def plot_fr(results, datatables):
-    
+
+    sns.set(style="white", font_scale=2.0)
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
     colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick']))
@@ -36,7 +38,7 @@ def plot_fr(results, datatables):
     fig_handles = []
     
     for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=1.2,height=7,lw=3.0)
         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
        
         for j in np.arange(len(datatables[i])):
@@ -45,9 +47,9 @@ def plot_fr(results, datatables):
                 ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
                 ax.axvline(datatables[i].rewardtime[j], color='silver')
                 for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
-                    ax.axvline(k,color='mistyrose', alpha=0.01)
+                    ax.axvline(k,color='mistyrose', alpha=0.02)
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
-                    ax.axvline(k,color='whitesmoke', alpha=0.01)
+                    ax.axvline(k,color='grey', alpha=0.01)
         
         fig_handles.append(g1)
        
