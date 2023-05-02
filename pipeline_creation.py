@@ -37,10 +37,15 @@ def choose_pipeline(choice):
     if choice == 'plastic':
         #import init_params_direct_indirect as par
         par =  __import__("init_params_direct_indirect")
+        
         #par = importlib.import_module("init_params_direct_indirect.py")
         #import popconstruct_direct_indirect as popconstruct
         popconstruct = __import__("popconstruct_direct_indirect")
+#         popconstruct = __import__("popconstruct_multi")
         ml = __import__("megaloop_plasticity")
+#         self.par = par
+#         self.popconstruct = popconstruct
+#         self.ml = ml
         #import megaloop_plasticity as ml
         
 #         from agent_timestep_plasticity import timestep_mutator, multitimestep_mutator
@@ -51,7 +56,8 @@ def choose_pipeline(choice):
 #         from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
         import generate_stop_dataframe as gen_stop
         import generate_stop_dataframe_2 as gen_stop_2
-    
+        
+#     return [par,popconstruct,ml]
 #     print("par in choose_pipeline",par)
 # 2. NETWORK PIPELINE
 
@@ -67,29 +73,29 @@ def codeblock_experimentchoice(self):
 
 def codeblock_modifycelldefaults(self):
 #     print("par in modifycelldefaults, thread_id",self.thread_id,par)
-    self.celldefaults = par.helper_cellparams(self.params)
+    self.celldefaults = self.par.helper_cellparams(self.params)
 
 def codeblock_modifypopspecific(self):
-    self.popspecific = par.helper_popspecific(self.pops)
+    self.popspecific = self.par.helper_popspecific(self.pops)
 
 def codeblock_modifyreceptordefaults(self):
-    self.receptordefaults = par.helper_receptor(self.receps)
+    self.receptordefaults = self.par.helper_receptor(self.receps)
 
 def codeblock_modifybasestim(self):
-    self.basestim = par.helper_basestim(self.base)
+    self.basestim = self.par.helper_basestim(self.base)
 
 def codeblock_modifydpmndefaults(self):
-    self.dpmndefaults = par.helper_dpmn(self.dpmns)
+    self.dpmndefaults = self.par.helper_dpmn(self.dpmns)
 
 def codeblock_modifyd1defaults(self):
-    self.d1defaults = par.helper_d1(self.d1)
+    self.d1defaults = self.par.helper_d1(self.d1)
 
 def codeblock_modifyd2defaults(self):
-    self.d2defaults = par.helper_d2(self.d2)
+    self.d2defaults = self.par.helper_d2(self.d2)
 
 def codeblock_modifyactionchannels(self):
 #     print("par in modifyactionchannels, thread_id",self.thread_id,par)
-    self.actionchannels = par.helper_actionchannels(self.channels)
+    self.actionchannels = self.par.helper_actionchannels(self.channels)
     
 def codeblock_modifyexperimentdefaults(self):
     if self.inter_trial_interval == None:
@@ -113,10 +119,10 @@ def codeblock_modifyexperimentdefaults(self):
 #popconstruct.py: to modify population parameters
 
 def codeblock_popconstruct(self):
-    self.popdata = popconstruct.helper_popconstruct(self.actionchannels, self.popspecific, self.celldefaults, self.receptordefaults, self.basestim, self.dpmndefaults, self.d1defaults, self.d2defaults)
+    self.popdata = self.popconstruct.helper_popconstruct(self.actionchannels, self.popspecific, self.celldefaults, self.receptordefaults, self.basestim, self.dpmndefaults, self.d1defaults, self.d2defaults)
 
 def codeblock_poppathways(self):
-    self.pathways = popconstruct.helper_poppathways(self.popdata, self.newpathways)
+    self.pathways = self.popconstruct.helper_poppathways(self.popdata, self.newpathways)
 
 #init_params.py: Q-values initialization and update
 
@@ -227,7 +233,12 @@ def create_q_val_pipeline(pl):
 def create_test_pipeline(runloop):
     
     pl = cbgt.Pipeline()
+    
     pl.add(codeblock_experimentchoice)
+    pl.par = par
+    pl.popconstruct = popconstruct
+    pl.ml = ml
+    
     pl.add(codeblock_modifyactionchannels)
     pl.add(codeblock_modifycelldefaults)
 #     pl.celldefaults = par.helper_cellparams()
@@ -252,6 +263,14 @@ def create_main_pipeline(runloop):
     
     
     pl.add(codeblock_experimentchoice)
+#     if experiment_choice == "plasticity":
+    pl.par = par
+    pl.popconstruct = popconstruct
+    pl.ml = ml
+    if experiment_choice == "stopsignal":
+        pl.gen_stop = gen_stop
+        pl.gen_stop_2 = gen_stop_2
+        
         
     pl.add(codeblock_modifyactionchannels)
     
