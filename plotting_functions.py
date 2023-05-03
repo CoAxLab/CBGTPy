@@ -27,12 +27,13 @@ def plot_fr(results, datatables):
     sns.set(style="white", font_scale=2.0)
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick']))
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen"]))
     col_list = dict()
     col_list['left'] = colors[0]
     col_list['right'] = colors[1]
     col_list['common'] = colors[2]
     col_list['down'] = colors[3]
+    col_list['up'] = colors[4]
     
                  
     fig_handles = []
@@ -50,7 +51,9 @@ def plot_fr(results, datatables):
                     ax.axvline(k,color='mistyrose', alpha=0.02)
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='grey', alpha=0.01)
-        
+                
+                if len(ax.get_ylabel()) > 0:
+                    ax.set_ylabel("Firing rates (spikes/s)")
         fig_handles.append(g1)
        
     return fig_handles
