@@ -28,6 +28,7 @@ def plot_fr(results, datatables):
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
     colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen"]))
+    
     col_list = dict()
     col_list['left'] = colors[0]
     col_list['right'] = colors[1]

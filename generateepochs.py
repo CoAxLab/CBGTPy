@@ -59,8 +59,12 @@ def define_reward(conflict,  actionchannels, n_trials=100, reward_mu=1, reward_s
     reward[subopt_reward_idx, 1] = reward_values[subopt_reward_idx]
     
     reward = pd.DataFrame(reward)
-    reward = reward.rename(columns = {0 : actionchannels.iloc[0]["action"], 1: actionchannels.iloc[1]["action"]})
-    #print(reward)
+    channel_dict = dict()
+    for i in np.arange(len(actionchannels)):
+        channel_dict[i] = actionchannels.iloc[i]["action"]
+        
+    reward = reward.rename(columns = channel_dict)
+    print(reward)
     return reward #reward_t1, reward_t2
 
 
@@ -238,9 +242,12 @@ def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels):  #reward_
     noisy_pattern = [min([.00001, abs(x)]) * 100000 for x in t1_epochs]
     
     t_epochs = pd.DataFrame()
+    
     t_epochs[actionchannels.iloc[0]['action']] = t1_epochs
     t_epochs[actionchannels.iloc[1]['action']] = t2_epochs
-    # volatile_pattern = [x%2 for x in epoch_number] - if we need to compute
+#     t_epochs[actionchannels.iloc[2]['action']] = t2_epochs
+#     t_epochs[actionchannels.iloc[3]['action']] = t2_epochs
+#     # volatile_pattern = [x%2 for x in epoch_number] - if we need to compute
     # epoch_number
 
     # , epoch_number, reward_p, p_id_solution, t1_epochs, t2_epochs,
