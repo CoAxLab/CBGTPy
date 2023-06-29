@@ -31,9 +31,11 @@ def choose_pipeline(choice):
     global ml
     global gen_stop
     global gen_stop_2
+    global number_of_choices
 #     global timestep_mutator
 #     global multitimestep_mutator
     experiment_choice = choice
+    
     if choice == 'plastic':
         #import init_params_direct_indirect as par
         par =  __import__("init_params_direct_indirect")
@@ -122,7 +124,7 @@ def codeblock_popconstruct(self):
     self.popdata = self.popconstruct.helper_popconstruct(self.actionchannels, self.popspecific, self.celldefaults, self.receptordefaults, self.basestim, self.dpmndefaults, self.d1defaults, self.d2defaults)
 
 def codeblock_poppathways(self):
-    self.pathways = self.popconstruct.helper_poppathways(self.popdata, self.newpathways)
+    self.pathways = self.popconstruct.helper_poppathways(self.popdata,self.number_of_choices,self.newpathways)
 
 #init_params.py: Q-values initialization and update
 
@@ -257,7 +259,7 @@ def create_test_pipeline(runloop):
     
 # 3. CREATE CBGT PIPELINE - MAIN
 
-def create_main_pipeline(runloop):
+def create_main_pipeline(runloop):#,num_choices):
     
     pl = cbgt.Pipeline()
     
@@ -289,6 +291,8 @@ def create_main_pipeline(runloop):
     #to update the Q-values 
     pl.trial_num = 0 #first row of Q-values df - initialization data 
     pl.chosen_action = None # 2 #chosen action for the current trial
+    #pl.number_of_choices = num_choices
+    #print("number of choices",pl.number_of_choices)
     
     
     # Default experimental parameters
@@ -311,7 +315,7 @@ def create_main_pipeline(runloop):
 
     #popconstruct.py: default population parameters 
     pl.popdata = pl[popconstruct.helper_popconstruct](pl.actionchannels, pl.popspecific, pl.celldefaults, pl.receptordefaults, pl.basestim, pl.dpmndefaults, pl.d1defaults, pl.d2defaults)
-    pl.pathways = pl[popconstruct.helper_poppathways](pl.popdata)
+    pl.pathways = pl[popconstruct.helper_poppathways](pl.popdata,pl.number_of_choices)
   
     #popconstruct.py: to create connectivity grids
     opt = create_opt_pipeline(pl)
