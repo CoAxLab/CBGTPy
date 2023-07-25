@@ -17,8 +17,6 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
     opt_df["opt_signal_population"] = [opt_signal_population]
     
     
-    
-    
     trial_index = np.arange(n_trials)
     
     opt_amplitude_df = pd.DataFrame()
@@ -35,7 +33,10 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
     for act in list(actionchannels.action.values):
         opt_onset_df[act] = opt_signal_onset
 
-    
+    opt_duration_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
+    opt_duration_df["trial_num"] = trial_index
+    for act in list(actionchannels.action.values):
+        opt_duration_df[act] = opt_signal_duration    
     
     opt_channels_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
     opt_channels_df["trial_num"] = trial_index
@@ -85,14 +86,14 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
                 opt_populations_df.loc[n,pop] = True
                 print(opt_populations_df.loc[n,pop])
     
-    return opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df,opt_populations_df, opt_list_trials #reward_t1, reward_t2
+    return opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df,opt_duration_df,opt_populations_df, opt_list_trials #reward_t1, reward_t2
 
 
 def GenOptSchedule(opt_signal_probability, actionchannels, n_trials,popdata, opt_signal_channel, opt_signal_amplitude, opt_signal_onset,opt_signal_duration, opt_signal_present,opt_signal_population):
     
     print("begin GenOptSchedule")
     #reward_t1, reward_t2
-    opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df,opt_populations_df,opt_list_trials = define_opt(
+    opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df,opt_duration_df,opt_populations_df,opt_list_trials = define_opt(
         opt_signal_probability, actionchannels, n_trials,popdata, opt_signal_channel,opt_signal_amplitude, opt_signal_onset,opt_signal_duration,opt_signal_present,opt_signal_population)
     
     print("opt_df")
@@ -100,4 +101,4 @@ def GenOptSchedule(opt_signal_probability, actionchannels, n_trials,popdata, opt
     
     print("opt_channels_df")
     print(opt_channels_df)
-    return opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df, opt_populations_df, opt_list_trials
+    return opt_df, opt_channels_df, opt_amplitude_df, opt_onset_df,opt_duration_df, opt_populations_df, opt_list_trials

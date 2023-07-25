@@ -21,8 +21,9 @@ def extract_recording_variables(results,list_variables,seed):
                 
                 nuc_list = np.hstack([ ["D1-"+ac, "D2-"+ac] for ac in actions])  #['D1-left','D2-left','D1-right','D2-right' ]
                 ind_list = np.hstack([ [(i1,0),(i1,1)]   for i1 in np.arange(len(actions))])  #[(0,0),(0,1),(1,0),(1,1)]
-
-                for j in np.arange(4):
+                print("nuc_list",nuc_list)
+                print("ind_list",ind_list)
+                for j in np.arange(len(actions)*2):
                     temp = pd.DataFrame()
 
                     temp["weights"] = [ np.mean(reshaped_wts[:,j][datatables[i]['stimulusstarttime'][i1]:datatables[i]['stimulusstarttime'][i1+1]])   for i1 in np.arange(len(datatables[i])-1) ]

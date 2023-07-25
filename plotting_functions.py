@@ -27,7 +27,7 @@ def plot_fr(results, datatables):
     sns.set(style="white", font_scale=2.0)
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen"]))
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen","pink"]))
     
     col_list = dict()
     col_list['left'] = colors[0]
@@ -35,6 +35,7 @@ def plot_fr(results, datatables):
     col_list['common'] = colors[2]
     col_list['down'] = colors[3]
     col_list['up'] = colors[4]
+    col_list['A'] = colors[5]
     
                  
     fig_handles = []
@@ -64,11 +65,12 @@ def plot_fr_stop(results, datatables):
     
     # Plot Population firing rates
     col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green']))
+    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','pink']))
     col_list = dict()
     col_list['left'] = colors[0]
     col_list['right'] = colors[1]
     col_list['common'] = colors[2]
+    col_list['up'] = colors[3]
 
                  
     fig_handles = []
@@ -112,7 +114,7 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
                 col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]
             #for i in np.arange(len(results)):
             # set the hue palette as a dict for custom mapping
-            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen'}
+            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
             
             if len(nuclei) == 0:
                 g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",data=fr_single,col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order, hue='channel', palette=palette)
@@ -146,7 +148,7 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
                 col_order = ["Cx", "CxI", "FSI","GPeP", "D2STR", "D1STR", "STNE","GPi","Th"]  
             else: 
                 col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]         
-            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen'}
+            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
             
             #for i in np.arange(len(results)):
             if len(nuclei) == 0:

@@ -26,7 +26,7 @@ np.random.seed(0)
 def define_reward(conflict,  actionchannels, n_trials=100, reward_mu=1, reward_std=0):
     #print(actionchannels)
     trial_index = np.arange(n_trials)
-
+    
     # define suboptimal choice reward probability
     opt_p = conflict[0]
     subopt_p = conflict[1]#1 - opt_p
@@ -113,6 +113,11 @@ def define_changepoints(n_trials,volatility):  #reward_t1, reward_t2,
     change_point_type = volatility[1] # "exact" or "poisson"
     # find approximate number of change points
     
+    if cp_lambda == None: # No change points , volatility parameter is moot
+        cp_indicator = np.zeros(n_trials)
+        cp_idx = []
+        return cp_idx, cp_indicator
+        
     
     n_cps = int(n_trials / cp_lambda)
     #cp_base = np.cumsum(np.random.poisson(lam=cp_lambda,size=n_cps))  # calculate cp indices
@@ -174,9 +179,18 @@ def define_changepoints(n_trials,volatility):  #reward_t1, reward_t2,
 def calc_reward(conflict,block_len,reward_mu,reward_std,actions):
     trial_index = np.arange(block_len)
     reward_values = np.random.normal(loc=reward_mu, scale=reward_std, size=block_len)
-    n_probs_trials = [ int(x*block_len)  for x in conflict]
+    print("conflict",conflict)
 
+    if isinstance(conflict,tuple):
+        n_probs_trials = [ int(x*block_len)  for x in conflict]
+    elif isinstance(conflict,float):
+        n_probs_trials = [ int(conflict*block_len) ]
+        conflict = [conflict]
+    else:
+        n_probs_trials = [int(1.0*block_len)] # Hopefully this condition is never accessed
     print("sum",sum(conflict))
+    print("n_prob_trials",n_probs_trials)
+    
     if sum(conflict) == 1: # all probabilities sum upto 1
         rew_idx = []
         for i in np.arange(len(conflict)):
@@ -215,7 +229,8 @@ def calc_reward(conflict,block_len,reward_mu,reward_std,actions):
 
 
 
-def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels,reward_mu=1, reward_std=0):  #reward_t1, reward_t2,
+# def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels,reward_mu=1, reward_std=0):  #reward_t1, reward_t2,
+def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward_std=0):  #reward_t1, reward_t2,
     
     #print("define_epochs")
     #print(actionchannels)
@@ -225,30 +240,37 @@ def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels,reward_mu=1
     t_epochs_list = dict()
     
 
-#     epoch_number = []
-#     epoch_trial = []
-#     epoch_length = []
-
-#     reward_p = []
 
     volatile_pattern = []
     
-    opt_p = conflict[0]
-    subopt_p = conflict[1]#1 - opt_p
+#     opt_p = conflict[0]
+#     subopt_p = conflict[1]#1 - opt_p
+
     probs = conflict
     print("conflict",(probs))
+    
+    reward = np.zeros((n_trials, len(actionchannels)))
+    reward_values = np.random.normal(loc=reward_mu, scale=reward_std, size=n_trials)
+    #n_probs_trials = [ int(x*n_trials)  for x in probs]
+    
+    if isinstance(probs,list): # More than one channel, 
+        for i in np.arange(len(probs)):
+            reward[:,i] = reward_values[:]
+    elif isinstance(probs,float):
+        reward[:,0] = reward_values[:]
+    
+    reward = pd.DataFrame(reward)
+    channel_dict = dict()
+    for i in np.arange(len(actionchannels)):
+        channel_dict[i] = actionchannels.iloc[i]["action"]
+        
+    reward = reward.rename(columns = channel_dict)
+    
 
     block = []  # female greeble is always first
-    # returns an integer representing the unicode character
-#     first_block = np.random.randint(0,2,1)
-#     first_block = [0]
-#     second_block = list(set(np.arange(0,2))-set(first_block))
-    
-    
-#     reward_t1 = np.array(reward[actionchannels.iloc[first_block[0]]['action']])
-#     reward_t2 = np.array(reward[actionchannels.iloc[second_block[0]]['action']])
+
     block_nums = np.arange(0,len(actionchannels))
-#     np.random.shuffle(block_nums)
+
     print("block_nums",block_nums)
     
     
@@ -262,107 +284,57 @@ def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels,reward_mu=1
         t_epochs_list[actions[i]] = np.zeros((n_trials))
     
     print("t_epochs_list",t_epochs_list)
-#     action1 = actionchannels.iloc[first_block[0]]['action']
-#     action2 = actionchannels.iloc[second_block[0]]['action']
-    
-    # remove or not? not needed for the moment
-#     p_id_solution = []  # female greeble is always first
-#     # returns an integer representing the unicode character
-#     f_greeble = ord('f')
-#     m_greeble = ord('m')
+
     print("actions",actions)
-    k = 0
-    for i in range(len(cp_idx)):
-        if k == len(probs):
-            k = k%len(probs)
-        
-        if i < len(cp_idx)-1: 
-            block_len = cp_idx[i+1] - cp_idx[i]
-            reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
-            print("reward_list", reward_list)
-            
-            for ac in actions:           
-                t_epochs_list[ac][cp_idx[i]:cp_idx[i + 1]] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
-                block.append(np.repeat(ac, cp_idx[i+1]-cp_idx[i]))
-            k+=1
-        elif i == len(cp_idx)-1:
-            block_len = n_trials-1 - cp_idx[i]
-            if block_len> 0:
+    if len(cp_idx) > 0:
+        k = 0
+        for i in range(len(cp_idx)):
+            if k == len(probs):
+                k = k%len(probs)
+
+            if i < len(cp_idx)-1: 
+                block_len = cp_idx[i+1] - cp_idx[i]
                 reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
-                for ac in actions:
-                    t_epochs_list[ac][cp_idx[i]:] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:]
-                    block.append(np.repeat(ac, n_trials-cp_idx[i]))
-                k+=1               
-        
-        # for every change point/ block change, move one position to right while assigning reward probabilities
-        # eg. actions = ["A","B","C"], conflict = (0.5, 0.3, 0.2)
-        # 1st block: A = 0.5, B = 0.3, C = 0.2, 2nd block: B = 0.5, C = 0.3, A = 0.2, 3rd block: C = 0.5, A = 0.3, B = 0.2 ...
-        actions = np.roll(actions,-1)
-        
-        
-#     current_target = True
-#     # treat all the changepoints except for the last one
-#     for i in range(len(cp_idx) - 1):
-#         if current_target:
-#             volatile_pattern.append(np.repeat(0., cp_idx[i + 1] - cp_idx[i]))
-#             t1_epochs.append(reward_t1[cp_idx[i]:cp_idx[i + 1]])
-#             t2_epochs.append(reward_t2[cp_idx[i]:cp_idx[i + 1]])
-#             block.append(np.repeat(action1, cp_idx[i+1]-cp_idx[i]))
-#             #reward_p.append(np.repeat(opt_p, cp_idx[i+1]-cp_idx[i]))
-#             #p_id_solution.append(np.repeat(f_greeble, cp_idx[i+1]-cp_idx[i]))
-#         else:
-#             volatile_pattern.append(np.repeat(1., cp_idx[i + 1] - cp_idx[i]))
-#             t1_epochs.append(reward_t2[cp_idx[i]:cp_idx[i + 1]])
-#             t2_epochs.append(reward_t1[cp_idx[i]:cp_idx[i + 1]])
-#             block.append(np.repeat(action2, cp_idx[i+1]-cp_idx[i]))
-#             #reward_p.append(np.repeat(subopt_p, cp_idx[i+1]-cp_idx[i]))
-#             #p_id_solution.append(np.repeat(m_greeble, cp_idx[i+1]-cp_idx[i]))
+                print("reward_list", reward_list)
 
-#         #epoch_number.append(np.repeat(i, cp_idx[i+1]-cp_idx[i]))
+                for ac in actions:           
+                    t_epochs_list[ac][cp_idx[i]:cp_idx[i + 1]] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
+                    block.append(np.repeat(ac, cp_idx[i+1]-cp_idx[i]))
+                k+=1
+            elif i == len(cp_idx)-1:
+                block_len = n_trials-1 - cp_idx[i]
+                if block_len> 0:
+                    reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
+                    for ac in actions:
+                        t_epochs_list[ac][cp_idx[i]:] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:]
+                        block.append(np.repeat(ac, n_trials-cp_idx[i]))
+                    k+=1               
 
-#         current_target = not(current_target)
+            # for every change point/ block change, move one position to right while assigning reward probabilities
+            # eg. actions = ["A","B","C"], conflict = (0.5, 0.3, 0.2)
+            # 1st block: A = 0.5, B = 0.3, C = 0.2, 2nd block: B = 0.5, C = 0.3, A = 0.2, 3rd block: C = 0.5, A = 0.3, B = 0.2 ...
+            actions = np.roll(actions,-1)
+    else:
+        block_len = n_trials
+        reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
+        print("reward_list", reward_list)
+        for ac in actions:           
+            t_epochs_list[ac][:] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
+            block.append(np.repeat(ac, n_trials))
         
-#         # consider the last changepoint
-#         if i == len(cp_idx) - 2:
-#             if current_target:
-#                 volatile_pattern.append(
-#                     np.repeat(0., cp_idx[i + 1] - cp_idx[i]))
-#                 t1_epochs.append(reward_t1[cp_idx[i + 1]:])
-#                 t2_epochs.append(reward_t2[cp_idx[i + 1]:])
-#                 block.append(action1)
-#                 # reward_p.append(opt_p)
-#                 # p_id_solution.append(f_greeble)
-#             else:
-#                 volatile_pattern.append(
-#                     np.repeat(1., cp_idx[i + 1] - cp_idx[i]))
-#                 t1_epochs.append(reward_t2[cp_idx[i + 1]:])
-#                 t2_epochs.append(reward_t1[cp_idx[i + 1]:])
-#                 block.append(action2)
-#                 # reward_p.append(subopt_p)
-#                 # p_id_solution.append(m_greeble)
-
-#             # epoch_number.append(i+1)
-
-    # save flaten arrays
-    #epoch_number = np.hstack(epoch_number).astype('float')
-#     t1_epochs = np.hstack(t1_epochs)
-#     t2_epochs = np.hstack(t2_epochs)
-    #reward_p = np.hstack(reward_p).astype('float')
-    #p_id_solution = np.hstack(p_id_solution)
+        
     #volatile_pattern = np.hstack(volatile_pattern)
     noisy_pattern = [min([.00001, abs(x)]) * 100000 for x in t1_epochs]
     
     print("t_epochs_list",t_epochs_list)
     
     t_epochs = pd.DataFrame()
-    for i in np.arange(len(probs)):
-        if len(t_epochs_list[actions[i]]) > 0:
-            t_epochs[actions[i]] = np.hstack(t_epochs_list[actions[i]])
-    #t_epochs[actionchannels.iloc[0]['action']] = t1_epochs
-    #t_epochs[actionchannels.iloc[1]['action']] = t2_epochs
-#     t_epochs[actionchannels.iloc[2]['action']] = t2_epochs
-#     t_epochs[actionchannels.iloc[3]['action']] = t2_epochs
-#     # volatile_pattern = [x%2 for x in epoch_number] - if we need to compute
+    if isinstance(probs,list):
+        for i in np.arange(len(probs)):
+            if len(t_epochs_list[actions[i]]) > 0:
+                t_epochs[actions[i]] = np.hstack(t_epochs_list[actions[i]])
+    elif isinstance(probs,float):
+        t_epochs[actions[0]] = np.hstack(t_epochs_list[actions[0]])
     # epoch_number
     print("t_epochs",t_epochs)
     # , epoch_number, reward_p, p_id_solution, t1_epochs, t2_epochs,
@@ -373,11 +345,12 @@ def define_epochs(n_trials, reward, cp_idx, conflict, actionchannels,reward_mu=1
 def GenRewardSchedule(n_trials, volatility, conflict, reward_mu, reward_std, actionchannels):
     
     #reward_t1, reward_t2
-    reward = define_reward(
-        conflict, actionchannels, n_trials, reward_mu, reward_std)
+    #reward = define_reward(
+    #    conflict, actionchannels, n_trials, reward_mu, reward_std)
     cp_idx, cp_indicator = define_changepoints(
         n_trials, volatility)
     #t1_epochs, t2_epochs
-    t_epochs, noisy_pattern, volatile_pattern, block = define_epochs(
-        n_trials, reward, cp_idx, conflict, actionchannels,reward_mu,reward_std) #reward_t1, reward_t2
+#     t_epochs, noisy_pattern, volatile_pattern, block = define_epochs(n_trials, reward, cp_idx, conflict,actionchannels,reward_mu,reward_std) #reward_t1, reward_t2
+    t_epochs, noisy_pattern, volatile_pattern, block = define_epochs(n_trials, cp_idx, conflict,actionchannels,reward_mu,reward_std) #reward_t1, reward_t2
+
     return volatile_pattern, cp_idx, cp_indicator, noisy_pattern, t_epochs,block #t1_epochs, t2_epochs

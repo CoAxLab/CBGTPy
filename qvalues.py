@@ -55,10 +55,7 @@ def get_reward_value(t_epochs, chosen_action, trial_num):
 def helper_init_Q_support_params(q_support=None):
 
     Q_support_params = ParamSet('Q_support_params',
-                                {'bayes_unif_min': 0.,
-                                 'bayes_unif_max': 2.0,
-                                 'bayes_H': 0.05,
-                                 'bayes_sF': 1.25,
+                                {
                                  'q_alpha': 0.1, # 0.05 in original value, in working version 0.45
                                  #'dpmn_CPP_scale': 35.,
                                  'dpmn_CPP_scale': 80.,
@@ -66,7 +63,7 @@ def helper_init_Q_support_params(q_support=None):
                                  'reward_value': -1.,
                                  'chosen_action': 1})
     
-#     print("q_support", q_support)
+    print("q_support", q_support)
     if q_support is not None:
 
         Q_support_params = ModifyViaSelector(Q_support_params, q_support)
@@ -149,7 +146,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 #     print(
 #         'Q_support_params.chosen_action[0]',
 #         Q_support_params.chosen_action[0])
-    print('trial_num', trial_num)
+    #print('trial_num', trial_num)
 
     if Q_support_params.chosen_action[0] != 'stop' and Q_support_params.chosen_action[0] != 'none':
 
@@ -195,7 +192,7 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
         
         dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
         
-        print("Q_df updated")
+        #print("Q_df updated")
         #print(Q_df)
 
     else:

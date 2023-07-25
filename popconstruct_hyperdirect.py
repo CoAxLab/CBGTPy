@@ -92,8 +92,9 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
     dpmn_ratio = 0.5
     dpmn_implied = 0.7
     
-    number_of_choices = 2
+    #number_of_choices = 2
     scaling = 2./float(number_of_choices)
+    print("scaling",scaling)
     #Stop signal task 
     simplepathways = pd.DataFrame(
         [

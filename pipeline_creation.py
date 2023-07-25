@@ -129,7 +129,7 @@ def codeblock_poppathways(self):
 #init_params.py: Q-values initialization and update
 
 def codeblock_init_Q_support_params(self):
-    self.Q_support_params = qval.helper_init_Q_support_params(self.q_support)
+    self.Q_support_params = qval.helper_init_Q_support_params(self.Q_support_params)
 
 def codeblock_update_Q_support_params(self,reward_val, chosen_action):
     self.Q_support_params = qval.helper_update_Q_support_params(self.Q_support_params,self.reward_val,pl.chosen_action)
@@ -162,16 +162,19 @@ def create_stop_pipeline(pl): #STN
     stop = cbgt.Pipeline() 
 
     
-    (stop.stop_df, stop.stop_channels_df, stop.stop_amplitude_df, stop.stop_onset_df, stop.stop_duration_df) = stop[gen_stop.GenStopSchedule](
+    (stop.stop_df, stop.stop_channels_df, stop.stop_amplitude_df, stop.stop_onset_df, stop.stop_duration_df, stop.stop_populations_df, stop.stop_list_trials) = stop[gen_stop.GenStopSchedule](
         stop.stop_signal_probability,
         pl.actionchannels,
         stop.n_trials,
+        stop.popdata,
         stop.stop_signal_channel,
         stop.stop_signal_amplitude,
         stop.stop_signal_onset,
-        stop.stop_signal_present, stop.stop_signal_duration
-     ).shape(5)
-    
+        stop.stop_signal_duration,
+        stop.stop_signal_present,
+        stop.stop_signal_population
+     ).shape(7)
+   
     #print(stop)
     return stop
 
@@ -180,15 +183,18 @@ def create_stop_pipeline_2(pl): #D2STR
     stop_2 = cbgt.Pipeline() 
 
     
-    (stop_2.stop_df_2, stop_2.stop_channels_df_2, stop_2.stop_amplitude_df_2, stop_2.stop_onset_df_2, stop_2.stop_duration_df_2) = stop_2[gen_stop_2.GenStopSchedule_2](
-        stop_2.stop_signal_probability_2,
+    (stop_2.stop_2_df, stop_2.stop_2_channels_df, stop_2.stop_2_amplitude_df, stop_2.stop_2_onset_df, stop_2.stop_2_duration_df, stop_2.stop_2_populations_df, stop_2.stop_2_list_trials) = stop_2[gen_stop_2.GenStopSchedule_2](
+        stop_2.stop_2_signal_probability,
         pl.actionchannels,
         stop_2.n_trials,
-        stop_2.stop_signal_channel_2,
-        stop_2.stop_signal_amplitude_2,
-        stop_2.stop_signal_onset_2,
-        stop_2.stop_signal_present_2, stop_2.stop_signal_duration_2
-     ).shape(5)
+        stop_2.popdata,
+        stop_2.stop_2_signal_channel,
+        stop_2.stop_2_signal_amplitude,
+        stop_2.stop_2_signal_onset,
+        stop_2.stop_2_signal_duration,
+        stop_2.stop_2_signal_present, 
+        stop_2.stop_2_signal_population,
+     ).shape(7)
     
     #print(stop)
     return stop_2
@@ -197,7 +203,7 @@ def create_stop_pipeline_2(pl): #D2STR
 def create_opt_pipeline(pl):
     opt = cbgt.Pipeline() #rsg is short for 'reward schedule generator'
     
-    (opt.opt_df, opt.opt_channels_df, opt.opt_amplitude_df, opt.opt_onset_df,opt.opt_populations_df,opt.opt_list_trials) = opt[gen_opt.GenOptSchedule](
+    (opt.opt_df, opt.opt_channels_df, opt.opt_amplitude_df, opt.opt_onset_df, opt.opt_duration_df, opt.opt_populations_df,opt.opt_list_trials) = opt[gen_opt.GenOptSchedule](
         opt.opt_signal_probability,
         pl.actionchannels,
         opt.n_trials,
@@ -208,7 +214,7 @@ def create_opt_pipeline(pl):
         opt.opt_signal_duration,
         opt.opt_signal_present,
         opt.opt_signal_population
-     ).shape(6)
+     ).shape(7)
     
     #print(stop)
     return opt
@@ -222,7 +228,7 @@ def create_q_val_pipeline(pl):
 
     #Defining necessary function modules: 
     #qvalues.py
-    q_val_pipe.Q_support_params = q_val_pipe[qval.helper_init_Q_support_params]()
+    q_val_pipe.Q_support_params = q_val_pipe[qval.helper_init_Q_support_params](pl.Q_support_params)
     q_val_pipe.Q_df = q_val_pipe[qval.helper_init_Q_df](pl.actionchannels,pl.Q_df_set)
 
     #rsg.reward_val = q_val_pipe[qval.get_reward_value](rsg.t1_epochs,rsg.t2_epochs,pl.chosen_action,pl.trial_num) 
@@ -282,11 +288,11 @@ def create_main_pipeline(runloop):#,num_choices):
     #Adding rsg pipeline to the network pipeline: 
     pl.add(rsg)
     
-    if experiment_choice == 'stopsignal':
-        stop = create_stop_pipeline(pl)
-        stop_2 = create_stop_pipeline_2(pl)
-        pl.add(stop)
-        pl.add(stop_2)
+#    if experiment_choice == 'stopsignal':
+#        stop = create_stop_pipeline(pl)
+#        stop_2 = create_stop_pipeline_2(pl)
+#        pl.add(stop)
+#        pl.add(stop_2)
     
     #to update the Q-values 
     pl.trial_num = 0 #first row of Q-values df - initialization data 
@@ -321,7 +327,12 @@ def create_main_pipeline(runloop):#,num_choices):
     opt = create_opt_pipeline(pl)
     pl.add(opt)
     
-    
+    if experiment_choice == 'stopsignal':
+       stop = create_stop_pipeline(pl)
+       stop_2 = create_stop_pipeline_2(pl)
+       pl.add(stop)
+       pl.add(stop_2)
+   
     #Adding codeblocks to the newtork pipeline: 
     pl.add(codeblock_modifycelldefaults)
     pl.add(codeblock_modifypopspecific)

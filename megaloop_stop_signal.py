@@ -46,19 +46,33 @@ def mega_loop(self):
     agent.in_popids = np.where(popdata['name'] == 'LIP')[0]
     agent.out_popids = np.where(popdata['name'] == 'Th')[0]
     agent.str_popids = np.where(untrace(popdata)['name'].str.contains("STR"))[0]
-    agent.stop_popids = np.where(popdata['name'] == 'STNE')[0]
-    agent.stop_popids_2 = np.where(popdata['name'] == 'D2STR')[0]
-    agent.opt_popids = np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[0]))[0]
-    print("agent.opt_popids",agent.opt_popids)
+    
+    agent.stop_popids = np.where(untrace(popdata)['name'].str.contains(self.stop_signal_population[0]))[0]
+    
+    agent.stop_2_popids = np.where(untrace(popdata)['name'].str.contains(self.stop_2_signal_population[0]))[0]
+    
+    agent.opt_popids=np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[0]))[0]
+
+    #print("agent.stop_popids", agent.stop_popids)
+    #print("agent.stop_2_popids", agent.stop_2_popids)
+    #print("agent.opt_popids",agent.opt_popids)
        
     agent.optstim_backup_basestim = np.zeros(len(agent.opt_popids))
-    agent.ramping_stopstim_current = np.zeros(len(actionchannels))
-    agent.ramping_stopstim_current_2 = np.zeros(len(actionchannels))
-    agent.ramping_stopstim_target = np.zeros(len(actionchannels))
-    agent.ramping_stopstim_target_2 = np.zeros(len(actionchannels))
-    agent.stopsignal_applied = np.zeros(len(actionchannels))
-    agent.stopsignal_applied_2 = np.zeros(len(actionchannels))
+    agent.stopstim_backup_basestim = np.zeros(len(agent.stop_popids))
+    agent.stopstim_2_backup_basestim = np.zeros(len(agent.stop_2_popids))
+    
+    agent.stopstim_applied = np.zeros(len(actionchannels))
+    agent.stopstim_2_applied = np.zeros(len(actionchannels))  
     agent.optstim_applied = np.zeros(len(actionchannels))
+    
+    
+    trial_wise_stop_duration = self.stop_signal_duration 
+    stop_amp = self.stop_signal_amplitude
+    stop_onset = self.stop_signal_onset
+    
+    trial_wise_stop_2_duration = self.stop_2_signal_duration 
+    stop_2_amp = self.stop_2_signal_amplitude
+    stop_2_onset = self.stop_2_signal_onset
     
     trial_wise_opt_duration = self.opt_signal_duration #500.
     opt_amp = self.opt_signal_amplitude
@@ -76,16 +90,16 @@ def mega_loop(self):
         agent.FreqExt_AMPA[popid] = np.zeros(len(agent.FreqExt_AMPA[popid]))
         
     #Stop STN        
-    for action_idx in range(len(actionchannels)):
-        popid = agent.stop_popids[action_idx]
-        agent.ramping_stopstim_current[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
-        agent.ramping_stopstim_target[action_idx] = np.mean(agent.FreqExt_AMPA[popid])   
+    #for action_idx in range(len(actionchannels)):
+        #popid = agent.stop_popids[action_idx]
+        #agent.ramping_stopstim_current[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
+        #agent.ramping_stopstim_target[action_idx] = np.mean(agent.FreqExt_AMPA[popid])   
         
     #Stop D2STR     
-    for action_idx in range(len(actionchannels)):
-        popid = agent.stop_popids_2[action_idx]
-        agent.ramping_stopstim_current_2[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
-        agent.ramping_stopstim_target_2[action_idx] = np.mean(agent.FreqExt_AMPA[popid]) 
+    #for action_idx in range(len(actionchannels)):
+        #popid = agent.stop_popids_2[action_idx]
+        #agent.ramping_stopstim_current_2[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
+        #agent.ramping_stopstim_target_2[action_idx] = np.mean(agent.FreqExt_AMPA[popid]) 
     
     #Opto    
     for action_idx in range(len(agent.opt_popids)):
@@ -96,6 +110,24 @@ def mega_loop(self):
     for action_idx in range(len(agent.opt_popids)):
         popid = agent.opt_popids[action_idx]
         agent.optstim_backup_basestim[action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
+        
+    #Stop 1    
+    for action_idx in range(len(agent.stop_popids)):
+        popid = agent.stop_popids[action_idx]
+        agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]    
+        
+    for action_idx in range(len(agent.stop_popids)):
+        popid = agent.stop_popids[action_idx]
+        agent.stopstim_backup_basestim[action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
+        
+    #Stop 2    
+    for action_idx in range(len(agent.stop_2_popids)):
+        popid = agent.stop_2_popids[action_idx]
+        agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]
+     
+    for action_idx in range(len(agent.stop_2_popids)):
+        popid = agent.stop_2_popids[action_idx]
+        agent.stopstim_2_backup_basestim[action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
         
     multitimestep_mutator(agent,popdata,5000)
     agent.FRs = [agent.rollingbuffer.mean(1) / untrace(list(popdata['N'])) / agent.dt * 1000]
@@ -114,8 +146,8 @@ def mega_loop(self):
     agent.hist_w_max = []
     
     agent.inp = []
-    agent.inp_stop = [] #STN
-    agent.inp_stop_2 = [] #D2STR
+    agent.stop_inp = [] 
+    agent.stop_2_inp = [] 
     agent.opt_inp = []
 
     datatables_decision = None
@@ -135,8 +167,8 @@ def mega_loop(self):
         if agent.phase == 0:
             agent.extstim = agent.gain * presented_stimulus * self.maxstim  # TODO: make 3.0 a param
             agent.ramping_extstim = agent.ramping_extstim * 0.9 + agent.extstim * 0.1
-            agent.ramping_stopstim_current = agent.ramping_stopstim_current * 0.9 + agent.ramping_stopstim_target * 0.1
-            agent.ramping_stopstim_current_2 = agent.ramping_stopstim_current_2 * 0.9 + agent.ramping_stopstim_target_2 * 0.1
+            #agent.ramping_stopstim_current = agent.ramping_stopstim_current * 0.9 + agent.ramping_stopstim_target * 0.1
+            #agent.ramping_stopstim_current_2 = agent.ramping_stopstim_current_2 * 0.9 + agent.ramping_stopstim_target_2 * 0.1
             
         else:
             agent.extstim = agent.gain * presented_stimulus * self.maxstim  # TODO: make 3.0 a param
@@ -149,16 +181,36 @@ def mega_loop(self):
             
         #Ramping for STOP signal - STN 
         
-        for action_idx in range(len(actionchannels)):
-            popid = agent.stop_popids[action_idx]
-            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_stopstim_current[action_idx]
+        #for action_idx in range(len(actionchannels)):
+            #popid = agent.stop_popids[action_idx]
+            #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_stopstim_current[action_idx]
             
         #Ramping for STOP signal - D2STR
         
-        for action_idx in range(len(actionchannels)):
-            popid = agent.stop_popids_2[action_idx]
-            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_stopstim_current_2[action_idx]
+        #for action_idx in range(len(actionchannels)):
+            #popid = agent.stop_popids_2[action_idx]
+            #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_stopstim_current_2[action_idx]
         
+        #Stop 1
+        if self.stop_signal_present == True:
+            if agent.stoptimer == stop_onset and self.trial_num in self.stop_list_trials:
+                
+                print("stop stim started")
+     
+                for action_idx in range(len(agent.stop_popids)):
+                    popid = agent.stop_popids[action_idx]
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_amp
+                    
+        #Stop 2
+        if self.stop_2_signal_present == True:
+            if agent.stoptimer_2 == stop_2_onset and self.trial_num in self.stop_2_list_trials:
+                
+                print("stop_2 stim started")
+     
+                for action_idx in range(len(agent.stop_2_popids)):
+                    popid = agent.stop_2_popids[action_idx]
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_2_amp
+                                    
         #Opto
         if self.opt_signal_present == True:
             if agent.opttimer == opt_onset and self.trial_num in self.opt_list_trials:
@@ -183,22 +235,20 @@ def mega_loop(self):
         #agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         
         if "weight" in self.record_variables:    
-           
             agent.hist_w.append([[agent.AMPA_eff[src][targ].mean() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
 
         if "optogenetic_input" in self.record_variables:
             agent.opt_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids])
             
+         
         if "stop_input_1" in self.record_variables:
-            agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids ])
+            agent.stop_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids ])
             
         if "stop_input_2" in self.record_variables:
-            agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids_2 ])
-            
+            agent.stop_2_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_2_popids])
+             
         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids])
-        agent.inp_stop.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids])
-        agent.inp_stop_2.append([ agent.FreqExt_AMPA[popid].mean() for popid in agent.stop_popids_2])
-      
+        
         #agent.hist_w_std.append([[agent.AMPA_eff[src][targ].std() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         #agent.hist_w_min.append([[agent.AMPA_eff[src][targ].min() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
         #agent.hist_w_max.append([[agent.AMPA_eff[src][targ].max() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
@@ -247,7 +297,7 @@ def mega_loop(self):
                 datatables_rewardtime = agent.globaltimer
                 datatables_decisiondurationplusdelay = agent.globaltimer - datatables_stimulusstarttime
                 if agent.motor_queued == -1:
-                    if self.stop_signal_present == True or self.stop_signal_present_2 == True:
+                    if self.stop_signal_present == True or self.stop_2_signal_present == True:
                     #self.chosen_action = None
                         self.chosen_action = 'stop' 
                     else: 
@@ -304,64 +354,75 @@ def mega_loop(self):
             
         #Stop signal - STN
         
-        if self.stop_signal_present:    
+        #if self.stop_signal_present:    
       
-            if agent.phase == 0 or agent.phase == 1:
+            #if agent.phase == 0 or agent.phase == 1:
 
-                for action_idx in range(len(actionchannels)):
-                    action = untrace(actionchannels.iloc[action_idx,0])
-                    trial_wise_stop_onset = self.stop_onset_df.iloc[self.trial_num][action]
-                    trial_wise_stop_amplitude = self.stop_amplitude_df.iloc[self.trial_num][action]
-                    trial_wise_stop_channel = self.stop_channels_df.iloc[self.trial_num][action]
+                #for action_idx in range(len(actionchannels)):
+                    #action = untrace(actionchannels.iloc[action_idx,0])
+                    #trial_wise_stop_onset = self.stop_onset_df.iloc[self.trial_num][action]
+                    #trial_wise_stop_amplitude = self.stop_amplitude_df.iloc[self.trial_num][action]
+                    #trial_wise_stop_channel = self.stop_channels_df.iloc[self.trial_num][action]
 
-                    if agent.stoptimer < trial_wise_stop_onset or agent.stopsignal_applied[action_idx] == 1 :
-                        continue
+                    #if agent.stoptimer < trial_wise_stop_onset or agent.stopsignal_applied[action_idx] == 1 :
+                        #continue
 
-                    if trial_wise_stop_channel == True:
-                        agent.ramping_stopstim_target[action_idx] += trial_wise_stop_amplitude
-                        agent.stopsignal_applied[action_idx] = 1
+                    #if trial_wise_stop_channel == True:
+                        #agent.ramping_stopstim_target[action_idx] += trial_wise_stop_amplitude
+                        #agent.stopsignal_applied[action_idx] = 1
 
-                if agent.phasetimer>trial_wise_stop_onset+self.stop_duration_df.iloc[self.trial_num][action]:
+                #if agent.phasetimer>trial_wise_stop_onset+self.stop_duration_df.iloc[self.trial_num][action]:
                     
-                    for action_idx in np.where(agent.stopsignal_applied==1)[0]:
-                        action = untrace(actionchannels.iloc[action_idx,0])
-                        trial_wise_stop_amplitude = self.stop_amplitude_df.iloc[self.trial_num][action]
-                        agent.ramping_stopstim_target[action_idx] -= trial_wise_stop_amplitude
-                        agent.stopsignal_applied[action_idx] = 0
+                    #for action_idx in np.where(agent.stopsignal_applied==1)[0]:
+                        #action = untrace(actionchannels.iloc[action_idx,0])
+                        #trial_wise_stop_amplitude = self.stop_amplitude_df.iloc[self.trial_num][action]
+                        #agent.ramping_stopstim_target[action_idx] -= trial_wise_stop_amplitude
+                        #agent.stopsignal_applied[action_idx] = 0
 
 
         #Stop signal - D2STR
         
-        if self.stop_signal_present_2:    
+        #if self.stop_signal_present_2:    
       
-            if agent.phase == 0 or agent.phase == 1:
+            #if agent.phase == 0 or agent.phase == 1:
 
-                for action_idx in range(len(actionchannels)):
-                    action = untrace(actionchannels.iloc[action_idx,0])
-                    trial_wise_stop_onset_2 = self.stop_onset_df_2.iloc[self.trial_num][action]
-                    trial_wise_stop_amplitude_2 = self.stop_amplitude_df_2.iloc[self.trial_num][action]
-                    trial_wise_stop_channel_2 = self.stop_channels_df_2.iloc[self.trial_num][action]
+                #for action_idx in range(len(actionchannels)):
+                    #action = untrace(actionchannels.iloc[action_idx,0])
+                    #trial_wise_stop_onset_2 = self.stop_onset_df_2.iloc[self.trial_num][action]
+                    #trial_wise_stop_amplitude_2 = self.stop_amplitude_df_2.iloc[self.trial_num][action]
+                    #trial_wise_stop_channel_2 = self.stop_channels_df_2.iloc[self.trial_num][action]
 
-                    if agent.stoptimer_2 < trial_wise_stop_onset_2 or agent.stopsignal_applied_2[action_idx] == 1 :
-                        continue
+                    #if agent.stoptimer_2 < trial_wise_stop_onset_2 or agent.stopsignal_applied_2[action_idx] == 1 :
+                        #continue
 
-                    if trial_wise_stop_channel_2 == True:
-                        agent.ramping_stopstim_target_2[action_idx] += trial_wise_stop_amplitude_2
-                        agent.stopsignal_applied_2[action_idx] = 1
+                    #if trial_wise_stop_channel_2 == True:
+                        #agent.ramping_stopstim_target_2[action_idx] += trial_wise_stop_amplitude_2
+                        #agent.stopsignal_applied_2[action_idx] = 1
 
-                if agent.phasetimer>trial_wise_stop_onset_2+self.stop_duration_df_2.iloc[self.trial_num][action]:
+                #if agent.phasetimer>trial_wise_stop_onset_2+self.stop_duration_df_2.iloc[self.trial_num][action]:
                     
-                    for action_idx in np.where(agent.stopsignal_applied_2==1)[0]:
-                        action = untrace(actionchannels.iloc[action_idx,0])
-                        trial_wise_stop_amplitude_2 = self.stop_amplitude_df_2.iloc[self.trial_num][action]
-                        agent.ramping_stopstim_target_2[action_idx] -= trial_wise_stop_amplitude_2
-                        agent.stopsignal_applied_2[action_idx] = 0
+                    #for action_idx in np.where(agent.stopsignal_applied_2==1)[0]:
+                        #action = untrace(actionchannels.iloc[action_idx,0])
+                        #trial_wise_stop_amplitude_2 = self.stop_amplitude_df_2.iloc[self.trial_num][action]
+                        #agent.ramping_stopstim_target_2[action_idx] -= trial_wise_stop_amplitude_2
+                        #agent.stopsignal_applied_2[action_idx] = 0
                         
-        
+        #Stop 1 
+        if self.stop_signal_present:   
+            if agent.stoptimer >= trial_wise_stop_duration + stop_onset:
+                for action_idx in range(len(agent.stop_popids)):
+                    popid = agent.stop_popids[action_idx]
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+        #Stop 2
+        if self.stop_2_signal_present:   
+            if agent.stoptimer_2 >= trial_wise_stop_2_duration + stop_2_onset:
+                for action_idx in range(len(agent.stop_2_popids)):
+                    popid = agent.stop_2_popids[action_idx]
+                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                    
         #Opto 
-        
         if self.opt_signal_present:   
-            if agent.opttimer >=trial_wise_opt_duration + opt_onset:
+            if agent.opttimer >= trial_wise_opt_duration + opt_onset:
                 for action_idx in range(len(agent.opt_popids)):
                     popid = agent.opt_popids[action_idx]
                     agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
