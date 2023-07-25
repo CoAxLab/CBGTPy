@@ -91,61 +91,63 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
 
     dpmn_ratio = 0.5
     dpmn_implied = 0.7
-
+    
+    number_of_choices = 2
     scaling = 2./float(number_of_choices)
-    # phenotype study's values
+    #Stop signal task 
     simplepathways = pd.DataFrame(
         [
-            ['LIP', 'D1STR', 'AMPA', 'syn', 1, 0.020, True], # 0.018 // min 0.008 max 0.022 // 0.027
-            ['LIP', 'D1STR', 'NMDA', 'syn', 1, 0.025, False], # min 0.012 max 0.033
-            ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.020, True], # min 0.008 max 0.059 (this)  // 0.027
-            ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.04, False], # 0.04 // min 0.0195 max 0.0885
-            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling, 0.198, False],
-            ['LIP', 'Th', 'AMPA', 'syn', 1, 0.03, False], #0.03
-            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.035, False], 
+            ['LIP', 'D1STR', 'AMPA', 'syn', 1, 0.022, True], 
+            ['LIP', 'D1STR', 'NMDA', 'syn', 1, 0.03, False], 
+            ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.022, True], 
+            ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.028, False], 
+            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling, 0.085, False],
+            ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False], 
+            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.029, False],
 
-            ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],#0.28
-            ['D1STR', 'D2STR', 'GABA', 'syn', 0.5, 0.28, False], #0.28
-            ['D1STR', 'GPi', 'GABA', 'syn', 1, 2.07, False], #2.07 // 1.6/1.7/1.8 min 0.4 max 2.4
+            ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],
+            ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False], 
+            ['D1STR', 'GPi', 'GABA', 'syn', 1, 1.8, False], 
+            ['D1STR', 'GPeA', 'GABA', 'syn', 0.4, 0.054, False],
 
-            ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#0.28
-            ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False], #0.28
-            ['D2STR', 'GPeP', 'GABA', 'syn', 1, 4.07, False], #1.2 // 2.70 // 4.07 // 2.67 last
-            ['D2STR', 'GPeA', 'GABA', 'syn', 0.4, 0.2, False], #0.2 prob = 1 prob 0.8 weight 0.3 Aristieta
+            ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],
+            ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False], 
+            ['D2STR', 'GPeP', 'GABA', 'syn', 1, 4.07, False], 
+            ['D2STR', 'GPeA', 'GABA', 'syn', 0.4, 0.61, False],
 
-            ['FSI', 'FSI', 'GABA', 'all', 1, 3.25833, False],
-            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.77760, False], #1.77760
-            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.66987, False], #1.66987
+            ['FSI', 'FSI', 'GABA', 'all', 1, 2.7, False], 
+            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.25, False], 
+            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.15, False],
 
-            ['GPeP', 'GPeP', 'GABA', 'all', 0.08334*scaling, 3., False], #2.5 // prob 0.0667
-            ['GPeP', 'STNE', 'GABA', 'syn', 0.08334, 0.35, False], #0.35 // prob 0.0667
-            ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False], #0.067 last  min 0.057 max 0.067
-            ['GPeP', 'FSI', 'GABA', 'all', 0.4*scaling, 0.1, False], # 0.03 // 0.05
-            ['GPeP', 'GPeA', 'GABA', 'syn', 0.7, 0.42, False], #prob 1 0.4 last // 0.19 last
+            ['GPeP', 'GPeP', 'GABA', 'all', 0.4*scaling, 0.45, False], 
+            ['GPeP', 'STNE', 'GABA', 'syn', 0.1, 0.37, False], 
+            ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False], 
+            ['GPeP', 'FSI', 'GABA', 'all', 0.4*scaling, 0.1, False], 
+            ['GPeP', 'GPeA', 'GABA', 'syn', 0.5, 0.30, False], #0.35
             
-            ['GPeA', 'GPeP', 'GABA', 'syn', 0.8, 0, False], # 0.05 / prob=0.667
-            ['GPeA', 'FSI', 'GABA', 'all', 0.4*scaling, 0.01, False], #0.1 // 0.19 #0.35/0.28 - prob < 1
-            ['GPeA', 'D2STR', 'GABA', 'syn', 0.42, 0.018, False], # 0.7 // 1.   #0.83/0.8 // 1.7 #1.5 prob < 0.5 - 0.4
-            ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.018, False], #0.45 // 0.9/8 - prob 0.4
-            ['GPeA', 'GPeA', 'GABA', 'all', 0.8*scaling, 1.5, False], # 0.5 last # 3.5 // prob=0.667
+            #['GPeA', 'GPeP', 'GABA', 'syn', 0.8, 0, False], # 0.05 / prob=0.667
+            ['GPeA', 'FSI', 'GABA', 'all', 0.4*scaling, 0.01, False], 
+            ['GPeA', 'D2STR', 'GABA', 'syn', 0.4, 0.018, False],
+            ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.018, False], #0.018
+            ['GPeA', 'GPeA', 'GABA', 'all', 0.4*scaling, 0.15, False], #0.05 
 
-            ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], #0.15 last // 0.057 // 0.09 last
-            ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], #1.68 // 1.53 last
-            ['STNE', 'GPeA', 'AMPA', 'syn', 0.32333, 0.1, False], #0.002
-            ['STNE', 'GPeA', 'NMDA', 'syn', 0.32333, 0.05, False], #0.05
-            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling, 0.032, False], # 0325 last #0.0295 
+            ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], 
+            ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], 
+            ['STNE', 'GPeA', 'AMPA', 'syn', 0.161666, 0.026, False], 
+            ['STNE', 'GPeA', 'NMDA', 'syn', 0.161666, 0.075, False], #0.1
+            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling, 0.0325, False], 
 
-            ['GPi', 'Th', 'GABA', 'syn', 1, 0.287, False], #0.285 // 0.29 // control 0.3315
+            ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False], 
 
-            ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3825, False],
-            ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3825, False],
+            ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3285, False],
+            ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3285, False],
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling, 0.1, False],
             ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling, 0.03, False],
 
             # ramping ctx
 
             ['LIP', 'LIP', 'AMPA', 'syn', 0.13, 0.0127, False],
-            ['LIP', 'LIP', 'NMDA', 'syn', 0.13, 0.1, False],
+            ['LIP', 'LIP', 'NMDA', 'syn', 0.13, 0.1, False], 
             ['LIP', 'LIPI', 'AMPA', 'all', 0.0725*scaling, 0.113, False],
             ['LIP', 'LIPI', 'NMDA', 'all', 0.0725*scaling, 0.525, False],
 
