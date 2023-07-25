@@ -329,7 +329,7 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
     print("t_epochs_list",t_epochs_list)
     
     t_epochs = pd.DataFrame()
-    if isinstance(probs,list):
+    if isinstance(probs,tuple):
         for i in np.arange(len(probs)):
             if len(t_epochs_list[actions[i]]) > 0:
                 t_epochs[actions[i]] = np.hstack(t_epochs_list[actions[i]])

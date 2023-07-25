@@ -238,7 +238,8 @@ class PipelineModule(ModuleParent):
 
     def __init__(self, pipeline):
         self.pipeline = pipeline
-
+        print(self.pipeline.par)
+        
     def getPipeline(self):
         return self.pipeline
 
@@ -330,6 +331,8 @@ class ExecutionManager:
         newids = []
         for p, e in zip(pipelines, environments):
             newids.append(self.spawnThreadManager(p, e))
+            print("SpawnThreadManagers",p)
+
         return newids
 
     def cyclethrough(self):
@@ -397,14 +400,19 @@ class ExecutionManager:
         if len(self.qidqueue) == 0:
             return
 
+        
         for i in range(len(self.workerrefs), min(
                 self.maxchildren, len(self.qidqueue))):
             wid = worker.remote(self.funcqueue[i], self.envqueue[i])
+#             print("spawning workers")
+#             print("worker id",wid)
+#             print("queue ids",self.qidqueue[i],self.funcqueue[i], "thread_id:"+str(self.envqueue[i]['thread_id'])+",")
             self.workerrefs[wid] = self.qidqueue[i]
-
+        
+#         print(self.workerrefs.keys())
         ready_ids, _remaining_ids = ray.wait(
             list(self.workerrefs.keys()), num_returns=1)
-
+        #print(ready_ids)
         taskfunctionresult = ray.get(ready_ids[0])
         qid = self.workerrefs.pop(ready_ids[0])
         self.taskfunctionresults[qid] = taskfunctionresult
@@ -418,6 +426,9 @@ class ExecutionManager:
                     self.maxchildren, len(self.qidqueue))):
                 wid = worker.remote(self.funcqueue[i], self.envqueue[i])
                 self.workerrefs[wid] = self.qidqueue[i]
+#                 print("queue still not empty")
+#                 print("worker id",wid)
+#                 print("queue ids",self.qidqueue[i],self.funcqueue[i], "thread_id:"+str(self.envqueue[i]['thread_id'])+",")
 
             ready_ids, _remaining_ids = ray.wait(
                 list(self.workerrefs.keys()), num_returns=1)
@@ -429,6 +440,7 @@ class ExecutionManager:
             self.qidqueue.pop(index)
             self.funcqueue.pop(index)
             self.envqueue.pop(index)
+            
 
     def run(self, pipelines, environments={}):
 
@@ -453,7 +465,8 @@ class ExecutionManager:
         while not self.allfinished(rootids):
             self.consumeQueue()
             self.cyclethrough()
-
+        
+        
         results = [self.idtothreadmanager[rootid].variables for rootid in rootids]
         if listform:
             return results
