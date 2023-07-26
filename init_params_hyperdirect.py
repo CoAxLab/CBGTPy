@@ -97,8 +97,8 @@ def helper_popspecific(pops=dict()):
     popspecific = {'LIP': {'N': 204, 'dpmn_cortex': 1},
                    'FSI': {'C': 0.2, 'Taum': 10},
                    # should be 10 but was 20 due to bug
-                   'GPeP': {'N': 500, 'g_T': 0.06, 'Taum': 20}, #N:750 total, 2/3
-                   'GPeA': {'N': 250, 'g_T': 0.06, 'Taum': 20}, #1/3
+                   'GPeP': {'N': 560, 'g_T': 0.06, 'Taum': 20}, #N:750 total, 2/3
+                   'GPeA': {'N': 190, 'g_T': 0.06, 'Taum': 20}, #1/3
                    'STNE': {'N': 750, 'g_T': 0.06},
                    'LIPI': {'N': 186, 'C': 0.2, 'Taum': 10},
                    'Th': {'Taum': 27.78}}
@@ -168,22 +168,22 @@ def helper_basestim(base=dict()):
         'MeanExtEff_AMPA': 1.2,  # 0.6,
         'MeanExtCon_AMPA': 640},
         'GPi': {
-        'FreqExt_AMPA': 0.8,
+        'FreqExt_AMPA': 0.84, #0.8
         'MeanExtEff_AMPA': 5.9,
         'MeanExtCon_AMPA': 800},
         'STNE': {
-        'FreqExt_AMPA': 4.15, #4.45 last  # 5.2,
+        'FreqExt_AMPA': 4.45, #4.45 last  # 5.2,
         'MeanExtEff_AMPA': 1.65,
         'MeanExtCon_AMPA': 800},
         'GPeP': {
-        'FreqExt_AMPA': 4.1, #last 4 # 5,
+        'FreqExt_AMPA': 4., #last 4.1 # 5,
         'MeanExtEff_AMPA': 2,
         'MeanExtCon_AMPA': 800,
         'FreqExt_GABA': 2,
         'MeanExtEff_GABA': 2,
         'MeanExtCon_GABA': 2000},
         'GPeA': {
-        'FreqExt_AMPA': 4,  # 4,
+        'FreqExt_AMPA': 2.5,  # 2.2, 
         'MeanExtEff_AMPA': 2,
         'MeanExtCon_AMPA': 800,
         'FreqExt_GABA': 2,
