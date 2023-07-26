@@ -271,7 +271,7 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
 
     block_nums = np.arange(0,len(actionchannels))
 
-    print("block_nums",block_nums)
+    #print("block_nums",block_nums)
     
     
     reward_list = []
@@ -283,9 +283,9 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
         reward_list.append(reward[actions[i]])
         t_epochs_list[actions[i]] = np.zeros((n_trials))
     
-    print("t_epochs_list",t_epochs_list)
+    #print("t_epochs_list",t_epochs_list)
 
-    print("actions",actions)
+    #print("actions",actions)
     if len(cp_idx) > 0:
         k = 0
         for i in range(len(cp_idx)):
@@ -326,7 +326,7 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
     #volatile_pattern = np.hstack(volatile_pattern)
     noisy_pattern = [min([.00001, abs(x)]) * 100000 for x in t1_epochs]
     
-    print("t_epochs_list",t_epochs_list)
+    #print("t_epochs_list",t_epochs_list)
     
     t_epochs = pd.DataFrame()
     if isinstance(probs,tuple):
@@ -336,7 +336,7 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
     elif isinstance(probs,float):
         t_epochs[actions[0]] = np.hstack(t_epochs_list[actions[0]])
     # epoch_number
-    print("t_epochs",t_epochs)
+    #print("t_epochs",t_epochs)
     # , epoch_number, reward_p, p_id_solution, t1_epochs, t2_epochs,
     return  t_epochs, noisy_pattern, volatile_pattern, np.hstack(block)
 

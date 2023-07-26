@@ -89,8 +89,16 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
 
     dpmn_ratio = 0.5
     dpmn_implied = 0.7
-    
-    scaling = 2./float(number_of_choices)
+    if number_of_choices >1:
+        scaling_conn = 2./float(number_of_choices)
+        scaling_wts = 1
+    else:
+        scaling_conn = 1
+        scaling_wts = 2./float(number_of_choices)
+        
+        
+    print("scaling_conn",scaling_conn)
+    print("scaling_wts",scaling_wts)
     # phenotype study's values
     simplepathways = pd.DataFrame(
         [
@@ -99,7 +107,7 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
             ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.015, True],#
             ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
 #             ['LIP', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
-            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling, 0.19, False],#            
+            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.19*scaling_wts, False],#            
             ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
 #             ['LIP', 'Th', 'NMDA', 'syn', 1, 0.05, False],# For str lesion to work, corticothalamic regime
             ['LIP', 'Th', 'NMDA', 'syn', 1, 0.029, False],# correct values for plasticity
@@ -120,32 +128,32 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
             ['FSI', 'D2STR', 'GABA', 'all', 1, 1.1, False],#
             
 
-            ['GPeP', 'GPeP', 'GABA', 'all', 0.0667*scaling, 1.75, False],#
+            ['GPeP', 'GPeP', 'GABA', 'all', 0.0667*scaling_conn, 1.75*scaling_wts, False],#
             ['GPeP', 'STNE', 'GABA', 'syn', 0.0667, 0.35, False],#
             ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False],#
 
             ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.07, False],#
             ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False],#
-            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling, 0.0380, False],#
+            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0380*scaling_wts, False],#
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False],#
 
             ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3825, False],#
             ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3825, False],#
-            ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling, 0.1, False],#
-            ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling, 0.03, False],#
+            ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],#
+            ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],#
 
             # ramping ctx
 
             ['LIP', 'LIP', 'AMPA', 'syn', 0.13, 0.0127, False],#
             ['LIP', 'LIP', 'NMDA', 'syn', 0.13, 0.08, False],#
-            ['LIP', 'LIPI', 'AMPA', 'all', 0.0725*scaling, 0.113, False],#
-            ['LIP', 'LIPI', 'NMDA', 'all', 0.0725*scaling, 0.525, False],#
+            ['LIP', 'LIPI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],#
+            ['LIP', 'LIPI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],#
 
             ['LIPI', 'LIP', 'GABA', 'all', 0.5, 1.05, False],#
             ['LIPI', 'LIPI', 'GABA', 'all', 1, 1.075, False],#
 
-            ['Th', 'LIPI', 'NMDA', 'all', 0.8334*scaling, 0.015, False],#
+            ['Th', 'LIPI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],#
 
         ],
         columns=['src', 'dest', 'receptor', 'type', 'con', 'eff', 'plastic']
