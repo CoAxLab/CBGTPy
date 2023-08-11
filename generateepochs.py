@@ -85,7 +85,7 @@ def define_reward(conflict,  actionchannels, n_trials=100, reward_mu=1, reward_s
         channel_dict[i] = actionchannels.iloc[i]["action"]
         
     reward = reward.rename(columns = channel_dict)
-    print(reward)
+    #print(reward)
     return reward #reward_t1, reward_t2
 
 

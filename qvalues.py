@@ -35,7 +35,7 @@ def get_reward_value(t_epochs, chosen_action, trial_num):
     #reward_val = rew_epochs[trial_num][chosen_action - 1]
     if chosen_action == "none":
         return 0
-    print("t_epochs",t_epochs)
+    #print("t_epochs",t_epochs)
     reward_val = t_epochs.iloc[trial_num][chosen_action]
     # print(reward_val)
     return reward_val

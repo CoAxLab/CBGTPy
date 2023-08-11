@@ -124,6 +124,7 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
             ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],
             ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False], 
             ['D2STR', 'GPeP', 'GABA', 'syn', 1, 4.07, False], 
+#             ['D2STR', 'GPeP', 'GABA', 'syn', 1, 5.0, False], 
             ['D2STR', 'GPeA', 'GABA', 'syn', 0.4, 0.61, False],
 
             ['FSI', 'FSI', 'GABA', 'all', 1, 2.7, False], 
@@ -131,6 +132,7 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
             ['FSI', 'D2STR', 'GABA', 'all', 1, 1.15, False],
 
             ['GPeP', 'GPeP', 'GABA', 'all', 0.4*scaling_conn, 0.45*scaling_wts, False], 
+            
             ['GPeP', 'STNE', 'GABA', 'syn', 0.1, 0.37, False], 
             ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False], 
             ['GPeP', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.1*scaling_wts, False], 
@@ -142,11 +144,13 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
             ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.018, False], #0.018
             ['GPeA', 'GPeA', 'GABA', 'all', 0.4*scaling_conn, 0.15*scaling_wts, False], #0.05 
 
+
             ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], 
             ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], 
             ['STNE', 'GPeA', 'AMPA', 'syn', 0.161666, 0.026, False], 
             ['STNE', 'GPeA', 'NMDA', 'syn', 0.161666, 0.075, False], #0.1
             ['STNE', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0325*scaling_wts, False], 
+#             ['STNE', 'GPi', 'NMDA', 'all', 1, 0.0325, False], 
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False], 
 
@@ -154,6 +158,7 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
             ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3285, False],
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],
             ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],
+#             ['Th', 'LIP', 'NMDA', 'all', 0.8334, 0.03, False],
 
             # ramping ctx
 

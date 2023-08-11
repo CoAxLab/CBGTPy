@@ -22,20 +22,26 @@ def smoothen_fr(results,win_len=50):
                 
     return results
         
-def plot_fr(results, datatables):
+def plot_fr(results, datatables, experiment_choice):
 
     sns.set(style="white", font_scale=2.0)
     # Plot Population firing rates
-    col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen","pink"]))
-    
+    if experiment_choice == "plastic":
+        col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
+    elif experiment_choice == "stopsignal":
+        col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]
+    #colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen","pink"]))
+    colors = list(sns.color_palette())
     col_list = dict()
-    col_list['left'] = colors[0]
-    col_list['right'] = colors[1]
-    col_list['common'] = colors[2]
-    col_list['down'] = colors[3]
-    col_list['up'] = colors[4]
-    col_list['A'] = colors[5]
+    actions = results[0].channel.unique()
+    for i,ac in enumerate(actions):
+        col_list[ac] = colors[i]
+#     col_list['left'] = colors[0]
+#     col_list['right'] = colors[1]
+#     col_list['common'] = colors[2]
+#     col_list['down'] = colors[3]
+#     col_list['up'] = colors[4]
+#     col_list['A'] = colors[5]
     
                  
     fig_handles = []
@@ -61,37 +67,37 @@ def plot_fr(results, datatables):
     return fig_handles
         
 
-def plot_fr_stop(results, datatables):
+# def plot_fr_stop(results, datatables):
     
-    # Plot Population firing rates
-    col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
-    colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','pink']))
-    col_list = dict()
-    col_list['left'] = colors[0]
-    col_list['right'] = colors[1]
-    col_list['common'] = colors[2]
-    col_list['up'] = colors[3]
+#     # Plot Population firing rates
+#     col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
+#     colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','pink']))
+#     col_list = dict()
+#     col_list['left'] = colors[0]
+#     col_list['right'] = colors[1]
+#     col_list['common'] = colors[2]
+#     col_list['up'] = colors[3]
 
                  
-    fig_handles = []
+#     fig_handles = []
     
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
+#     for i in np.arange(len(results)):
+#         g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
         
-        #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
-        for j in np.arange(len(datatables[i])):
-            for ax in g1.axes.flat:
-                ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
-                ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
-                ax.axvline(datatables[i].rewardtime[j], color='silver')
-                for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
-                    ax.axvline(k,color='mistyrose', alpha=0.02)
-                for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
-                    ax.axvline(k,color='whitesmoke', alpha=0.02)
+#         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
+#         for j in np.arange(len(datatables[i])):
+#             for ax in g1.axes.flat:
+#                 ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
+#                 ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
+#                 ax.axvline(datatables[i].rewardtime[j], color='silver')
+#                 for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
+#                     ax.axvline(k,color='mistyrose', alpha=0.02)
+#                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
+#                     ax.axvline(k,color='whitesmoke', alpha=0.02)
         
-        fig_handles.append(g1)
-        #g1.fig.savefig('ActualFR_'+str(i)+".png", dpi=400)
-    return fig_handles
+#         fig_handles.append(g1)
+#         #g1.fig.savefig('ActualFR_'+str(i)+".png", dpi=400)
+#     return fig_handles
 
 
 
