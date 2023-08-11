@@ -106,8 +106,6 @@ def codeblock_modifyexperimentdefaults(self):
         self.thalamic_threshold = 30.
     if self.movement_time == None:
         self.trial_wise_movement_times = np.round(np.random.normal(250.,1.5,self.n_trials),0)
-        #print("trial wise mt",self.trial_wise_movement_times)
-        #self.movement_time_type = "mean"
     elif isinstance(self.movement_time,list):
 #         self.movement_time_type = self.movement_time[0]
         if self.movement_time[0] == "mean":

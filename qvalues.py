@@ -26,13 +26,6 @@ import scipy.stats as sp_st
 #def get_reward_value(t1_epochs, t2_epochs, chosen_action, trial_num):
 def get_reward_value(t_epochs, chosen_action, trial_num):
 
-    #rew_epochs = np.vstack((t1_epochs, t2_epochs)).T
-
-    # Assuming a n_trials x channels array
-
-    # chosen_action - 1  because, action labels start from 1, but the index in
-    # the reward array should start from 0
-    #reward_val = rew_epochs[trial_num][chosen_action - 1]
     if chosen_action == "none":
         return 0
     #print("t_epochs",t_epochs)
@@ -59,7 +52,7 @@ def helper_init_Q_support_params(q_support=None):
                                 {
                                  'q_alpha': 0.1, # 0.05 in original value, in working version 0.45
                                  #'dpmn_CPP_scale': 35.,
-                                 'dpmn_CPP_scale': 80.,
+                                 'C_scale': 80.,
                                  #'dpmn_CPP_scale': 25.,
                                  'reward_value': -1.,
                                  'chosen_action': 1})
@@ -69,7 +62,7 @@ def helper_init_Q_support_params(q_support=None):
 
         Q_support_params = ModifyViaSelector(Q_support_params, q_support)
 
-    print(Q_support_params['dpmn_CPP_scale'])    
+    print(Q_support_params['C_scale'])    
     return Q_support_params
 
 # ----------------------helper_update_Q_support_params() FUNCTION  -------
@@ -142,33 +135,23 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 
     # Required to perform mathematical calculations with data frame values
     Q_support_params = untrace(Q_support_params)
-    #Q_df = untrace(Q_df)
-    #print('Q_support_params.chosen_action[trial_num]', Q_support_params.chosen_action[trial_num])
-#     print(
-#         'Q_support_params.chosen_action[0]',
-#         Q_support_params.chosen_action[0])
-    #print('trial_num', trial_num)
 
     if Q_support_params.chosen_action[0] != 'stop' and Q_support_params.chosen_action[0] != 'none':
 
-        #print('Qdf', Q_df)
         trial_wise_q_df = Q_df.iloc[trial_num]  # trial wise Q data frame
 
         trial_wise_chosen_action = Q_support_params.chosen_action  # trial wise chosen action
 
         # q value of the chosen action
         q_val_chosen = trial_wise_q_df[trial_wise_chosen_action]
-        #print('trialwiseqdf', trial_wise_q_df)
-        #print('qvalchosen', q_val_chosen)
 
         # error = reward_calue - current q-value
         q_error = Q_support_params.reward_value.values - q_val_chosen.values
         
-        #q_error = Q_support_params.reward_value.values - trial_wise_q_df
         #print("q_val_chosen",q_val_chosen.values)
         da_inc = Q_support_params.reward_value.values - q_val_chosen.values   #np.max(trial_wise_q_df)
         #print('Q_support_params.REWARD_VALUE', type(Q_support_params.reward_value))
-        #print('Q_support_params type', type(Q_support_params))
+
 
         # Update the current q-value accordingly
         q_val_updated = q_val_chosen.values + Q_support_params.q_alpha.values * q_error
@@ -183,15 +166,8 @@ def helper_update_Q_df(Q_df, Q_support_params, dpmndefaults, trial_num):
 
         # Update the correct value with q_val_updated
         Q_df.iloc[trial_num + 1][trial_wise_chosen_action] = q_val_updated
-        #print('Qdf', Q_df)
-        #print('Qdf data types', Q_df.dtypes)
-
-        # update dopamine burst ?
-        #dpmndefaults.dpmn_DAp = q_error * bayes_CPP * Q_support_params.dpmn_CPP_scale
-        #dpmndefaults.dpmn_DAp = q_error * Q_support_params.dpmn_CPP_scale
-        #print("da_inc",da_inc)
         
-        dpmndefaults.dpmn_DAp = da_inc * Q_support_params.dpmn_CPP_scale
+        dpmndefaults.dpmn_DAp = da_inc * Q_support_params.C_scale
         
         #print("Q_df updated")
         #print(Q_df)
