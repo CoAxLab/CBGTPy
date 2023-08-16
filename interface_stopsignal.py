@@ -3,8 +3,8 @@
 import cbgt as cbgt
 from frontendhelpers import *
 from tracetype import *
-import init_params_hyperdirect as par
-import popconstruct_hyperdirect as popconstruct
+import init_params_stopsignal as par
+import popconstruct_stopsignal as popconstruct
 import qvalues as qval
 from agentmatrixinit import *
 from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
@@ -43,7 +43,7 @@ def mega_loop(self):
     agent.extstim = np.zeros(len(actionchannels))
     agent.ramping_extstim = np.zeros(len(actionchannels))
     
-    agent.in_popids = np.where(popdata['name'] == 'LIP')[0]
+    agent.in_popids = np.where(popdata['name'] == 'Cx')[0]
     agent.out_popids = np.where(popdata['name'] == 'Th')[0]
     agent.str_popids = np.where(untrace(popdata)['name'].str.contains("STR"))[0]
     

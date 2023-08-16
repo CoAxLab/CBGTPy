@@ -1,5 +1,5 @@
 from frontendhelpers import *
-from init_params_direct_indirect import *
+from init_params_nchoice import *
 import pandas as pd
 
 
@@ -35,19 +35,19 @@ def helper_popconstruct(
 
     popdata['name'] = [
         'GPi',
-        'STNE',
-        'GPeP',
+        'STN',
+        'GPe',
         'D1STR',
         'D2STR',
-        'LIP',
+        'Cx',
         'Th',
         'FSI',
-        'LIPI',
+        'CxI',
     ]
     popdata = trace(popdata, 'init')
 
     popdata = ModifyViaSelector(popdata, channels, SelName(
-        ['GPi', 'STNE', 'GPeP', 'D1STR', 'D2STR', 'LIP', 'Th']))
+        ['GPi', 'STN', 'GPe', 'D1STR', 'D2STR', 'Cx', 'Th']))
 
     popdata = ModifyViaSelector(popdata, celldefaults)
 
@@ -102,15 +102,15 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
     # phenotype study's values
     simplepathways = pd.DataFrame(
         [
-            ['LIP', 'D1STR', 'AMPA', 'syn', 1, 0.015, True],#
-            ['LIP', 'D1STR', 'NMDA', 'syn', 1, 0.02, False],#
-            ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.015, True],#
-            ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
-#             ['LIP', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
-            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.19*scaling_wts, False],#            
-            ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
-#             ['LIP', 'Th', 'NMDA', 'syn', 1, 0.05, False],# For str lesion to work, corticothalamic regime
-            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.029, False],# correct values for plasticity
+            ['Cx', 'D1STR', 'AMPA', 'syn', 1, 0.015, True],#
+            ['Cx', 'D1STR', 'NMDA', 'syn', 1, 0.02, False],#
+            ['Cx', 'D2STR', 'AMPA', 'syn', 1, 0.015, True],#
+            ['Cx', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
+#             ['Cx', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
+            ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.19*scaling_wts, False],#            
+            ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
+#             ['Cx', 'Th', 'NMDA', 'syn', 1, 0.05, False],# For str lesion to work, corticothalamic regime
+            ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],# correct values for plasticity
 
             ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],#
             ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
@@ -118,7 +118,7 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
 
             ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
             ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False],#
-            ['D2STR', 'GPeP', 'GABA', 'syn', 1, 4.07, False],#
+            ['D2STR', 'GPe', 'GABA', 'syn', 1, 4.07, False],#
 
             
             ['FSI', 'FSI', 'GABA', 'all', 1, 3.25833, False],#
@@ -128,32 +128,32 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
             ['FSI', 'D2STR', 'GABA', 'all', 1, 1.1, False],#
             
 
-            ['GPeP', 'GPeP', 'GABA', 'all', 0.0667*scaling_conn, 1.75*scaling_wts, False],#
-            ['GPeP', 'STNE', 'GABA', 'syn', 0.0667, 0.35, False],#
-            ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False],#
+            ['GPe', 'GPe', 'GABA', 'all', 0.0667*scaling_conn, 1.75*scaling_wts, False],#
+            ['GPe', 'STN', 'GABA', 'syn', 0.0667, 0.35, False],#
+            ['GPe', 'GPi', 'GABA', 'syn', 1, 0.058, False],#
 
-            ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.07, False],#
-            ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False],#
-            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0380*scaling_wts, False],#
+            ['STN', 'GPe', 'AMPA', 'syn', 0.161666, 0.07, False],#
+            ['STN', 'GPe', 'NMDA', 'syn', 0.161666, 1.51, False],#
+            ['STN', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0380*scaling_wts, False],#
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False],#
 
             ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3825, False],#
             ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3825, False],#
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],#
-            ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],#
+            ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],#
 
             # ramping ctx
 
-            ['LIP', 'LIP', 'AMPA', 'syn', 0.13, 0.0127, False],#
-            ['LIP', 'LIP', 'NMDA', 'syn', 0.13, 0.08, False],#
-            ['LIP', 'LIPI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],#
-            ['LIP', 'LIPI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],#
+            ['Cx', 'Cx', 'AMPA', 'syn', 0.13, 0.0127, False],#
+            ['Cx', 'Cx', 'NMDA', 'syn', 0.13, 0.08, False],#
+            ['Cx', 'CxI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],#
+            ['Cx', 'CxI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],#
 
-            ['LIPI', 'LIP', 'GABA', 'all', 0.5, 1.05, False],#
-            ['LIPI', 'LIPI', 'GABA', 'all', 1, 1.075, False],#
+            ['CxI', 'Cx', 'GABA', 'all', 0.5, 1.05, False],#
+            ['CxI', 'CxI', 'GABA', 'all', 1, 1.075, False],#
 
-            ['Th', 'LIPI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],#
+            ['Th', 'CxI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],#
 
         ],
         columns=['src', 'dest', 'receptor', 'type', 'con', 'eff', 'plastic']

@@ -3,23 +3,18 @@
 import cbgt as cbgt
 from frontendhelpers import * 
 from tracetype import *
-#import init_params as par 
-#import popconstruct as popconstruct
 import qvalues as qval
 import generateepochs as gen
 import generate_opt_dataframe as gen_opt
-#import mega_loop as ml
 from agentmatrixinit import *
 import pdb
 
 experiment_choice = None
 par = "Taco"#None
 popconstruct = None
-ml = None
+interface = None
 gen_stop = None
 gen_stop_2 = None
-# timestep_mutator = None
-# multitimestep_mutator = None
 
 
 
@@ -28,34 +23,22 @@ def choose_pipeline(choice):
     global experiment_choice
     global par
     global popconstruct
-    global ml
+    global interface
     global gen_stop
     global gen_stop_2
     global number_of_choices
-#     global timestep_mutator
-#     global multitimestep_mutator
     experiment_choice = choice
     
-    if choice == 'plastic':
-        #import init_params_direct_indirect as par
-        par =  __import__("init_params_direct_indirect")
+    if choice == 'n-choice':
+        import init_params_nchoice as par
+        import popconstruct_nchoice as popconstruct
+        import interface_nchoice as interface
         
-        #par = importlib.import_module("init_params_direct_indirect.py")
-        #import popconstruct_direct_indirect as popconstruct
-        popconstruct = __import__("popconstruct_direct_indirect")
-#         popconstruct = __import__("popconstruct_multi")
-        ml = __import__("megaloop_plasticity")
-#         self.par = par
-#         self.popconstruct = popconstruct
-#         self.ml = ml
-        #import megaloop_plasticity as ml
-        
-#         from agent_timestep_plasticity import timestep_mutator, multitimestep_mutator
-    if choice == 'stopsignal':
-        import init_params_hyperdirect as par
-        import popconstruct_hyperdirect as popconstruct
-        import megaloop_stop_signal as ml
-#         from agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
+
+    if choice == 'stop-signal':
+        import init_params_stopsignal as par
+        import popconstruct_stopsignal as popconstruct
+        import interface_stopsignal as interface
         import generate_stop_dataframe as gen_stop
         import generate_stop_dataframe_2 as gen_stop_2
         
@@ -243,19 +226,10 @@ def create_test_pipeline(runloop):
     pl.add(codeblock_experimentchoice)
     pl.par = par
     pl.popconstruct = popconstruct
-    pl.ml = ml
+    pl.interface = interface
     
     pl.add(codeblock_modifyactionchannels)
     pl.add(codeblock_modifycelldefaults)
-#     pl.celldefaults = par.helper_cellparams()
-    
-#     rsg = create_reward_pipeline(pl)
-#     #Adding rsg pipeline to the network pipeline: 
-#     pl.add(rsg)
-
-#     if runloop:
-#         mega_loop = ml.mega_loop
-#         pl.add(mega_loop)
     
     return pl
     
@@ -269,11 +243,10 @@ def create_main_pipeline(runloop):#,num_choices):
     
     
     pl.add(codeblock_experimentchoice)
-#     if experiment_choice == "plasticity":
     pl.par = par
     pl.popconstruct = popconstruct
-    pl.ml = ml
-    if experiment_choice == "stopsignal":
+    pl.interface = interface
+    if experiment_choice == "stop-signal":
         pl.gen_stop = gen_stop
         pl.gen_stop_2 = gen_stop_2
         
@@ -325,7 +298,7 @@ def create_main_pipeline(runloop):#,num_choices):
     opt = create_opt_pipeline(pl)
     pl.add(opt)
     
-    if experiment_choice == 'stopsignal':
+    if experiment_choice == 'stop-signal':
        stop = create_stop_pipeline(pl)
        stop_2 = create_stop_pipeline_2(pl)
        pl.add(stop)
@@ -356,7 +329,7 @@ def create_main_pipeline(runloop):#,num_choices):
     
     # Agent mega loop - updated trial wise qvalues and chosen action
     if runloop:
-        mega_loop = ml.mega_loop
+        mega_loop = interface.mega_loop
         pl.add(mega_loop)
     
     return pl

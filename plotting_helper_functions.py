@@ -26,9 +26,9 @@ def rename_columns(results,smooth=False):
     for i in results['popdata'].index[:-2]:
         temp = untrace(results['popdata']['newname'].iloc[i])
         #print(type(temp))
-        if 'LIP' in temp:
-            temp1 = "Cx_"+temp.split('_')[1]
-            temp = temp1
+    #    if 'LIP' in temp:
+    #        temp1 = "Cx_"+temp.split('_')[1]
+    #        temp = temp1
         new_names[i] = temp
     new_names[i+1]='FSI_common'
     new_names[i+2]='CxI_common'
@@ -45,9 +45,9 @@ def extract_relevant_frames(results,seed,experiment_choice):
     Q_df = cbgt.collateVariable(results,'Q_df')
     datatables = cbgt.collateVariable(results,'datatables')
     
-    if experiment_choice == "plastic":
+    if experiment_choice == "n-choice":
     
-        dpmn_cpp_scale = results[0]['Q_support_params']['dpmn_CPP_scale'].values[0]
+        dpmn_cpp_scale = results[0]['Q_support_params']['C_scale'].values[0]
     
         firing_rates = []
         q_df = []
@@ -75,7 +75,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             results_local_melt = results_local_melt.rename(columns={"value":"firing_rate"})
             results_local_melt["seed"] = [ str(seed)+"_"+str(i) for j in np.arange(len(results_local_melt)) ]
             results_local_melt["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(results_local_melt))]
-            results_local_melt["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(results_local_melt))]
+            results_local_melt["volatility"] = [exp_params["volatility"][0][0] for j in np.arange(len(results_local_melt))]
             results_local_melt["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(results_local_melt))]
             results_local_melt["conflict"] = [np.array(exp_params["conflict"])[0] for j in np.arange(len(results_local_melt))]
 
@@ -121,7 +121,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
 
             final_data["seed"] = [str(seed)+"_"+str(i)  for j in np.arange(len(final_data))]
             final_data["n_trials"] = [float(exp_params["n_trials"]) for j in np.arange(len(final_data))] 
-            final_data["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(final_data))] 
+            final_data["volatility"] = [exp_params["volatility"][0][0] for j in np.arange(len(final_data))] 
             final_data["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(final_data))] 
             #final_data["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(final_data))] 
             final_data["conflict"] = [np.array(exp_params["conflict"])[0] for j in np.arange(len(final_data))] 
@@ -147,7 +147,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
                 perf = perf.append({'%_rewarded_actions':rr,"block":grp[0][0], "actions":grp[0][1],"%_action":num},ignore_index=True)
             perf["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(perf))]
             perf["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(perf))]
-            perf["volatility"] = [ float(exp_params["volatility"][0][0]) for j in np.arange(len(perf))]
+            perf["volatility"] = [ exp_params["volatility"][0][0] for j in np.arange(len(perf))]
             perf["volatility_type"] = [ exp_params["volatility"][0][1] for j in np.arange(len(perf))]
             #perf["volatility/num_trials"] = [ (float(exp_params["volatility"])/float(exp_params["n_trials"]))*100 for j in np.arange(len(perf))]
             perf["conflict"] = [np.array(exp_params["conflict"])[0] for j in np.arange(len(perf))]
@@ -160,7 +160,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             overall_perf = (len(datatables[i].loc[datatables[i]["correctdecision"]==datatables[i]["decision"]])/len(datatables[i]))*100
             total_perf["%_correct_actions"] = [overall_perf]
             total_perf["seed"] = [str(seed)]
-            total_perf["volatility"] = [float(exp_params["volatility"][0][0])]
+            total_perf["volatility"] = [exp_params["volatility"][0][0]]
             total_perf["volatility_type"] = [exp_params["volatility"][0][1]]
             #total_perf["volatility/num_trials"] = [(float(exp_params["volatility"])/float(exp_params["n_trials"]))*100]
             total_perf["conflict"] = [np.array(exp_params["conflict"])[0]]
@@ -173,7 +173,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             rt = pd.DataFrame()
             rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
             rt["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(rt))]
-            rt["volatility"] = [float(exp_params["volatility"][0][0]) for j in np.arange(len(rt))]
+            rt["volatility"] = [exp_params["volatility"][0][0] for j in np.arange(len(rt))]
             rt["volatility_type"] = [exp_params["volatility"][0][1] for j in np.arange(len(rt))]
             rt["conflict"] = [ np.array(exp_params["conflict"])[0] for j in np.arange(len(rt))]
             #rt["volatility/num_trials"] = [(float(exp_params["volatility"])/exp_params["n_trials"])*100 for j in np.arange(len(rt))]
@@ -185,7 +185,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
 
         return firing_rates, q_df, performance, rt_distribution, total_performance
     
-    elif experiment_choice == "stopsignal":
+    elif experiment_choice == "stop-signal":
         firing_rates = []
         rt_distribution = pd.DataFrame()
 
@@ -219,42 +219,6 @@ def extract_relevant_frames(results,seed,experiment_choice):
         return firing_rates, rt_distribution
         
 
-# def extract_relevant_frames_stop(results,seed):
-
-#     t_epochs = cbgt.collateVariable(results,'t_epochs')
-#     datatables = cbgt.collateVariable(results,'datatables')
-    
-#     firing_rates = []
-#     rt_distribution = pd.DataFrame()
-        
-#     #print(q_df)   
-#     #print(performance)
-#     #save_dataframes(firing_rates,q_df, performance, rt_distribution,total_performance, seed,src_dir)
-#     for i in np.arange(len(results)):
-       
-#         results[i] = rename_columns(results[i]) # Overwrites the column names in popfreqs
-#         results_local = results[i]['popfreqs'].copy()
-    
-#         results_local_melt = results_local.melt("Time (ms)")
-    
-    
-#         results_local_melt["nuclei"] = [ x.split('_')[0]  for x in results_local_melt["variable"]]
-#         results_local_melt["channel"] = [ x.split('_')[1]  for x in results_local_melt["variable"]]
-        
-       
-#         results_local_melt = results_local_melt.rename(columns={"value":"firing_rate"})
-#         results_local_melt["seed"] = [ str(seed)+"_"+str(i) for j in np.arange(len(results_local_melt)) ]
-        
-                
-#         firing_rates.append(results_local_melt)
-        
-#         rt = pd.DataFrame()
-#         rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
-#         rt["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(rt))]
-        
-#         rt_distribution = rt_distribution.append(rt)
-
-#     return firing_rates, rt_distribution
 
     
     

@@ -94,13 +94,13 @@ def helper_cellparams(params=None):
 
 def helper_popspecific(pops=dict()):
 
-    popspecific = {'LIP': {'N': 204, 'dpmn_cortex': 1},
+    popspecific = {'Cx': {'N': 204, 'dpmn_cortex': 1},
                    'FSI': {'C': 0.2, 'Taum': 10},
                    # should be 10 but was 20 due to bug
                    'GPeP': {'N': 560, 'g_T': 0.06, 'Taum': 20}, #N:750 total, 2/3
                    'GPeA': {'N': 190, 'g_T': 0.06, 'Taum': 20}, #1/3
-                   'STNE': {'N': 750, 'g_T': 0.06},
-                   'LIPI': {'N': 186, 'C': 0.2, 'Taum': 10},
+                   'STN': {'N': 750, 'g_T': 0.06},
+                   'CxI': {'N': 186, 'C': 0.2, 'Taum': 10},
                    'Th': {'Taum': 27.78}}
 
     if pops is not None:
@@ -162,7 +162,7 @@ def helper_basestim(base=dict()):
         'FreqExt_AMPA': 4.8,  # 3.0,
         'MeanExtEff_AMPA': 1.55,
         'MeanExtCon_AMPA': 800},
-        'LIPI': {
+        'CxI': {
         'FreqExt_AMPA': 3.7,
         # 'FreqExt_AMPA': 1.05,
         'MeanExtEff_AMPA': 1.2,  # 0.6,
@@ -171,7 +171,7 @@ def helper_basestim(base=dict()):
         'FreqExt_AMPA': 0.84, #0.8
         'MeanExtEff_AMPA': 5.9,
         'MeanExtCon_AMPA': 800},
-        'STNE': {
+        'STN': {
         'FreqExt_AMPA': 4.45, #4.45 last  # 5.2,
         'MeanExtEff_AMPA': 1.65,
         'MeanExtCon_AMPA': 800},
@@ -197,7 +197,7 @@ def helper_basestim(base=dict()):
         'FreqExt_AMPA': 1.3,
         'MeanExtEff_AMPA': 4,
         'MeanExtCon_AMPA': 800},
-        'LIP': {
+        'Cx': {
         'FreqExt_AMPA': 2.5,  # 2.5,
         'MeanExtEff_AMPA': 2,
         'MeanExtCon_AMPA': 800},
@@ -211,7 +211,7 @@ def helper_basestim(base=dict()):
     #     'FreqExt_AMPA': 3.6,
     #     'MeanExtEff_AMPA': 1.55,
     #     'MeanExtCon_AMPA': 800},
-    #     'LIPI': {
+    #     'CxI': {
     #     'FreqExt_AMPA': 1.05,
     #     'MeanExtEff_AMPA': 0.6,#1.2,
     #     'MeanExtCon_AMPA': 640},
@@ -219,7 +219,7 @@ def helper_basestim(base=dict()):
     #     'FreqExt_AMPA': 0.8,
     #     'MeanExtEff_AMPA': 5.9,
     #     'MeanExtCon_AMPA': 800},
-    #     'STNE': {
+    #     'STN': {
     #     'FreqExt_AMPA': 4.45,
     #     'MeanExtEff_AMPA': 1.65,
     #     'MeanExtCon_AMPA': 800},
@@ -238,7 +238,7 @@ def helper_basestim(base=dict()):
     #     'FreqExt_AMPA': 1.3,
     #     'MeanExtEff_AMPA': 4,
     #     'MeanExtCon_AMPA': 800},
-    #     'LIP': {
+    #     'Cx': {
     #     'FreqExt_AMPA': 2.2,
     #     'MeanExtEff_AMPA': 2,
     #     'MeanExtCon_AMPA': 800},

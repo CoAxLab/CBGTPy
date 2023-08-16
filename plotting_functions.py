@@ -26,22 +26,16 @@ def plot_fr(results, datatables, experiment_choice):
 
     sns.set(style="white", font_scale=2.0)
     # Plot Population firing rates
-    if experiment_choice == "plastic":
-        col_order = ["Cx", "CxI", "FSI","GPeP", "D1STR", "D2STR", "STNE","GPi","Th"] # To ease comparison with reference Figure
-    elif experiment_choice == "stopsignal":
-        col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]
+    if experiment_choice == "n-choice":
+        col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"] # To ease comparison with reference Figure
+    elif experiment_choice == "stop-signal":
+        col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
     #colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen","pink"]))
     colors = list(sns.color_palette())
     col_list = dict()
     actions = results[0].channel.unique()
     for i,ac in enumerate(actions):
         col_list[ac] = colors[i]
-#     col_list['left'] = colors[0]
-#     col_list['right'] = colors[1]
-#     col_list['common'] = colors[2]
-#     col_list['down'] = colors[3]
-#     col_list['up'] = colors[4]
-#     col_list['A'] = colors[5]
     
                  
     fig_handles = []
@@ -115,9 +109,9 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
             fr_single = pd.concat([fr, firing_rates[firing_rates['channel'] == 'common']])
             
             if 'GPeA' not in firing_rates['nuclei'].unique():
-                col_order = ["Cx", "CxI", "FSI","GPeP", "D2STR", "D1STR", "STNE","GPi","Th"]  
+                col_order = ["Cx", "CxI", "FSI","GPe", "D2STR", "D1STR", "STN","GPi","Th"]  
             else: 
-                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]
+                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
             #for i in np.arange(len(results)):
             # set the hue palette as a dict for custom mapping
             palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
@@ -151,9 +145,9 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
             #fr = firing_rates
             
             if 'GPeA' not in firing_rates['nuclei'].unique():
-                col_order = ["Cx", "CxI", "FSI","GPeP", "D2STR", "D1STR", "STNE","GPi","Th"]  
+                col_order = ["Cx", "CxI", "FSI","GPe", "D2STR", "D1STR", "STN","GPi","Th"]  
             else: 
-                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"]         
+                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]         
             palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
             
             #for i in np.arange(len(results)):

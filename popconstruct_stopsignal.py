@@ -1,5 +1,5 @@
 from frontendhelpers import *
-from init_params_hyperdirect import *
+from init_params_stopsignal import *
 import pandas as pd
 
 
@@ -35,20 +35,20 @@ def helper_popconstruct(
 
     popdata['name'] = [
         'GPi',
-        'STNE',
+        'STN',
         'GPeP',
         'GPeA',
         'D1STR',
         'D2STR',
-        'LIP',
+        'Cx',
         'Th',
         'FSI',
-        'LIPI',
+        'CxI',
     ]
     popdata = trace(popdata, 'init')
 
     popdata = ModifyViaSelector(popdata, channels, SelName(
-        ['GPi', 'STNE', 'GPeP','GPeA', 'D1STR', 'D2STR', 'LIP', 'Th']))
+        ['GPi', 'STN', 'GPeP','GPeA', 'D1STR', 'D2STR', 'Cx', 'Th']))
 
     popdata = ModifyViaSelector(popdata, celldefaults)
 
@@ -108,13 +108,13 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
     #Stop signal task 
     simplepathways = pd.DataFrame(
         [
-            ['LIP', 'D1STR', 'AMPA', 'syn', 1, 0.022, True], 
-            ['LIP', 'D1STR', 'NMDA', 'syn', 1, 0.03, False], 
-            ['LIP', 'D2STR', 'AMPA', 'syn', 1, 0.022, True], 
-            ['LIP', 'D2STR', 'NMDA', 'syn', 1, 0.028, False], 
-            ['LIP', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.085*scaling_wts, False],
-            ['LIP', 'Th', 'AMPA', 'syn', 1, 0.025, False], 
-            ['LIP', 'Th', 'NMDA', 'syn', 1, 0.029, False],
+            ['Cx', 'D1STR', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'D1STR', 'NMDA', 'syn', 1, 0.03, False], 
+            ['Cx', 'D2STR', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'D2STR', 'NMDA', 'syn', 1, 0.028, False], 
+            ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.085*scaling_wts, False],
+            ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False], 
+            ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],
 
             ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],
             ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False], 
@@ -133,44 +133,44 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
 
             ['GPeP', 'GPeP', 'GABA', 'all', 0.4*scaling_conn, 0.45*scaling_wts, False], 
             
-            ['GPeP', 'STNE', 'GABA', 'syn', 0.1, 0.37, False], 
+            ['GPeP', 'STN', 'GABA', 'syn', 0.1, 0.37, False], 
             ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False], 
             ['GPeP', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.1*scaling_wts, False], 
             ['GPeP', 'GPeA', 'GABA', 'syn', 0.5, 0.30, False], #0.35
             
             #['GPeA', 'GPeP', 'GABA', 'syn', 0.8, 0, False], # 0.05 / prob=0.667
             ['GPeA', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.01*scaling_wts, False], 
-            ['GPeA', 'D2STR', 'GABA', 'syn', 0.4, 0.018, False],
-            ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.018, False], #0.018
+            ['GPeA', 'D2STR', 'GABA', 'syn', 0.4, 0.12, False],
+            ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.32, False], #0.018
             ['GPeA', 'GPeA', 'GABA', 'all', 0.4*scaling_conn, 0.15*scaling_wts, False], #0.05 
 
 
-            ['STNE', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], 
-            ['STNE', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], 
-            ['STNE', 'GPeA', 'AMPA', 'syn', 0.161666, 0.026, False], 
-            ['STNE', 'GPeA', 'NMDA', 'syn', 0.161666, 0.075, False], #0.1
-            ['STNE', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0325*scaling_wts, False], 
-#             ['STNE', 'GPi', 'NMDA', 'all', 1, 0.0325, False], 
+            ['STN', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], 
+            ['STN', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], 
+            ['STN', 'GPeA', 'AMPA', 'syn', 0.161666, 0.026, False], 
+            ['STN', 'GPeA', 'NMDA', 'syn', 0.161666, 0.075, False], #0.1
+            ['STN', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0325*scaling_wts, False], 
+#             ['STN', 'GPi', 'NMDA', 'all', 1, 0.0325, False], 
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False], 
 
             ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3285, False],
             ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3285, False],
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],
-            ['Th', 'LIP', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],
-#             ['Th', 'LIP', 'NMDA', 'all', 0.8334, 0.03, False],
+            ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],
+#             ['Th', 'Cx', 'NMDA', 'all', 0.8334, 0.03, False],
 
             # ramping ctx
 
-            ['LIP', 'LIP', 'AMPA', 'syn', 0.13, 0.0127, False],
-            ['LIP', 'LIP', 'NMDA', 'syn', 0.13, 0.1, False], 
-            ['LIP', 'LIPI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],
-            ['LIP', 'LIPI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],
+            ['Cx', 'Cx', 'AMPA', 'syn', 0.13, 0.0127, False],
+            ['Cx', 'Cx', 'NMDA', 'syn', 0.13, 0.1, False], 
+            ['Cx', 'CxI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],
+            ['Cx', 'CxI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],
 
-            ['LIPI', 'LIP', 'GABA', 'all', 0.5, 1.05, False],
-            ['LIPI', 'LIPI', 'GABA', 'all', 1, 1.075, False],
+            ['CxI', 'Cx', 'GABA', 'all', 0.5, 1.05, False],
+            ['CxI', 'CxI', 'GABA', 'all', 1, 1.075, False],
 
-            ['Th', 'LIPI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],
+            ['Th', 'CxI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],
 
         ],
         columns=['src', 'dest', 'receptor', 'type', 'con', 'eff', 'plastic']

@@ -3,8 +3,8 @@
 import cbgt as cbgt
 from frontendhelpers import *
 from tracetype import *
-import init_params_direct_indirect as par
-import popconstruct_direct_indirect as popconstruct
+import init_params_nchoice as par
+import popconstruct_nchoice as popconstruct
 import qvalues as qval
 # import generateepochs as gen
 from agentmatrixinit import *
@@ -43,13 +43,13 @@ def mega_loop(self):
     agent.gain = np.ones(len(actionchannels))
     agent.extstim = np.zeros(len(actionchannels))
     agent.ramping_extstim = np.zeros(len(actionchannels))
-    agent.in_popids = np.where(popdata['name'] == 'LIP')[0]
+    agent.in_popids = np.where(popdata['name'] == 'Cx')[0]
 
     agent.out_popids = np.where(popdata['name'] == 'Th')[0]
     agent.str_popids = np.where(untrace(popdata)['name'].str.contains("STR"))[0]
     agent.d1_popids = np.where(popdata['name'] == 'D1STR')[0]
     agent.d2_popids = np.where(popdata['name'] == 'D2STR')[0]
-    agent.stop_popids = np.where(popdata['name'] == 'STNE')[0]
+    agent.stop_popids = np.where(popdata['name'] == 'STN')[0]
     
     agent.opt_popids = np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[0]))[0]
     print("agent.opt_popids",agent.opt_popids)

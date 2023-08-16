@@ -8,8 +8,8 @@ if not ray.is_initialized():
 
 
 @ray.remote
-def worker(module, environment):
-    return module(environment)
+def worker(module, configuration):
+    return module(configuration)
 
 
 class Pipeline:
@@ -286,14 +286,14 @@ class ThreadManager:
             return {
                 'status': 'waitingfortaskfunction',
                 'taskfunction': module.getTaskFunction(),
-                'environment': self.variables,
+                'configuration': self.variables,
             }
 
         if isinstance(module, PipelineModule):
             return {
                 'status': 'waitingforchildren',
                 'pipelines': [module.getPipeline()],
-                'environments': [self.variables],
+                'configurations': [self.variables],
             }
 
 
@@ -318,18 +318,18 @@ class ExecutionManager:
         self.maxchildren = cores
         self.workerrefs = {}
 
-    def spawnThreadManager(self, pipeline, environment):
+    def spawnThreadManager(self, pipeline, configuration):
         newid = self.HIDcounter
         self.HIDcounter += 1
-        threadmanager = ThreadManager(newid, environment)
+        threadmanager = ThreadManager(newid, configuration)
         self.idtothreadmanager[newid] = threadmanager
         self.idtopipeline[newid] = pipeline
         self.idtostatus[newid] = 'new'
         return newid
 
-    def spawnThreadManagers(self, pipelines, environments):
+    def spawnThreadManagers(self, pipelines, configurations):
         newids = []
-        for p, e in zip(pipelines, environments):
+        for p, e in zip(pipelines, configurations):
             newids.append(self.spawnThreadManager(p, e))
             print("SpawnThreadManagers",p)
 
@@ -381,11 +381,11 @@ class ExecutionManager:
         if request['status'] == 'waitingfortaskfunction':
             qid = self.addToQueue(
                 request['taskfunction'],
-                request['environment'])
+                request['configuration'])
             self.idtowaiting[HID] = qid
         if request['status'] == 'waitingforchildren':
             hids = self.spawnThreadManagers(
-                request['pipelines'], request['environments'])
+                request['pipelines'], request['configurations'])
             self.idtowaiting[HID] = hids
 
     def addToQueue(self, taskfunction, variables):
@@ -442,24 +442,24 @@ class ExecutionManager:
             self.envqueue.pop(index)
             
 
-    def run(self, pipelines, environments={}):
+    def run(self, pipelines, configurations={}):
 
         listform = True
-        if not isinstance(pipelines, list) and not isinstance(environments, list):
+        if not isinstance(pipelines, list) and not isinstance(configurations, list):
             listform = False
         if not isinstance(pipelines, list):
             pipelines = [pipelines]
-        if not isinstance(environments, list):
-            environments = [environments]
+        if not isinstance(configurations, list):
+            configurations = [configurations]
 
         if len(pipelines) == 1:
-            pipelines = pipelines * len(environments)
-        if len(environments) == 1:
-            environments = environments * len(pipelines)
+            pipelines = pipelines * len(configurations)
+        if len(configurations) == 1:
+            configurations = configurations * len(pipelines)
 
         rootids = []
         for i in range(len(pipelines)):
-            rootids.append(self.spawnThreadManager(pipelines[i], environments[i]))
+            rootids.append(self.spawnThreadManager(pipelines[i], configurations[i]))
 
         self.cyclethrough()
         while not self.allfinished(rootids):
