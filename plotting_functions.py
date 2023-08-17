@@ -24,7 +24,7 @@ def smoothen_fr(results,win_len=50):
         
 def plot_fr(results, datatables, experiment_choice):
 
-    sns.set(style="white", font_scale=2.0)
+    sns.set(style="white", font_scale=2.5)
     # Plot Population firing rates
     if experiment_choice == "n-choice":
         col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"] # To ease comparison with reference Figure
@@ -43,7 +43,14 @@ def plot_fr(results, datatables, experiment_choice):
     for i in np.arange(len(results)):
         g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=1.2,height=7,lw=3.0)
         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
-       
+    
+        for ax in g1.axes.flat:
+            tit = ax.get_title().split(' = ')[1]
+            ax.set_title(tit,fontweight='bold')
+            if len(ax.get_ylabel()) > 0:
+                ax.set_ylabel("Firing rates (spikes/s)")
+        
+
         for j in np.arange(len(datatables[i])):
             for ax in g1.axes.flat:
                 ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
@@ -54,8 +61,15 @@ def plot_fr(results, datatables, experiment_choice):
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='grey', alpha=0.01)
                 
-                if len(ax.get_ylabel()) > 0:
-                    ax.set_ylabel("Firing rates (spikes/s)")
+
+        leg = g1._legend
+        #print(leg.legendHandles)
+        for line in leg.get_lines():
+            line.set_linewidth(4.0)        
+#         for legobj in leg.legendHandles:
+#             legobj.set_linewidth(2.0)
+                
+                
         fig_handles.append(g1)
        
     return fig_handles
