@@ -143,7 +143,7 @@ def create_stop_pipeline(pl): #STN
     stop = cbgt.Pipeline() 
 
     
-    (stop.stop_df, stop.stop_channels_df, stop.stop_amplitude_df, stop.stop_onset_df, stop.stop_duration_df, stop.stop_populations_df, stop.stop_list_trials) = stop[gen_stop.GenStopSchedule](
+    (stop.stop_df, stop.stop_channels_dfs, stop.stop_amplitude_dfs, stop.stop_onset_dfs, stop.stop_duration_dfs, stop.stop_populations_dfs, stop.stop_list_trials_list) = stop[gen_stop.GenStopSchedule](
         stop.stop_signal_probability,
         pl.actionchannels,
         stop.n_trials,
@@ -160,25 +160,25 @@ def create_stop_pipeline(pl): #STN
     return stop
 
 
-def create_stop_pipeline_2(pl): #D2STR
-    stop_2 = cbgt.Pipeline() 
+# def create_stop_pipeline_2(pl): #D2STR
+#     stop_2 = cbgt.Pipeline() 
 
     
-    (stop_2.stop_2_df, stop_2.stop_2_channels_df, stop_2.stop_2_amplitude_df, stop_2.stop_2_onset_df, stop_2.stop_2_duration_df, stop_2.stop_2_populations_df, stop_2.stop_2_list_trials) = stop_2[gen_stop_2.GenStopSchedule_2](
-        stop_2.stop_2_signal_probability,
-        pl.actionchannels,
-        stop_2.n_trials,
-        stop_2.popdata,
-        stop_2.stop_2_signal_channel,
-        stop_2.stop_2_signal_amplitude,
-        stop_2.stop_2_signal_onset,
-        stop_2.stop_2_signal_duration,
-        stop_2.stop_2_signal_present, 
-        stop_2.stop_2_signal_population,
-     ).shape(7)
+#     (stop_2.stop_2_df, stop_2.stop_2_channels_df, stop_2.stop_2_amplitude_df, stop_2.stop_2_onset_df, stop_2.stop_2_duration_df, stop_2.stop_2_populations_df, stop_2.stop_2_list_trials) = stop_2[gen_stop_2.GenStopSchedule_2](
+#         stop_2.stop_2_signal_probability,
+#         pl.actionchannels,
+#         stop_2.n_trials,
+#         stop_2.popdata,
+#         stop_2.stop_2_signal_channel,
+#         stop_2.stop_2_signal_amplitude,
+#         stop_2.stop_2_signal_onset,
+#         stop_2.stop_2_signal_duration,
+#         stop_2.stop_2_signal_present, 
+#         stop_2.stop_2_signal_population,
+#      ).shape(7)
     
-    #print(stop)
-    return stop_2
+#     #print(stop)
+#     return stop_2
 
 
 def create_opt_pipeline(pl):
@@ -300,9 +300,9 @@ def create_main_pipeline(runloop):#,num_choices):
     
     if experiment_choice == 'stop-signal':
        stop = create_stop_pipeline(pl)
-       stop_2 = create_stop_pipeline_2(pl)
+       #stop_2 = create_stop_pipeline_2(pl)
        pl.add(stop)
-       pl.add(stop_2)
+       #pl.add(stop_2)
    
     #Adding codeblocks to the newtork pipeline: 
     pl.add(codeblock_modifycelldefaults)
