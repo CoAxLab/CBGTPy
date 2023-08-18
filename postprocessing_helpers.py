@@ -57,8 +57,8 @@ def extract_recording_variables(results,list_variables,seed):
         elif var_name == "stop_input_1":
             stop_inp_1_df = pd.DataFrame()
             for i in np.arange(len(results)):
-                stop_inp_1 = np.array(results[i]['agent'].inp_stop)
-                stop_pop_1 = "STNE"
+                stop_inp_1 = np.array(results[i]['agent'].stop_inp)
+                stop_pop_1 = results[i]['stop_signal_population'][0]
                 temp = pd.DataFrame()
                 if np.shape(stop_inp_1)[1] > 1:
                     for i1,ac in enumerate(actions):
@@ -76,8 +76,8 @@ def extract_recording_variables(results,list_variables,seed):
         elif var_name == "stop_input_2":
             stop_inp_2_df = pd.DataFrame()
             for i in np.arange(len(results)):
-                stop_inp_2 = np.array(results[i]['agent'].inp_stop_2)
-                stop_pop_2 = "D2STR"
+                stop_inp_2 = np.array(results[i]['agent'].stop_2_inp)
+                stop_pop_2 = results[i]['stop_2_signal_population'][0]
                 temp = pd.DataFrame()
                 if np.shape(stop_inp_2)[1] > 1:
                     for i1,ac in enumerate(actions):
