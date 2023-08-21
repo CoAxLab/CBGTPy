@@ -21,7 +21,8 @@ def smoothen_fr(results,win_len=50):
         results[k] = np.convolve(results[k],win,mode='same')
                 
     return results
-        
+       
+    
 def plot_fr(results, datatables, experiment_choice):
 
     sns.set(style="white", font_scale=2.5)
@@ -30,7 +31,7 @@ def plot_fr(results, datatables, experiment_choice):
         col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"] # To ease comparison with reference Figure
     elif experiment_choice == "stop-signal":
         col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
-    #colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','firebrick',"darkolivegreen","pink"]))
+    
     colors = list(sns.color_palette())
     col_list = dict()
     actions = results[0].channel.unique()
@@ -61,7 +62,41 @@ def plot_fr(results, datatables, experiment_choice):
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='grey', alpha=0.01)
                 
-
+        if experiment_choice == 'stop-signal':
+                if results['stop_signal_present'] == True:
+                    for n in results['stop_signal_population']:
+                        ind = np.where(np.array(col_order)==n)[0]
+                        #print('inside')
+                        axes = g1.axes.flatten()
+                        ylim = g1.axes[ind].get_ylim()
+                        #print(axes)
+                        for j in np.arange(len(datatables)):
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
+                                           xmax=datatables.stimulusstarttime[j]+
+                                           results['stop_signal_onset']+results['stop_signal_duration'],
+                                           color='', linewidth=4.5)
+                        
+            
+        if results['opt_signal_present'] == True:
+            if results['opt_signal_amplitude']>0:
+                col_opt='firebrick'
+            elif results['opt_signal_amplitude']<0:
+                col_opt='gold'
+            for n in results['opt_signal_population']:
+                ind = np.where(np.array(col_order)==n)[0]
+                #print('inside')
+                axes = g1.axes.flatten()
+                ylim = g1.axes[ind].get_ylim()
+                #print(axes)
+                for j in np.arange(len(datatables)):
+                    for ax in axes:
+                        g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
+                                   xmax=datatables.stimulusstarttime[j]+
+                                   results['opt_signal_onset']+results['opt_signal_duration'],
+                                   color=col_opt, linewidth=4.5)
         leg = g1._legend
         #print(leg.legendHandles)
         for line in leg.get_lines():
@@ -75,41 +110,7 @@ def plot_fr(results, datatables, experiment_choice):
     return fig_handles
         
 
-# def plot_fr_stop(results, datatables):
-    
-#     # Plot Population firing rates
-#     col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STNE","GPi","Th"] # To ease comparison with reference Figure 
-#     colors = list(sns.color_palette(['darkorange', 'steelblue', 'green','pink']))
-#     col_list = dict()
-#     col_list['left'] = colors[0]
-#     col_list['right'] = colors[1]
-#     col_list['common'] = colors[2]
-#     col_list['up'] = colors[3]
-
-                 
-#     fig_handles = []
-    
-#     for i in np.arange(len(results)):
-#         g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order)
-        
-#         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
-#         for j in np.arange(len(datatables[i])):
-#             for ax in g1.axes.flat:
-#                 ax.axvline(datatables[i].stimulusstarttime[j], color='mistyrose')
-#                 ax.axvline(datatables[i].decisiontime[j], color='mistyrose')
-#                 ax.axvline(datatables[i].rewardtime[j], color='silver')
-#                 for k in np.arange(datatables[i].stimulusstarttime[j], datatables[i].decisiontime[j]):
-#                     ax.axvline(k,color='mistyrose', alpha=0.02)
-#                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
-#                     ax.axvline(k,color='whitesmoke', alpha=0.02)
-        
-#         fig_handles.append(g1)
-#         #g1.fig.savefig('ActualFR_'+str(i)+".png", dpi=400)
-#     return fig_handles
-
-
-
-def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
+def plot_fr_flex(firing_rates, datatables, results, channel, nuclei, interval, experiment_choice):
     
     #nuclei = []
     fr = pd.DataFrame()
@@ -122,85 +123,187 @@ def plot_fr_flex(firing_rates, datatables, channel, nuclei, interval):
             fr = firing_rates[firing_rates['channel'] == channel[0]]
             fr_single = pd.concat([fr, firing_rates[firing_rates['channel'] == 'common']])
             
-            if 'GPeA' not in firing_rates['nuclei'].unique():
-                col_order = ["Cx", "CxI", "FSI","GPe", "D2STR", "D1STR", "STN","GPi","Th"]  
-            else: 
+            if experiment_choice == "n-choice":
+                col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"]
+                
+            elif experiment_choice == "stop-signal":
                 col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
-            #for i in np.arange(len(results)):
-            # set the hue palette as a dict for custom mapping
-            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
             
+            colors = list(sns.color_palette())
+            col_list = dict()
+            actions = firing_rates.channel.unique()
+            
+            for i,ac in enumerate(actions):
+                col_list[ac] = colors[i]
+        
             if len(nuclei) == 0:
-                g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",data=fr_single,col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order, hue='channel', palette=palette)
+                g1 = sns.relplot(x="Time (ms)", y ="firing_rate",
+                                 col="nuclei",data=fr_single,col_wrap=3,kind="line",
+                                 facet_kws={'sharey':False, 'sharex': True},col_order=col_order,
+                                 hue='channel', palette=col_list)
                 
             else:
-                g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",data=fr_single.loc[fr_single['nuclei'].isin(nuclei)],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True}, hue='channel', palette=palette)
-          
-            if len(interval) != 0: 
-                g1.set(xlim=interval)
-            
-            for j in np.arange(len(datatables)):
-                for ax in g1.axes.flat:
-                    ax.axvline(datatables.stimulusstarttime[j], color='silver')
-                    ax.axvline(datatables.decisiontime[j], color='mistyrose')
-                    ax.axvline(datatables.rewardtime[j], color='silver')
-                    for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
-                        ax.axvline(k,color='mistyrose', alpha=0.02)
-                    for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
-                        ax.axvline(k,color='whitesmoke', alpha=0.02)
-                            
-            fig_handles.append(g1)
-
-        else:  #'all'
-            fr_1 = firing_rates[firing_rates['channel'] == 'left']
-            fr_left = pd.concat([fr_1, firing_rates[firing_rates['channel'] == 'common']])
-            fr_2 = firing_rates[firing_rates['channel'] == 'right']
-            fr_right = pd.concat([fr_2, firing_rates[firing_rates['channel'] == 'common']])
-            #fr = firing_rates
-            
-            if 'GPeA' not in firing_rates['nuclei'].unique():
-                col_order = ["Cx", "CxI", "FSI","GPe", "D2STR", "D1STR", "STN","GPi","Th"]  
-            else: 
-                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]         
-            palette = {'left': "darkorange", 'right':"steelblue", 'common':'forestgreen','up':'pink'}
-            
-            #for i in np.arange(len(results)):
-            if len(nuclei) == 0:
-                g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei", data=fr_right,col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order, hue='channel', palette=palette)
-                g2 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",data=fr_left,col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order, hue='channel', palette=palette)
-            else: 
-                g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei", data=fr_right.loc[fr_right['nuclei'].isin(nuclei)],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True}, hue='channel', palette=palette)
-                g2 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",data=fr_left.loc[fr_left['nuclei'].isin(nuclei)],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True}, hue='channel', palette=palette)
+                g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei",
+                                 data=fr_single.loc[fr_single['nuclei'].isin(nuclei)],
+                                 col_wrap=3,kind="line", 
+                                 facet_kws={'sharey':False, 'sharex': True},
+                                 col_order=col_order, hue='channel', palette=col_list)
                 
             if len(interval) != 0: 
                 g1.set(xlim=interval)
-                g2.set(xlim=interval)
             
             for j in np.arange(len(datatables)):
                 for ax in g1.axes.flat:
                     ax.axvline(datatables.stimulusstarttime[j], color='silver')
                     ax.axvline(datatables.decisiontime[j], color='mistyrose')
-                    ax.axvline(datatables.rewardtime[j], color='silver')
-                    for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
-                        ax.axvline(k,color='mistyrose', alpha=0.02)
-                    for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
-                        ax.axvline(k,color='whitesmoke', alpha=0.02)
-            
-            for j in np.arange(len(datatables)):
-                for ax in g2.axes.flat:
-                    ax.axvline(datatables.stimulusstarttime[j], color='silver')
-                    ax.axvline(datatables.decisiontime[j], color='mistyrose')
-                    ax.axvline(datatables.rewardtime[j], color='silver')
+                    ax.axvline(datatables.rewardtime[j], color='silver')                                 
                     for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
                         ax.axvline(k,color='mistyrose', alpha=0.02)
                     for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
                         ax.axvline(k,color='whitesmoke', alpha=0.02)
                         
+            leg = g1._legend
+            #print(leg.legendHandles)
+            for line in leg.get_lines():
+                line.set_linewidth(4.0)    
+            
             fig_handles.append(g1)
-            fig_handles.append(g2)
+            
+            if experiment_choice == 'stop-signal':
+                if results['stop_signal_present'] == True:
+                    for n in results['stop_signal_population']:
+                        ind = np.where(np.array(col_order)==n)[0]
+                        #print('inside')
+                        axes = g1.axes.flatten()
+                        ylim = g1.axes[ind].get_ylim()
+                        #print(axes)
+                        for j in np.arange(len(datatables)):
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
+                                           xmax=datatables.stimulusstarttime[j]+
+                                           results['stop_signal_onset']+results['stop_signal_duration'],
+                                           color='', linewidth=4.5)
+                        
+            
+            if results['opt_signal_present'] == True:
+                if results['opt_signal_amplitude']>0:
+                    col_opt='firebrick'
+                elif results['opt_signal_amplitude']<0:
+                    col_opt='gold'
+                for n in results['opt_signal_population']:
+                    ind = np.where(np.array(col_order)==n)[0]
+                    #print('inside')
+                    axes = g1.axes.flatten()
+                    ylim = g1.axes[ind].get_ylim()
+                    #print(axes)
+                    for j in np.arange(len(datatables)):
+                        for ax in axes:
+                            g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
+                                       xmax=datatables.stimulusstarttime[j]+
+                                       results['opt_signal_onset']+results['opt_signal_duration'],
+                                       color=col_opt, linewidth=4.5)
+            
+        else:  #'all'
+            
+            
+            actions = firing_rates.channel.unique()
+            fr=pd.DataFrame(columns=np.arange(len(actions)))
+
+            colors = list(sns.color_palette())
+            col_list = dict()
+            #print('actions', actions)
+            for i,ac in enumerate(actions):
+                col_list[ac] = colors[i]
+            
+            if experiment_choice == "n-choice":
+                col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"]
+                
+            elif experiment_choice == "stop-signal":
+                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
+            
+            for i,ac in enumerate(actions[:-1]):
+                
+                fr_chann = firing_rates[firing_rates['channel'] == ac]
+                fr = pd.concat([fr_chann, firing_rates[firing_rates['channel'] == 'common']])
+                #print('fr', fr)
+                
+                if len(nuclei) == 0:
+
+                    g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei", data=fr,col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order, hue='channel', palette=col_list)
+                
+                else: 
+
+                    g1 = sns.relplot(x="Time (ms)", y ="firing_rate", col="nuclei", data=fr.loc[fr['nuclei'].isin(nuclei)],col_wrap=3,kind="line",facet_kws={'sharey': False, 'sharex': True}, hue='channel', palette=col_list)
+            
+
+                if len(interval) != 0: 
+                    g1.set(xlim=interval)
+                    #g2.set(xlim=interval)
+
+
+                for j in np.arange(len(datatables)):
+                    for ax in g1.axes.flat:
+                        ax.axvline(datatables.stimulusstarttime[j], color='silver')
+                        ax.axvline(datatables.decisiontime[j], color='mistyrose')
+                        ax.axvline(datatables.rewardtime[j], color='silver')
+                        for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
+                            ax.axvline(k,color='mistyrose', alpha=0.02)
+                        for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
+                            ax.axvline(k,color='whitesmoke', alpha=0.02)
+            
+            #for j in np.arange(len(datatables)):
+                #for ax in g2.axes.flat:
+                    #ax.axvline(datatables.stimulusstarttime[j], color='silver')
+                    #ax.axvline(datatables.decisiontime[j], color='mistyrose')
+                    #ax.axvline(datatables.rewardtime[j], color='silver')
+                    #for k in np.arange(datatables.stimulusstarttime[j], datatables.decisiontime[j]):
+                        #ax.axvline(k,color='mistyrose', alpha=0.02)
+                    #for k in np.arange(datatables.decisiontime[j], datatables.rewardtime[j]):
+                        #ax.axvline(k,color='whitesmoke', alpha=0.02)
+                        
+                fig_handles.append(g1)
+                
+                if experiment_choice == 'stop-signal':
+                if results['stop_signal_present'] == True:
+                    for n in results['stop_signal_population']:
+                        ind = np.where(np.array(col_order)==n)[0]
+                        #print('inside')
+                        axes = g1.axes.flatten()
+                        ylim = g1.axes[ind].get_ylim()
+                        #print(axes)
+                        for j in np.arange(len(datatables)):
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
+                                           xmax=datatables.stimulusstarttime[j]+
+                                           results['stop_signal_onset']+results['stop_signal_duration'],
+                                           color='', linewidth=4.5)
+                        
+            
+                if results['opt_signal_present'] == True:
+                    if results['opt_signal_amplitude']>0:
+                        col_opt='firebrick'
+                    elif results['opt_signal_amplitude']<0:
+                        col_opt='gold'
+                    for n in results['opt_signal_population']:
+                        ind = np.where(np.array(col_order)==n)[0]
+                        #print('inside')
+                        axes = g1.axes.flatten()
+                        ylim = g1.axes[ind].get_ylim()
+                        #print(axes)
+                        for j in np.arange(len(datatables)):
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],
+    xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
+                                           xmax=datatables.stimulusstarttime[j]+
+                                           results['opt_signal_onset']+results['opt_signal_duration'],
+                                           color=col_opt, linewidth=4.5)
 
     else: 
-        print('Specify if <left>, <right> or <all> channel option.')
+        
+        print('Specify if <channel_n_name> or <all> channel option.')
                 
     return fig_handles
 
