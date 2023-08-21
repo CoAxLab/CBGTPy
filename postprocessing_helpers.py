@@ -54,43 +54,49 @@ def extract_recording_variables(results,list_variables,seed):
             opt_inp_df = opt_inp_df.reset_index()
             recorded_variables[var_name] = opt_inp_df
             
-        elif var_name == "stop_input_1":
-            stop_inp_1_df = pd.DataFrame()
+        elif var_name == "stop_input":
+            stop_inp_df = pd.DataFrame()
             for i in np.arange(len(results)):
-                stop_inp_1 = np.array(results[i]['agent'].stop_inp)
-                stop_pop_1 = results[i]['stop_signal_population'][0]
-                temp = pd.DataFrame()
-                if np.shape(stop_inp_1)[1] > 1:
-                    for i1,ac in enumerate(actions):
-                        temp[stop_pop_1+"_"+ac] = stop_inp_1[:,i1]
-                        #temp[stop_pop_1+"_right"] = stop_inp_1[:,1]
-                else:
-                    temp[stop_pop_1] = stop_inp_1[:,0]
-                temp["seed"] = str(seed)+"_"+str(i)
-                temp["Time(ms)"] = np.arange(len(stop_inp_1))
-                stop_inp_1_df = pd.concat([stop_inp_1_df,temp])#stop_inp_1_df.append(temp)
+                for j,sp in enumerate(results[i]['stop_signal_population']):
+                    stop_inp = np.array(results[i]['agent'].stop_inp[j])
+                    stop_pop = sp
+                    temp = pd.DataFrame()
+                    if np.shape(stop_inp)[1] > 1:
+                        for i1,ac in enumerate(actions):
+                            temp["value"] = stop_inp[:,i1]
+                            temp["nuclei"] = stop_pop+"_"+ac
+                                                   
+                            #temp[stop_pop+"_"+ac] = stop_inp[:,i1]
+                            #temp[stop_pop_1+"_right"] = stop_inp_1[:,1]
+                    else:
+                        temp["value"] = stop_inp[:,0]
+                        temp["nuclei"] = stop_pop
+                    temp["seed"] = str(seed)+"_"+str(i)
+                    temp["Time(ms)"] = np.arange(len(stop_inp))
+                    stop_inp_df = pd.concat([stop_inp_df,temp])#stop_inp_1_df.append(temp)
+
+            stop_inp_df = stop_inp_df.reset_index()
             
-            stop_inp_1_df = stop_inp_1_df.reset_index()
-            recorded_variables[var_name] = stop_inp_1_df
+            recorded_variables[var_name] = stop_inp_df
             
-        elif var_name == "stop_input_2":
-            stop_inp_2_df = pd.DataFrame()
-            for i in np.arange(len(results)):
-                stop_inp_2 = np.array(results[i]['agent'].stop_2_inp)
-                stop_pop_2 = results[i]['stop_2_signal_population'][0]
-                temp = pd.DataFrame()
-                if np.shape(stop_inp_2)[1] > 1:
-                    for i1,ac in enumerate(actions):
-                        temp[stop_pop_2+"_"+ac] = stop_inp_2[:,i1]
-                    #temp[stop_pop_2+"_right"] = stop_inp_2[:,1]
-                else:
-                    temp[stop_pop_2] = stop_inp_2[:,0]
-                temp["seed"] = str(seed)+"_"+str(i)
-                temp["Time(ms)"] = np.arange(len(stop_inp_2))
-                stop_inp_2_df = pd.concat([stop_inp_2_df,temp]) #stop_inp_2_df.append(temp)
+#         elif var_name == "stop_input_2":
+#             stop_inp_2_df = pd.DataFrame()
+#             for i in np.arange(len(results)):
+#                 stop_inp_2 = np.array(results[i]['agent'].stop_2_inp)
+#                 stop_pop_2 = results[i]['stop_2_signal_population'][0]
+#                 temp = pd.DataFrame()
+#                 if np.shape(stop_inp_2)[1] > 1:
+#                     for i1,ac in enumerate(actions):
+#                         temp[stop_pop_2+"_"+ac] = stop_inp_2[:,i1]
+#                     #temp[stop_pop_2+"_right"] = stop_inp_2[:,1]
+#                 else:
+#                     temp[stop_pop_2] = stop_inp_2[:,0]
+#                 temp["seed"] = str(seed)+"_"+str(i)
+#                 temp["Time(ms)"] = np.arange(len(stop_inp_2))
+#                 stop_inp_2_df = pd.concat([stop_inp_2_df,temp]) #stop_inp_2_df.append(temp)
             
-            stop_inp_2_df = stop_inp_2_df.reset_index()
-            recorded_variables[var_name] = stop_inp_2_df
+#             stop_inp_2_df = stop_inp_2_df.reset_index()
+#             recorded_variables[var_name] = stop_inp_2_df
                    
     
     return recorded_variables

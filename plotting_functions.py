@@ -23,7 +23,7 @@ def smoothen_fr(results,win_len=50):
     return results
        
     
-def plot_fr(results, datatables, experiment_choice):
+def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=False):
 
     sns.set(style="white", font_scale=2.5)
     # Plot Population firing rates
@@ -34,15 +34,15 @@ def plot_fr(results, datatables, experiment_choice):
     
     colors = list(sns.color_palette())
     col_list = dict()
-    actions = results[0].channel.unique()
+    actions = firing_rates[0].channel.unique()
     for i,ac in enumerate(actions):
         col_list[ac] = colors[i]
     
                  
     fig_handles = []
     
-    for i in np.arange(len(results)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=results[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=1.2,height=7,lw=3.0)
+    for i in np.arange(len(firing_rates)):
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=firing_rates[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=1.2,height=7,lw=3.0)
         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
     
         for ax in g1.axes.flat:
@@ -62,41 +62,45 @@ def plot_fr(results, datatables, experiment_choice):
                 for k in np.arange(datatables[i].decisiontime[j], datatables[i].rewardtime[j]):
                     ax.axvline(k,color='grey', alpha=0.01)
                 
-        if experiment_choice == 'stop-signal':
-                if results['stop_signal_present'] == True:
-                    for n in results['stop_signal_population']:
-                        ind = np.where(np.array(col_order)==n)[0]
-                        #print('inside')
-                        axes = g1.axes.flatten()
-                        ylim = g1.axes[ind].get_ylim()
-                        #print(axes)
-                        for j in np.arange(len(datatables)):
-                            for ax in axes:
-                                g1.axes[ind].hlines(y=ylim[1],
-xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
-                                           xmax=datatables.stimulusstarttime[j]+
-                                           results['stop_signal_onset']+results['stop_signal_duration'],
-                                           color='', linewidth=4.5)
+        if experiment_choice == 'stop-signal' and display_stim == True:
+            for ni,nuc in enumerate(results[i]['stop_signal_population']):
+                
+                if results[i]['stop_signal_present'][ni] == True:
+                    ind = np.where(np.array(col_order)==nuc)[0][0]
+                
+                    #print('inside')
+                    axes = g1.axes.flatten()
+                    ylim = g1.axes[ind].get_ylim()
+                    #print(axes)
+                    for j in np.arange(len(datatables[i])):
+                        for ax in axes:
+                            g1.axes[ind].hlines(y=ylim[1],
+xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
+                                       xmax=datatables[i].stimulusstarttime[j]+
+                                       results[i]['stop_signal_onset'][ni]+results[i]['stop_signal_duration'][ni],
+                                       color='red', linewidth=10)
                         
             
-        if results['opt_signal_present'] == True:
-            if results['opt_signal_amplitude']>0:
-                col_opt='firebrick'
-            elif results['opt_signal_amplitude']<0:
-                col_opt='gold'
-            for n in results['opt_signal_population']:
-                ind = np.where(np.array(col_order)==n)[0]
-                #print('inside')
-                axes = g1.axes.flatten()
-                ylim = g1.axes[ind].get_ylim()
-                #print(axes)
-                for j in np.arange(len(datatables)):
-                    for ax in axes:
-                        g1.axes[ind].hlines(y=ylim[1],
-xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
-                                   xmax=datatables.stimulusstarttime[j]+
-                                   results['opt_signal_onset']+results['opt_signal_duration'],
-                                   color=col_opt, linewidth=4.5)
+        if display_stim == True:
+            for ni,nuc in enumerate(results[i]['opt_signal_population']):
+                if results[i]['opt_signal_present'][ni] == True:
+                    if results[i]['opt_signal_amplitude'][ni]>0:
+                        col_opt='firebrick'
+                    elif results[i]['opt_signal_amplitude'][ni]<0:
+                        col_opt='gold'
+
+                    ind = np.where(np.array(col_order)==nuc)[0][0]
+                    #print('inside')
+                    axes = g1.axes.flatten()
+                    ylim = g1.axes[ind].get_ylim()
+                    
+                    for j in np.arange(len(datatables[i])):
+                        for ax in axes:
+                            g1.axes[ind].hlines(y=ylim[1],
+    xmin=datatables[i].stimulusstarttime[j]+results[i]['opt_signal_onset'][ni],
+                                       xmax=datatables[i].stimulusstarttime[j]+
+                                       results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni],
+                                       color=col_opt, linewidth=10)
         leg = g1._legend
         #print(leg.legendHandles)
         for line in leg.get_lines():
@@ -266,20 +270,20 @@ xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
                 fig_handles.append(g1)
                 
                 if experiment_choice == 'stop-signal':
-                if results['stop_signal_present'] == True:
-                    for n in results['stop_signal_population']:
-                        ind = np.where(np.array(col_order)==n)[0]
-                        #print('inside')
-                        axes = g1.axes.flatten()
-                        ylim = g1.axes[ind].get_ylim()
-                        #print(axes)
-                        for j in np.arange(len(datatables)):
-                            for ax in axes:
-                                g1.axes[ind].hlines(y=ylim[1],
-xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
-                                           xmax=datatables.stimulusstarttime[j]+
-                                           results['stop_signal_onset']+results['stop_signal_duration'],
-                                           color='', linewidth=4.5)
+                    if results['stop_signal_present'] == True:
+                        for n in results['stop_signal_population']:
+                            ind = np.where(np.array(col_order)==n)[0]
+                            #print('inside')
+                            axes = g1.axes.flatten()
+                            ylim = g1.axes[ind].get_ylim()
+                            #print(axes)
+                            for j in np.arange(len(datatables)):
+                                for ax in axes:
+                                    g1.axes[ind].hlines(y=ylim[1],
+    xmin=datatables.stimulusstarttime[j]+results['stop_signal_onset'],
+                                               xmax=datatables.stimulusstarttime[j]+
+                                               results['stop_signal_onset']+results['stop_signal_duration'],
+                                               color='', linewidth=4.5)
                         
             
                 if results['opt_signal_present'] == True:
