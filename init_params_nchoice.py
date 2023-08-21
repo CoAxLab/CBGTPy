@@ -181,11 +181,11 @@ def helper_basestim(base=dict()):
         'FreqExt_GABA': 2,
         'MeanExtEff_GABA': 2,
         'MeanExtCon_GABA': 2000},
-        'D1STR': {
+        'dSPN': {
         'FreqExt_AMPA': 1.3,
         'MeanExtEff_AMPA': 4,
         'MeanExtCon_AMPA': 800},
-        'D2STR': {
+        'iSPN': {
         'FreqExt_AMPA': 1.3,
         'MeanExtEff_AMPA': 4,
         'MeanExtCon_AMPA': 800},

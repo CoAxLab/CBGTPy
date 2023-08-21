@@ -38,8 +38,8 @@ def helper_popconstruct(
         'STN',
         'GPeP',
         'GPeA',
-        'D1STR',
-        'D2STR',
+        'dSPN',
+        'iSPN',
         'Cx',
         'Th',
         'FSI',
@@ -48,7 +48,7 @@ def helper_popconstruct(
     popdata = trace(popdata, 'init')
 
     popdata = ModifyViaSelector(popdata, channels, SelName(
-        ['GPi', 'STN', 'GPeP','GPeA', 'D1STR', 'D2STR', 'Cx', 'Th']))
+        ['GPi', 'STN', 'GPeP','GPeA', 'dSPN', 'iSPN', 'Cx', 'Th']))
 
     popdata = ModifyViaSelector(popdata, celldefaults)
 
@@ -63,9 +63,9 @@ def helper_popconstruct(
         popdata = ModifyViaSelector(popdata, params, SelName(key))
 
     popdata = ModifyViaSelector(
-        popdata, dpmndefaults, SelName(['D1STR', 'D2STR']))
-    popdata = ModifyViaSelector(popdata, d1defaults, SelName('D1STR'))
-    popdata = ModifyViaSelector(popdata, d2defaults, SelName('D2STR'))
+        popdata, dpmndefaults, SelName(['dSPN', 'iSPN']))
+    popdata = ModifyViaSelector(popdata, d1defaults, SelName('dSPN'))
+    popdata = ModifyViaSelector(popdata, d2defaults, SelName('iSPN'))
     #print('popdata', popdata)
 
     return popdata
@@ -108,28 +108,28 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
     #Stop signal task 
     simplepathways = pd.DataFrame(
         [
-            ['Cx', 'D1STR', 'AMPA', 'syn', 1, 0.022, True], 
-            ['Cx', 'D1STR', 'NMDA', 'syn', 1, 0.03, False], 
-            ['Cx', 'D2STR', 'AMPA', 'syn', 1, 0.022, True], 
-            ['Cx', 'D2STR', 'NMDA', 'syn', 1, 0.028, False], 
+            ['Cx', 'dSPN', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'dSPN', 'NMDA', 'syn', 1, 0.03, False], 
+            ['Cx', 'iSPN', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'iSPN', 'NMDA', 'syn', 1, 0.028, False], 
             ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.085*scaling_wts, False],
             ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False], 
             ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],
 
-            ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],
-            ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False], 
-            ['D1STR', 'GPi', 'GABA', 'syn', 1, 1.8, False], 
-            ['D1STR', 'GPeA', 'GABA', 'syn', 0.4, 0.054, False],
+            ['dSPN', 'dSPN', 'GABA', 'syn', 0.45, 0.28, False],
+            ['dSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False], 
+            ['dSPN', 'GPi', 'GABA', 'syn', 1, 1.8, False], 
+            ['dSPN', 'GPeA', 'GABA', 'syn', 0.4, 0.054, False],
 
-            ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],
-            ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False], 
-            ['D2STR', 'GPeP', 'GABA', 'syn', 1, 4.07, False], 
-#             ['D2STR', 'GPeP', 'GABA', 'syn', 1, 5.0, False], 
-            ['D2STR', 'GPeA', 'GABA', 'syn', 0.4, 0.61, False],
+            ['iSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],
+            ['iSPN', 'dSPN', 'GABA', 'syn', 0.5, 0.28, False], 
+            ['iSPN', 'GPeP', 'GABA', 'syn', 1, 4.07, False], 
+#             ['iSPN', 'GPeP', 'GABA', 'syn', 1, 5.0, False], 
+            ['iSPN', 'GPeA', 'GABA', 'syn', 0.4, 0.61, False],
 
             ['FSI', 'FSI', 'GABA', 'all', 1, 2.7, False], 
-            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.25, False], 
-            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.15, False],
+            ['FSI', 'dSPN', 'GABA', 'all', 1, 1.25, False], 
+            ['FSI', 'iSPN', 'GABA', 'all', 1, 1.15, False],
 
             ['GPeP', 'GPeP', 'GABA', 'all', 0.4*scaling_conn, 0.45*scaling_wts, False], 
             
@@ -140,8 +140,8 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
             
             #['GPeA', 'GPeP', 'GABA', 'syn', 0.8, 0, False], # 0.05 / prob=0.667
             ['GPeA', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.01*scaling_wts, False], 
-            ['GPeA', 'D2STR', 'GABA', 'syn', 0.4, 0.12, False],
-            ['GPeA', 'D1STR', 'GABA', 'syn', 0.4, 0.32, False], #0.018
+            ['GPeA', 'iSPN', 'GABA', 'syn', 0.4, 0.12, False],
+            ['GPeA', 'dSPN', 'GABA', 'syn', 0.4, 0.32, False], #0.018
             ['GPeA', 'GPeA', 'GABA', 'all', 0.4*scaling_conn, 0.15*scaling_wts, False], #0.05 
 
 
@@ -154,8 +154,8 @@ def helper_poppathways(popdata,number_of_choices, newpathways=None):
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False], 
 
-            ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3285, False],
-            ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3285, False],
+            ['Th', 'dSPN', 'AMPA', 'syn', 1, 0.3285, False],
+            ['Th', 'iSPN', 'AMPA', 'syn', 1, 0.3285, False],
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],
             ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],
 #             ['Th', 'Cx', 'NMDA', 'all', 0.8334, 0.03, False],

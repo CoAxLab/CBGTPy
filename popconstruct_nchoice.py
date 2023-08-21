@@ -37,8 +37,8 @@ def helper_popconstruct(
         'GPi',
         'STN',
         'GPe',
-        'D1STR',
-        'D2STR',
+        'dSPN',
+        'iSPN',
         'Cx',
         'Th',
         'FSI',
@@ -47,7 +47,7 @@ def helper_popconstruct(
     popdata = trace(popdata, 'init')
 
     popdata = ModifyViaSelector(popdata, channels, SelName(
-        ['GPi', 'STN', 'GPe', 'D1STR', 'D2STR', 'Cx', 'Th']))
+        ['GPi', 'STN', 'GPe', 'dSPN', 'iSPN', 'Cx', 'Th']))
 
     popdata = ModifyViaSelector(popdata, celldefaults)
 
@@ -62,9 +62,9 @@ def helper_popconstruct(
         popdata = ModifyViaSelector(popdata, params, SelName(key))
 
     popdata = ModifyViaSelector(
-        popdata, dpmndefaults, SelName(['D1STR', 'D2STR']))
-    popdata = ModifyViaSelector(popdata, d1defaults, SelName('D1STR'))
-    popdata = ModifyViaSelector(popdata, d2defaults, SelName('D2STR'))
+        popdata, dpmndefaults, SelName(['dSPN', 'iSPN']))
+    popdata = ModifyViaSelector(popdata, d1defaults, SelName('dSPN'))
+    popdata = ModifyViaSelector(popdata, d2defaults, SelName('iSPN'))
 
     return popdata
 
@@ -102,30 +102,30 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
     # phenotype study's values
     simplepathways = pd.DataFrame(
         [
-            ['Cx', 'D1STR', 'AMPA', 'syn', 1, 0.015, True],#
-            ['Cx', 'D1STR', 'NMDA', 'syn', 1, 0.02, False],#
-            ['Cx', 'D2STR', 'AMPA', 'syn', 1, 0.015, True],#
-            ['Cx', 'D2STR', 'NMDA', 'syn', 1, 0.02, False],#
+            ['Cx', 'dSPN', 'AMPA', 'syn', 1, 0.015, True],#
+            ['Cx', 'dSPN', 'NMDA', 'syn', 1, 0.02, False],#
+            ['Cx', 'iSPN', 'AMPA', 'syn', 1, 0.015, True],#
+            ['Cx', 'iSPN', 'NMDA', 'syn', 1, 0.02, False],#
 #             ['Cx', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
             ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.19*scaling_wts, False],#            
             ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
 #             ['Cx', 'Th', 'NMDA', 'syn', 1, 0.05, False],# For str lesion to work, corticothalamic regime
             ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],# correct values for plasticity
 
-            ['D1STR', 'D1STR', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['D1STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['D1STR', 'GPi', 'GABA', 'syn', 1, 2.09, False],
+            ['dSPN', 'dSPN', 'GABA', 'syn', 0.45, 0.28, False],#
+            ['dSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],#
+            ['dSPN', 'GPi', 'GABA', 'syn', 1, 2.09, False],
 
-            ['D2STR', 'D2STR', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['D2STR', 'D1STR', 'GABA', 'syn', 0.5, 0.28, False],#
-            ['D2STR', 'GPe', 'GABA', 'syn', 1, 4.07, False],#
+            ['iSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],#
+            ['iSPN', 'dSPN', 'GABA', 'syn', 0.5, 0.28, False],#
+            ['iSPN', 'GPe', 'GABA', 'syn', 1, 4.07, False],#
 
             
             ['FSI', 'FSI', 'GABA', 'all', 1, 3.25833, False],#
-#             ['FSI', 'D1STR', 'GABA', 'all', 1, 1.77760, False],#
-#             ['FSI', 'D2STR', 'GABA', 'all', 1, 1.66987, False],#
-            ['FSI', 'D1STR', 'GABA', 'all', 1, 1.2, False],#
-            ['FSI', 'D2STR', 'GABA', 'all', 1, 1.1, False],#
+#             ['FSI', 'dSPN', 'GABA', 'all', 1, 1.77760, False],#
+#             ['FSI', 'iSPN', 'GABA', 'all', 1, 1.66987, False],#
+            ['FSI', 'dSPN', 'GABA', 'all', 1, 1.2, False],#
+            ['FSI', 'iSPN', 'GABA', 'all', 1, 1.1, False],#
             
 
             ['GPe', 'GPe', 'GABA', 'all', 0.0667*scaling_conn, 1.75*scaling_wts, False],#
@@ -138,8 +138,8 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
 
             ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False],#
 
-            ['Th', 'D1STR', 'AMPA', 'syn', 1, 0.3825, False],#
-            ['Th', 'D2STR', 'AMPA', 'syn', 1, 0.3825, False],#
+            ['Th', 'dSPN', 'AMPA', 'syn', 1, 0.3825, False],#
+            ['Th', 'iSPN', 'AMPA', 'syn', 1, 0.3825, False],#
             ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],#
             ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],#
 
@@ -175,7 +175,7 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
             pathways.loc[idx, 'biselector'] = NamePathwaySelector(
                 row['src'], row['dest'])
     pathways = trace(pathways, 'auto')
-#     print(pathways.loc[pathways["src"]=="D1STR"][["src","dest","eff"]])
+#     print(pathways.loc[pathways["src"]=="dSPN"][["src","dest","eff"]])
     return pathways
 
 # ----------------------  helper_connectivity FUNCTION  ------------------

@@ -47,7 +47,7 @@ def mega_loop(self):
     
     agent.in_popids = np.where(popdata['name'] == 'Cx')[0]
     agent.out_popids = np.where(popdata['name'] == 'Th')[0]
-    agent.str_popids = np.where(untrace(popdata)['name'].str.contains("STR"))[0]
+    agent.str_popids = np.where(untrace(popdata)['name'].str.contains("SPN"))[0]
     
     agent.stop_popids = [ np.where(untrace(popdata)['name'].str.contains(self.stop_signal_population[i]))[0] for i in stop_iter]
     

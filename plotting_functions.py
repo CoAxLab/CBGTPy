@@ -28,9 +28,9 @@ def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=Fa
     sns.set(style="white", font_scale=2.5)
     # Plot Population firing rates
     if experiment_choice == "n-choice":
-        col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"] # To ease comparison with reference Figure
+        col_order = ["Cx", "CxI", "FSI","GPe", "dSPN", "iSPN", "STN","GPi","Th"] # To ease comparison with reference Figure
     elif experiment_choice == "stop-signal":
-        col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
+        col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "iSPN", "dSPN", "STN","GPi","Th"]
     
     colors = list(sns.color_palette())
     col_list = dict()
@@ -83,10 +83,10 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
             
         if display_stim == True:
             for ni,nuc in enumerate(results[i]['opt_signal_population']):
-                if results[i]['opt_signal_present'][ni] == True:
-                    if results[i]['opt_signal_amplitude'][ni]>0:
+                if results[i]['opt_signal_present'] == True:
+                    if results[i]['opt_signal_amplitude']>0:
                         col_opt='firebrick'
-                    elif results[i]['opt_signal_amplitude'][ni]<0:
+                    elif results[i]['opt_signal_amplitude']<0:
                         col_opt='gold'
 
                     ind = np.where(np.array(col_order)==nuc)[0][0]
@@ -97,9 +97,9 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
                     for j in np.arange(len(datatables[i])):
                         for ax in axes:
                             g1.axes[ind].hlines(y=ylim[1],
-    xmin=datatables[i].stimulusstarttime[j]+results[i]['opt_signal_onset'][ni],
+    xmin=datatables[i].stimulusstarttime[j]+results[i]['opt_signal_onset'],
                                        xmax=datatables[i].stimulusstarttime[j]+
-                                       results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni],
+                                       results[i]['opt_signal_onset']+results[i]['opt_signal_duration'],
                                        color=col_opt, linewidth=10)
         leg = g1._legend
         #print(leg.legendHandles)
@@ -128,10 +128,10 @@ def plot_fr_flex(firing_rates, datatables, results, channel, nuclei, interval, e
             fr_single = pd.concat([fr, firing_rates[firing_rates['channel'] == 'common']])
             
             if experiment_choice == "n-choice":
-                col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"]
+                col_order = ["Cx", "CxI", "FSI","GPe", "dSPN", "iSPN", "STN","GPi","Th"]
                 
             elif experiment_choice == "stop-signal":
-                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
+                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "iSPN", "dSPN", "STN","GPi","Th"]
             
             colors = list(sns.color_palette())
             col_list = dict()
@@ -222,10 +222,10 @@ xmin=datatables.stimulusstarttime[j]+results['opt_signal_onset'],
                 col_list[ac] = colors[i]
             
             if experiment_choice == "n-choice":
-                col_order = ["Cx", "CxI", "FSI","GPe", "D1STR", "D2STR", "STN","GPi","Th"]
+                col_order = ["Cx", "CxI", "FSI","GPe", "dSPN", "iSPN", "STN","GPi","Th"]
                 
             elif experiment_choice == "stop-signal":
-                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "D2STR", "D1STR", "STN","GPi","Th"]
+                col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "iSPN", "dSPN", "STN","GPi","Th"]
             
             for i,ac in enumerate(actions[:-1]):
                 
