@@ -57,18 +57,18 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
         opt_amplitude_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_amplitude_df["trial_num"] = trial_index
         for act in list(actionchannels.action.values):
-            opt_amplitude_df[act] = opt_signal_amplitude
+            opt_amplitude_df[act] = opt_signal_amplitude[i]
 
 
         opt_onset_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_onset_df["trial_num"] = trial_index
         for act in list(actionchannels.action.values):
-            opt_onset_df[act] = opt_signal_onset
+            opt_onset_df[act] = opt_signal_onset[i]
 
         opt_duration_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_duration_df["trial_num"] = trial_index
         for act in list(actionchannels.action.values):
-            opt_duration_df[act] = opt_signal_duration
+            opt_duration_df[act] = opt_signal_duration[i]
 
         opt_channels_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_channels_df["trial_num"] = trial_index
