@@ -29,8 +29,10 @@ def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=Fa
     # Plot Population firing rates
     if experiment_choice == "n-choice":
         col_order = ["Cx", "CxI", "FSI","GPe", "dSPN", "iSPN", "STN","GPi","Th"] # To ease comparison with reference Figure
+        aspect = 1.2
     elif experiment_choice == "stop-signal":
         col_order = ["Cx", "CxI", "FSI","GPeP", "GPeA", "iSPN", "dSPN", "STN","GPi","Th"]
+        aspect = 1.4
     
     colors = list(sns.color_palette())
     col_list = dict()
@@ -42,7 +44,8 @@ def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=Fa
     fig_handles = []
     
     for i in np.arange(len(firing_rates)):
-        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=firing_rates[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=1.2,height=7,lw=3.0)
+        
+        g1 = sns.relplot(x="Time (ms)", y ="firing_rate", hue="channel",col="nuclei",data=firing_rates[i],col_wrap=3,palette=col_list, kind="line",facet_kws={'sharey': False, 'sharex': True},col_order=col_order,aspect=aspect,height=7,lw=3.0)
         #g1.fig.savefig(fig_dir+'ActualFR_'+str(seed)+"_"+str(i)+".png", dpi=400)
     
         for ax in g1.axes.flat:
@@ -78,29 +81,30 @@ def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=Fa
 xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
                                        xmax=datatables[i].stimulusstarttime[j]+
                                        results[i]['stop_signal_onset'][ni]+results[i]['stop_signal_duration'][ni],
-                                       color='red', linewidth=10)
+                                       color='red', linewidth=15)
                         
             
         if display_stim == True:
             for ni,nuc in enumerate(results[i]['opt_signal_population']):
-                if results[i]['opt_signal_present'] == True:
-                    if results[i]['opt_signal_amplitude']>0:
-                        col_opt='firebrick'
-                    elif results[i]['opt_signal_amplitude']<0:
+                if results[i]['opt_signal_present'][ni] == True:
+                    if results[i]['opt_signal_amplitude'][ni]>0:
+                        col_opt='skyblue'
+                    elif results[i]['opt_signal_amplitude'][ni]<0:
                         col_opt='gold'
 
                     ind = np.where(np.array(col_order)==nuc)[0][0]
-                    #print('inside')
                     axes = g1.axes.flatten()
                     ylim = g1.axes[ind].get_ylim()
                     
-                    for j in np.arange(len(datatables[i])):
-                        for ax in axes:
-                            g1.axes[ind].hlines(y=ylim[1],
-    xmin=datatables[i].stimulusstarttime[j]+results[i]['opt_signal_onset'],
-                                       xmax=datatables[i].stimulusstarttime[j]+
-                                       results[i]['opt_signal_onset']+results[i]['opt_signal_duration'],
-                                       color=col_opt, linewidth=10)
+#                     for j in np.arange(len(datatables[i])):
+                    for tr in results[i]['opt_list_trials_list'][ni]:
+#                         if tr in results[i]['opt_list_trials_list'][ni]:
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],
+        xmin=datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni],
+                                           xmax=datatables[i].stimulusstarttime[tr]+
+                                           results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni],
+                                           color=col_opt, linewidth=15)
         leg = g1._legend
         #print(leg.legendHandles)
         for line in leg.get_lines():
@@ -108,7 +112,7 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
 #         for legobj in leg.legendHandles:
 #             legobj.set_linewidth(2.0)
                 
-                
+#         plt.tight_layout()    
         fig_handles.append(g1)
        
     return fig_handles

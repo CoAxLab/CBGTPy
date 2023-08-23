@@ -88,7 +88,7 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
         trial_indices = np.zeros(n_trials)
 
         print(type(opt_signal_probability))
-        if isinstance(opt_signal_probability[i],float) == True:
+        if isinstance(opt_signal_probability[i],(float,int)) == True:
             trials_with_opt_signal = np.random.choice(trial_index,int(n_trials*opt_signal_probability[i]), replace=False)
         elif type(opt_signal_probability[i]) == list or type(opt_signal_probability[i]) == np.ndarray:
             trials_with_opt_signal = opt_signal_probability[i]

@@ -244,14 +244,9 @@ def mega_loop(self):
             for i in stop_iter :
                 agent.stop_inp[i].append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_popids[i]])
 
-#         if "stop_input_2" in self.record_variables:
-#             agent.stop_2_inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.stop_2_popids])
 
         agent.inp.append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.in_popids])
 
-        #agent.hist_w_std.append([[agent.AMPA_eff[src][targ].std() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        #agent.hist_w_min.append([[agent.AMPA_eff[src][targ].min() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
-        #agent.hist_w_max.append([[agent.AMPA_eff[src][targ].max() for targ in agent.str_popids if agent.AMPA_eff[src][targ] is not None] for src in agent.in_popids])
 
         if agent.phase == 0:
             gateFRs = agent.rollingbuffer[agent.out_popids].mean(1) / untrace(list(popdata['N'][agent.out_popids])) / agent.dt * 1000
@@ -360,12 +355,6 @@ def mega_loop(self):
                     for action_idx in range(len(agent.stop_popids[i])):
                         popid = agent.stop_popids[i][action_idx]
                         agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
-#         #Stop 2
-#         if self.stop_2_signal_present:
-#             if agent.stoptimer_2 >= trial_wise_stop_2_duration + stop_2_onset:
-#                 for action_idx in range(len(agent.stop_2_popids)):
-#                     popid = agent.stop_2_popids[action_idx]
-#                     agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
 
         #Opto
         for i in opt_iter:

@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pylab as pl
 import os
+import gc
 import pickle
 import glob
 
@@ -11,6 +12,7 @@ def extract_recording_variables(results,list_variables,seed):
     
     recorded_variables = dict()
     actions = results[0]['channels']['action'].values
+    print(actions)
     for var_name in list_variables:
         if var_name == "weight":
             weights_df = pd.DataFrame(columns=["weights","trials","nuclei"])
@@ -19,7 +21,7 @@ def extract_recording_variables(results,list_variables,seed):
                 weights = np.array(results[i]['agent'].hist_w)
                 reshaped_wts = weights.reshape(len(weights),len(actions)*2)
                 
-                nuc_list = np.hstack([ ["D1-"+ac, "D2-"+ac] for ac in actions])  #['D1-left','D2-left','D1-right','D2-right' ]
+                nuc_list = np.hstack([ ["dSPN-"+ac, "iSPN-"+ac] for ac in actions])  #['D1-left','D2-left','D1-right','D2-right' ]
                 ind_list = np.hstack([ [(i1,0),(i1,1)]   for i1 in np.arange(len(actions))])  #[(0,0),(0,1),(1,0),(1,1)]
                 print("nuc_list",nuc_list)
                 print("ind_list",ind_list)
@@ -38,19 +40,31 @@ def extract_recording_variables(results,list_variables,seed):
         elif var_name == "optogenetic_input":
             opt_inp_df = pd.DataFrame()
             for i in np.arange(len(results)):
-                opt_inp = np.array(results[i]['agent'].opt_inp)
-                opt_pop = results[i]['opt_signal_population'][0]
-                temp = pd.DataFrame()
-                if np.shape(opt_inp)[1] > 1:
-                    for i1,ac in enumerate(actions):
-                        temp[opt_pop+"_"+ac] = opt_inp[:,i1]
-                    #temp[opt_pop+"_right"] = opt_inp[:,1]
-                else:
-                    temp[opt_pop] = opt_inp[:,0]
-                temp["seed"] = str(seed)+"_"+str(i)
-                temp["Time(ms)"] = np.arange(len(opt_inp))
-                opt_inp_df = pd.concat([opt_inp_df,temp])#opt_inp_df.append(temp)
-            
+                for j,op in enumerate(results[i]['opt_signal_population']):
+                    opt_inp = np.array(results[i]['agent'].opt_inp[j])
+                    opt_pop = op
+#                     print("opt_inp",np.shape(opt_inp)[1])
+                    temp = pd.DataFrame()
+                    if np.shape(opt_inp)[1] > 1:
+                        
+                        for i1,ac in enumerate(actions):
+                            temp_ac = pd.DataFrame()
+                            temp_ac["value"] = opt_inp[:,i1]
+                            temp_ac["nuclei"] = [opt_pop+"-"+ac]*len(opt_inp)
+                            temp_ac["Time(ms)"] = np.arange(len(opt_inp))
+                            temp = temp.append(temp_ac)
+                            del temp_ac
+                        #temp[opt_pop+"_right"] = opt_inp[:,1]
+                    else:
+                        temp["value"] = opt_inp[:,0]
+                        temp["nuclei"] = [op]*len(opt_inp)
+                        temp["Time(ms)"] = np.arange(len(opt_inp))
+
+                    temp["seed"] = str(seed)+"_"+str(i)#]*len(opt_inp)
+                    opt_inp_df = pd.concat([opt_inp_df,temp])#opt_inp_df.append(temp)
+                    
+                    del temp
+                    
             opt_inp_df = opt_inp_df.reset_index()
             recorded_variables[var_name] = opt_inp_df
             
@@ -62,18 +76,26 @@ def extract_recording_variables(results,list_variables,seed):
                     stop_pop = sp
                     temp = pd.DataFrame()
                     if np.shape(stop_inp)[1] > 1:
+
                         for i1,ac in enumerate(actions):
-                            temp["value"] = stop_inp[:,i1]
-                            temp["nuclei"] = stop_pop+"_"+ac
-                                                   
-                            #temp[stop_pop+"_"+ac] = stop_inp[:,i1]
-                            #temp[stop_pop_1+"_right"] = stop_inp_1[:,1]
+                            temp_ac = pd.DataFrame()
+                            temp_ac["value"] = stop_inp[:,i1]
+                            temp_ac["nuclei"] = [stop_pop+"-"+ac]*len(stop_inp)
+                            temp_ac["Time(ms)"] = np.arange(len(stop_inp))
+                            temp = temp.append(temp_ac)
+                            del temp_ac
+                        #temp[opt_pop+"_right"] = opt_inp[:,1]
                     else:
                         temp["value"] = stop_inp[:,0]
-                        temp["nuclei"] = stop_pop
+                        temp["nuclei"] = [sp]*len(stop_inp)
+                        temp["Time(ms)"] = np.arange(len(stop_inp))
+                        
+                        
                     temp["seed"] = str(seed)+"_"+str(i)
-                    temp["Time(ms)"] = np.arange(len(stop_inp))
+                    
                     stop_inp_df = pd.concat([stop_inp_df,temp])#stop_inp_1_df.append(temp)
+                    del temp
+                    
 
             stop_inp_df = stop_inp_df.reset_index()
             
