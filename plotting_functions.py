@@ -96,13 +96,14 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
                     axes = g1.axes.flatten()
                     ylim = g1.axes[ind].get_ylim()
                     
-#                     for j in np.arange(len(datatables[i])):
+
                     for tr in results[i]['opt_list_trials_list'][ni]:
-#                         if tr in results[i]['opt_list_trials_list'][ni]:
-                        if isinstance(results[i]['opt_duration_dfs'][ni],object):
+                        if isinstance(results[i]['opt_duration_dfs'][ni].iloc[0][0],str):
                             which_phase_df = results[i]['opt_duration_dfs'][ni].iloc[tr]
                             ac = results[i]['channels'].action.unique()[0]
-                            which_phase = int(which_phase_df[ac].split(' ')[1]) # Doesn't matter which channel, display is the               same
+                            
+                            which_phase = int(which_phase_df[ac].split(' ')[1]) # Doesn't matter which channel, display is the 
+                            
                             if which_phase == 0:
                                 start = datatables[i].stimulusstarttime[tr]
                                 end = datatables[i].decisiontime[tr]
@@ -116,7 +117,7 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
                             for ax in axes:
                                 g1.axes[ind].hlines(y=ylim[1],xmin=start, xmax=end,color=col_opt, linewidth=15)
                             
-                        elif isinstance(results[i]['opt_duration_dfs'][ni],(float,int)):
+                        elif isinstance(results[i]['opt_duration_dfs'][ni].iloc[0][0],(float,int)):
                             start = datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni]
                             end = datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni]
                             for ax in axes:
