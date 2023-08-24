@@ -100,6 +100,16 @@ def define_stop(stop_signal_probability, actionchannels, n_trials, pop_names, st
                     channels_stop = list(actionchannels.action.values)
                 else:
                     channels_stop = np.nan
+            elif stop_signal_channel[i] in list(actionchannels.action.values):
+                if stop_signal_population[i] not in ['FSI','CxI']:
+                    channels_stop = [stop_signal_channel[i]]
+                else:
+                    channels_stop = np.nan
+            elif isinstance(stop_signal_channel[i],(list,tuple)):
+                if stop_signal_population[i] not in ['FSI','CxI']:
+                    channels_stop = list(stop_signal_channel[i])
+                else:
+                    channels_stop = np.nan
 
             if n in trials_with_stop_signal:
                 for col in channels_stop:
