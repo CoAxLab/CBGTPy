@@ -149,8 +149,9 @@ def mega_loop(self):
 
                         print("opt stim started")
                         for action_idx in range(len(agent.opt_popids[i])):
-                            popid = agent.opt_popids[i][action_idx]
-                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                            if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                popid = agent.opt_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
             
                 elif isinstance(self.opt_duration_dfs[i].iloc[0][0],str):
                     if self.trial_num in self.opt_list_trials_list[i]:
@@ -163,8 +164,9 @@ def mega_loop(self):
                                 if agent.phase == int(which_phase[1]):
     #                                 print("opt stim started")
                                     #for action_idx in range(len(agent.opt_popids[i])):
-                                    popid = agent.opt_popids[i][action_idx]
-                                    agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                                    if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                        popid = agent.opt_popids[i][action_idx]
+                                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
                 else:
                     raise Exception("duration not passed correctly: It should be a numeric or string in format: phase 0")
                         
