@@ -108,6 +108,16 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
                     channels_opt = list(actionchannels.action.values)
                 else:
                     channels_opt = np.nan
+            elif opt_signal_channel[i] in list(actionchannels.action.values):
+                if opt_signal_population[i] not in ['FSI','CxI']:
+                    channels_opt = [opt_signal_channel[i]]
+                else:
+                    channels_opt = np.nan
+            elif isinstance(opt_signal_channel[i],(list,tuple)):
+                if opt_signal_population[i] not in ['FSI','CxI']:
+                    channels_opt = list(opt_signal_channel[i])
+                else:
+                    channels_opt = np.nan
 
             if n in trials_with_opt_signal:
                 for col in channels_opt:
