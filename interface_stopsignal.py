@@ -253,12 +253,7 @@ def mega_loop(self):
 
             thresholds_crossed = np.where(gateFRs > self.thalamic_threshold)[0]
 
-            if self.decision_channel != 'all' and len(thresholds_crossed) > 0: #CG 1-channel working
-                n = int(self.decision_channel)
-                if n in thresholds_crossed:
-                    thresholds_crossed = [n]
-                else:
-                    thresholds_crossed = []
+            
 
             if len(thresholds_crossed) > 0 or agent.phasetimer > self.choice_timeout:
 
