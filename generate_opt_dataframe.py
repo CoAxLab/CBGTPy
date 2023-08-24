@@ -67,8 +67,10 @@ def define_opt(opt_signal_probability, actionchannels, n_trials, pop_names, opt_
 
         opt_duration_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_duration_df["trial_num"] = trial_index
-        for act in list(actionchannels.action.values):
-            opt_duration_df[act] = opt_signal_duration[i]
+        for act in list(actionchannels.action.values): # Treats the float, int duration value and string "phase 0" etc as same
+            opt_duration_df[act] = opt_signal_duration[i] 
+    
+                
 
         opt_channels_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         opt_channels_df["trial_num"] = trial_index

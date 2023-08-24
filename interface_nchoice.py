@@ -143,15 +143,32 @@ def mega_loop(self):
         #Opto
         for i in opt_iter:
             if self.opt_signal_present[i] == True:
-                if agent.opttimer[i] == opt_onset[i] and self.trial_num in self.opt_list_trials_list[i]:
+                if isinstance(self.opt_duration_dfs[i],(float,int)):
+                    if agent.opttimer[i] == opt_onset[i] and self.trial_num in self.opt_list_trials_list[i]:
 
-                    print("opt stim started")
-
-                    for action_idx in range(len(agent.opt_popids[i])):
-                        popid = agent.opt_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                        print("opt stim started")
+                        for action_idx in range(len(agent.opt_popids[i])):
+                            popid = agent.opt_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
             
-            
+                elif isinstance(self.opt_duration_dfs[i],object):
+#                     print("duration string")
+                    which_phase_df = self.opt_duration_dfs[i].iloc[self.trial_num]
+                    for action_idx in range(len(agent.opt_popids[i])):                    
+                        which_phase = which_phase_df[action_idx].split(' ')
+#                         print(which_phase)
+                        if which_phase[0] == "phase" and int(which_phase[1]) in [0,1,2]:
+#                             print("inside phase")
+                            if agent.phase == int(which_phase[1]):
+#                                 print("opt stim started")
+                                #for action_idx in range(len(agent.opt_popids[i])):
+                                popid = agent.opt_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                else:
+                    raise Exception("duration not passed correctly: It should be a numeric or string in format: phase 0")
+                        
+                            
+                
         multitimestep_mutator(agent,popdata,5)
       
         agent.phasetimer += 1 # 1 ms = 5 * dt
@@ -270,11 +287,22 @@ def mega_loop(self):
         #Opto
         for i in opt_iter:
             if self.opt_signal_present[i]:
-                if agent.opttimer[i] >= trial_wise_opt_duration[i] + opt_onset[i]:
-                    for action_idx in range(len(agent.opt_popids[i])):
-                        popid = agent.opt_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
-            
+                if isinstance(self.opt_duration_dfs[i],(float,int)):                
+                    if agent.opttimer[i] >= trial_wise_opt_duration[i] + opt_onset[i]:
+                        for action_idx in range(len(agent.opt_popids[i])):
+                            popid = agent.opt_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            
+                elif isinstance(self.opt_duration_dfs[i],object):
+                    which_phase_df = self.opt_duration_dfs[i].iloc[self.trial_num]
+                    for action_idx in range(len(agent.opt_popids[i])):                    
+                        which_phase = which_phase_df[action_idx].split(' ')
+                        if agent.phase != int(which_phase[1]): # Stop stimulation if the phase is over
+                            #for action_idx in range(len(agent.opt_popids[i])):
+#                             print("opt stim stopped")
+                            popid = agent.opt_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            
 
 
         # environment

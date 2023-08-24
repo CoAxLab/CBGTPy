@@ -99,12 +99,28 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
 #                     for j in np.arange(len(datatables[i])):
                     for tr in results[i]['opt_list_trials_list'][ni]:
 #                         if tr in results[i]['opt_list_trials_list'][ni]:
+                        if isinstance(results[i]['opt_duration_dfs'][ni],object):
+                            which_phase_df = results[i]['opt_duration_dfs'][ni].iloc[tr]
+                            ac = results[i]['channels'].action.unique()[0]
+                            which_phase = int(which_phase_df[ac].split(' ')[1]) # Doesn't matter which channel, display is the               same
+                            if which_phase == 0:
+                                start = datatables[i].stimulusstarttime[tr]
+                                end = datatables[i].decisiontime[tr]
+                            elif which_phase == 1:
+                                start = datatables[i].decisiontime[tr]
+                                end = datatables[i].rewardtime[tr]
+                            elif which_phase == 2:
+                                start = datatables[i].rewardtime[tr]
+                                end = datatables[i].rewardtime[tr]+results[i]['inter_trial_interval']
+                            
                             for ax in axes:
-                                g1.axes[ind].hlines(y=ylim[1],
-        xmin=datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni],
-                                           xmax=datatables[i].stimulusstarttime[tr]+
-                                           results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni],
-                                           color=col_opt, linewidth=15)
+                                g1.axes[ind].hlines(y=ylim[1],xmin=start, xmax=end,color=col_opt, linewidth=15)
+                            
+                        elif isinstance(results[i]['opt_duration_dfs'][ni],(float,int)):
+                            start = datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni]
+                            end = datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni]+results[i]['opt_signal_duration'][ni]
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],xmin= start,xmax=end, color=col_opt, linewidth=15)
         leg = g1._legend
         #print(leg.legendHandles)
         for line in leg.get_lines():
