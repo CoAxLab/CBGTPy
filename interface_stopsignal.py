@@ -195,8 +195,9 @@ def mega_loop(self):
                     print("stop stim started")
 
                     for action_idx in range(len(agent.stop_popids[i])):
-                        popid = agent.stop_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_amp[i]
+                        if self.stop_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                            popid = agent.stop_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_amp[i]
 
         #Stop 2
 #         if self.stop_2_signal_present == True:
@@ -216,8 +217,9 @@ def mega_loop(self):
                     print("opt stim started")
 
                     for action_idx in range(len(agent.opt_popids[i])):
-                        popid = agent.opt_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                        if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                            popid = agent.opt_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
 
         multitimestep_mutator(agent,popdata,5)
 
