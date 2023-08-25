@@ -64,8 +64,8 @@ def define_stop(stop_signal_probability, actionchannels, n_trials, pop_names, st
 
         stop_duration_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         stop_duration_df["trial_num"] = trial_index
-        for act in list(actionchannels.action.values):
-            stop_duration_df[act] = stop_signal_duration[i]
+        for act in list(actionchannels.action.values): # Treats the float, int duration value and string "phase 0" etc as same
+            stop_duration_df[act] = stop_signal_duration[i] 
 
         stop_channels_df = pd.DataFrame(columns=list(actionchannels.action.values)+["trial_num"])
         stop_channels_df["trial_num"] = trial_index
@@ -82,9 +82,9 @@ def define_stop(stop_signal_probability, actionchannels, n_trials, pop_names, st
 
 
         trial_indices = np.zeros(n_trials)
-        if isinstance(stop_signal_probability[i],float) == True:
+        if isinstance(stop_signal_probability[i],(float,int)) == True:
             trials_with_stop_signal = np.random.choice(trial_index,int(n_trials*stop_signal_probability[i]), replace=False)
-        elif type(stop_signal_probability[i]) == list:
+        elif type(stop_signal_probability[i]) == list or type(stop_signal_probability[i]) == np.ndarray:
             trials_with_stop_signal = stop_signal_probability[i]
 
         stop_list_trials = trials_with_stop_signal

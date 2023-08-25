@@ -69,21 +69,41 @@ def plot_fr(firing_rates, datatables, results, experiment_choice,display_stim=Fa
             for ni,nuc in enumerate(results[i]['stop_signal_population']):
                 
                 if results[i]['stop_signal_present'][ni] == True:
+                    
                     ind = np.where(np.array(col_order)==nuc)[0][0]
-                
-                    #print('inside')
                     axes = g1.axes.flatten()
                     ylim = g1.axes[ind].get_ylim()
-                    #print(axes)
-                    for j in np.arange(len(datatables[i])):
-                        for ax in axes:
-                            g1.axes[ind].hlines(y=ylim[1],
-xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
-                                       xmax=datatables[i].stimulusstarttime[j]+
-                                       results[i]['stop_signal_onset'][ni]+results[i]['stop_signal_duration'][ni],
-                                       color='red', linewidth=15)
-                        
-            
+                    
+                    for tr in results[i]['stop_list_trials_list'][ni]:
+                        if isinstance(results[i]['stop_duration_dfs'][ni].iloc[0][0],str):
+                            which_phase_df = results[i]['stop_duration_dfs'][ni].iloc[tr]
+                            ac = results[i]['channels'].action.unique()[0]
+                            
+                            which_phase = int(which_phase_df[ac].split(' ')[1]) # Doesn't matter which channel, display is the 
+                            
+                            if which_phase == 0:
+                                start = datatables[i].stimulusstarttime[tr]
+                                end = datatables[i].decisiontime[tr]
+                            elif which_phase == 1:
+                                start = datatables[i].decisiontime[tr]
+                                end = datatables[i].rewardtime[tr]
+                            elif which_phase == 2:
+                                start = datatables[i].rewardtime[tr]
+                                end = datatables[i].rewardtime[tr]+results[i]['inter_trial_interval']
+                            
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],xmin=start, 
+                                                    xmax=end,color='red', linewidth=15)
+                            
+                        elif isinstance(results[i]['stop_duration_dfs'][ni].iloc[0][0],(float,int)):
+                            start = datatables[i].stimulusstarttime[tr]+results[i]['stop_signal_onset'][ni]
+                            end = datatables[i].stimulusstarttime[tr]+results[i]['stop_signal_onset'][ni]+results[i]['stop_signal_duration'][ni]
+                            for ax in axes:
+                                g1.axes[ind].hlines(y=ylim[1],xmin= start,xmax=end, 
+                                                    color='red', linewidth=15)
+                    
+              
+                 
         if display_stim == True:
             for ni,nuc in enumerate(results[i]['opt_signal_population']):
                 if results[i]['opt_signal_present'][ni] == True:
@@ -115,7 +135,8 @@ xmin=datatables[i].stimulusstarttime[j]+results[i]['stop_signal_onset'][ni],
                                 end = datatables[i].rewardtime[tr]+results[i]['inter_trial_interval']
                             
                             for ax in axes:
-                                g1.axes[ind].hlines(y=ylim[1],xmin=start, xmax=end,color=col_opt, linewidth=15)
+                                g1.axes[ind].hlines(y=ylim[1],xmin=start, xmax=end,
+                                                    color=col_opt, linewidth=15)
                             
                         elif isinstance(results[i]['opt_duration_dfs'][ni].iloc[0][0],(float,int)):
                             start = datatables[i].stimulusstarttime[tr]+results[i]['opt_signal_onset'][ni]

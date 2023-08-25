@@ -37,7 +37,6 @@ def mega_loop(self):
     agent.globaltimer = 0
     agent.phasetimer = 0
     agent.stoptimer = [ 0 for i in stop_iter]
-#     agent.stoptimer_2 = 0
     agent.opttimer = [ 0 for i in opt_iter]
 
     agent.motor_queued = None
@@ -54,31 +53,21 @@ def mega_loop(self):
 
     print("agent.stop_popids",agent.stop_popids)
 
-
-#     agent.stop_2_popids = np.where(untrace(popdata)['name'].str.contains(self.stop_2_signal_population[0]))[0]
-
     agent.opt_popids = [ np.where(untrace(popdata)['name'].str.contains(self.opt_signal_population[i]))[0] for i in opt_iter]
 
     #print("agent.stop_popids", agent.stop_popids)
-    #print("agent.stop_2_popids", agent.stop_2_popids)
     #print("agent.opt_popids",agent.opt_popids)
 
     agent.optstim_backup_basestim = [ np.zeros(len(agent.opt_popids[i])) for i in opt_iter]
     agent.stopstim_backup_basestim = [ np.zeros(len(agent.stop_popids[i])) for i in stop_iter]
-    #agent.stopstim_2_backup_basestim = np.zeros(len(agent.stop_2_popids))
 
     agent.stopstim_applied = [ np.zeros(len(actionchannels)) for i in stop_iter]
-#     agent.stopstim_2_applied = np.zeros(len(actionchannels))
     agent.optstim_applied = [ np.zeros(len(actionchannels)) for i in opt_iter]
 
 
     trial_wise_stop_duration = [ self.stop_signal_duration[i] for i in stop_iter]
     stop_amp = [ self.stop_signal_amplitude[i] for i in stop_iter]
     stop_onset = [ self.stop_signal_onset[i] for i in stop_iter]
-
-#     trial_wise_stop_2_duration = self.stop_2_signal_duration
-#     stop_2_amp = self.stop_2_signal_amplitude
-#     stop_2_onset = self.stop_2_signal_onset
 
     trial_wise_opt_duration = [ self.opt_signal_duration[i] for i in opt_iter]
     opt_amp = [ self.opt_signal_amplitude[i] for i in opt_iter]
@@ -117,7 +106,7 @@ def mega_loop(self):
             popid = agent.opt_popids[i][action_idx]
             agent.optstim_backup_basestim[i][action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
 
-    #Stop 1
+    #Stop
     for i in stop_iter:
         for action_idx in range(len(agent.stop_popids[i])):
             popid = agent.stop_popids[i][action_idx]
@@ -127,15 +116,7 @@ def mega_loop(self):
             popid = agent.stop_popids[i][action_idx]
             agent.stopstim_backup_basestim[i][action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
 
-#     #Stop 2
-#     for action_idx in range(len(agent.stop_2_popids)):
-#         popid = agent.stop_2_popids[action_idx]
-#         agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]
-
-#     for action_idx in range(len(agent.stop_2_popids)):
-#         popid = agent.stop_2_popids[action_idx]
-#         agent.stopstim_2_backup_basestim[action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
-
+            
     multitimestep_mutator(agent,popdata,5000)
     agent.FRs = [agent.rollingbuffer.mean(1) / untrace(list(popdata['N'])) / agent.dt * 1000]
 
@@ -154,7 +135,6 @@ def mega_loop(self):
 
     agent.inp = []
     agent.stop_inp = [[] for i in stop_iter]
-#     agent.stop_2_inp = []
     agent.opt_inp = [[] for i in opt_iter]
 
     datatables_decision = None
@@ -171,6 +151,7 @@ def mega_loop(self):
 
 
     while self.trial_num < self.n_trials:
+        
         if agent.phase == 0:
             agent.extstim = agent.gain * presented_stimulus * self.maxstim  # TODO: make 3.0 a param
             agent.ramping_extstim = agent.ramping_extstim * 0.9 + agent.extstim * 0.1
@@ -186,40 +167,67 @@ def mega_loop(self):
             agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + np.ones(len(agent.FreqExt_AMPA[popid])) * agent.ramping_extstim[action_idx]
 
 
-
-        #Stop 1
+        #Stop
         for i in stop_iter:
             if self.stop_signal_present[i] == True:
-                if agent.stoptimer[i] == stop_onset[i] and self.trial_num in self.stop_list_trials_list[i]:
+                if isinstance(self.stop_duration_dfs[i].iloc[0][0],(float,int)):
+                    if agent.stoptimer[i] == stop_onset[i] and self.trial_num in self.stop_list_trials_list[i]:
 
-                    print("stop stim started")
+                        print("stop stim started")
 
-                    for action_idx in range(len(agent.stop_popids[i])):
-                        if self.stop_channels_dfs[i].iloc[self.trial_num][action_idx]:
-                            popid = agent.stop_popids[i][action_idx]
-                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_amp[i]
+                        for action_idx in range(len(agent.stop_popids[i])):
+                            if self.stop_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                popid = agent.stop_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_amp[i]
+                elif isinstance(self.stop_duration_dfs[i].iloc[0][0],str):
+                    if self.trial_num in self.stop_list_trials_list[i]:
+                        which_phase_df = self.stop_duration_dfs[i].iloc[self.trial_num]
+                        for action_idx in range(len(agent.stop_popids[i])):                    
+    #                       print(which_phase_df[action_idx])
+                            which_phase = which_phase_df[action_idx].split(' ')
+                            if which_phase[0] == "phase" and int(which_phase[1]) in [0,1,2]:
+    #                           print("inside phase")
+                                if agent.phase == int(which_phase[1]):
+    #                               print("stop stim started")
+                                    #for action_idx in range(len(agent.opt_popids[i])):
+                                    if self.stop_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                        popid = agent.stop_popids[i][action_idx]
+                                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                else:
+                    raise Exception("duration not passed correctly: It should be a numeric or string in format: phase 0")
 
-        #Stop 2
-#         if self.stop_2_signal_present == True:
-#             if agent.stoptimer_2 == stop_2_onset and self.trial_num in self.stop_2_list_trials:
-
-#                 print("stop_2 stim started")
-
-#                 for action_idx in range(len(agent.stop_2_popids)):
-#                     popid = agent.stop_2_popids[action_idx]
-#                     agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + stop_2_amp
-
+                                
         #Opto
         for i in opt_iter:
             if self.opt_signal_present[i] == True:
-                if agent.opttimer[i] == opt_onset[i] and self.trial_num in self.opt_list_trials_list[i]:
+                if isinstance(self.opt_duration_dfs[i].iloc[0][0],(float,int)):
+#                     print("float - what is 0th element",self.opt_duration_dfs[i].iloc[0][0])
+                    if agent.opttimer[i] == opt_onset[i] and self.trial_num in self.opt_list_trials_list[i]:
 
-                    print("opt stim started")
-
-                    for action_idx in range(len(agent.opt_popids[i])):
-                        if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
-                            popid = agent.opt_popids[i][action_idx]
-                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                        print("opt stim started")
+                        for action_idx in range(len(agent.opt_popids[i])):
+                            if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                popid = agent.opt_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+            
+                elif isinstance(self.opt_duration_dfs[i].iloc[0][0],str):
+                    if self.trial_num in self.opt_list_trials_list[i]:
+                        which_phase_df = self.opt_duration_dfs[i].iloc[self.trial_num]
+                        for action_idx in range(len(agent.opt_popids[i])):                    
+    #                         print(which_phase_df[action_idx])
+                            which_phase = which_phase_df[action_idx].split(' ')
+                            if which_phase[0] == "phase" and int(which_phase[1]) in [0,1,2]:
+    #                             print("inside phase")
+                                if agent.phase == int(which_phase[1]):
+    #                                 print("opt stim started")
+                                    #for action_idx in range(len(agent.opt_popids[i])):
+                                    if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
+                                        popid = agent.opt_popids[i][action_idx]
+                                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                else:
+                    raise Exception("duration not passed correctly: It should be a numeric or string in format: phase 0")
+                        
+                        
 
         multitimestep_mutator(agent,popdata,5)
 
@@ -348,20 +356,47 @@ def mega_loop(self):
         #Stop 1
         for i in stop_iter:
             if self.stop_signal_present[i]:
-                if agent.stoptimer[i] >= trial_wise_stop_duration[i] + stop_onset[i]:
-                    for action_idx in range(len(agent.stop_popids[i])):
-                        popid = agent.stop_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                if isinstance(self.stop_duration_dfs[i].iloc[0][0],(float,int)):
+                    if agent.stoptimer[i] >= trial_wise_stop_duration[i] + stop_onset[i]:
+                        for action_idx in range(len(agent.stop_popids[i])):
+                            popid = agent.stop_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                
+                elif isinstance(self.stop_duration_dfs[i].iloc[0][0],str):
+                    if self.trial_num in self.stop_list_trials_list[i]:
+                        which_phase_df = self.stop_duration_dfs[i].iloc[self.trial_num]
+                        for action_idx in range(len(agent.stop_popids[i])):                    
+    #                         print(which_phase_df)
+                            #print(which_phase_df[action_idx])
+                            which_phase = which_phase_df[action_idx].split(' ')
+                            if agent.phase != int(which_phase[1]): # Stop stimulation if the phase is over
+                                popid = agent.stop_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            
 
         #Opto
         for i in opt_iter:
             if self.opt_signal_present[i]:
-                if agent.opttimer[i] >= trial_wise_opt_duration[i] + opt_onset[i]:
-                    for action_idx in range(len(agent.opt_popids[i])):
-                        popid = agent.opt_popids[i][action_idx]
-                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
-
-
+                if isinstance(self.opt_duration_dfs[i].iloc[0][0],(float,int)):
+                    if agent.opttimer[i] >= trial_wise_opt_duration[i] + opt_onset[i]:
+                        for action_idx in range(len(agent.opt_popids[i])):
+                            popid = agent.opt_popids[i][action_idx]
+                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            
+                elif isinstance(self.opt_duration_dfs[i].iloc[0][0],str):
+                    if self.trial_num in self.opt_list_trials_list[i]:
+                        which_phase_df = self.opt_duration_dfs[i].iloc[self.trial_num]
+                        for action_idx in range(len(agent.opt_popids[i])):                    
+    #                       print(which_phase_df)
+                            #print(which_phase_df[action_idx])
+                            which_phase = which_phase_df[action_idx].split(' ')
+                            if agent.phase != int(which_phase[1]): # Stop stimulation if the phase is over
+                                popid = agent.opt_popids[i][action_idx]
+                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            
+                            
+                            
+                            
         #Environment
 
         if self.chosen_action is not None:
@@ -374,7 +409,6 @@ def mega_loop(self):
                 (self.Q_df, self.Q_support_params, self.dpmndefaults) = qval.helper_update_Q_df(self.Q_df,self.Q_support_params,self.dpmndefaults,self.trial_num)
                 #print("scaled dopamine signal",self.dpmndefaults['dpmn_DAp'].values[0])
 
-            # Shouldn't this be just for chosen action ?
 
                 #for popid in agent.str_popids:
                     #agent.dpmn_DAp[popid] *=0
