@@ -14,7 +14,6 @@ par = "Taco"#None
 popconstruct = None
 interface = None
 gen_stop = None
-gen_stop_2 = None
 
 
 
@@ -25,7 +24,6 @@ def choose_pipeline(choice):
     global popconstruct
     global interface
     global gen_stop
-    global gen_stop_2
     global number_of_choices
     experiment_choice = choice
 
@@ -40,7 +38,6 @@ def choose_pipeline(choice):
         import popconstruct_stopsignal as popconstruct
         import interface_stopsignal as interface
         import generate_stop_dataframe as gen_stop
-        import generate_stop_dataframe_2 as gen_stop_2
 
 #     return [par,popconstruct,ml]
 #     print("par in choose_pipeline",par)
@@ -160,27 +157,6 @@ def create_stop_pipeline(pl): #STN
     return stop
 
 
-# def create_stop_pipeline_2(pl): #D2STR
-#     stop_2 = cbgt.Pipeline()
-
-
-#     (stop_2.stop_2_df, stop_2.stop_2_channels_df, stop_2.stop_2_amplitude_df, stop_2.stop_2_onset_df, stop_2.stop_2_duration_df, stop_2.stop_2_populations_df, stop_2.stop_2_list_trials) = stop_2[gen_stop_2.GenStopSchedule_2](
-#         stop_2.stop_2_signal_probability,
-#         pl.actionchannels,
-#         stop_2.n_trials,
-#         stop_2.popdata,
-#         stop_2.stop_2_signal_channel,
-#         stop_2.stop_2_signal_amplitude,
-#         stop_2.stop_2_signal_onset,
-#         stop_2.stop_2_signal_duration,
-#         stop_2.stop_2_signal_present,
-#         stop_2.stop_2_signal_population,
-#      ).shape(7)
-
-#     #print(stop)
-#     return stop_2
-
-
 def create_opt_pipeline(pl):
     opt = cbgt.Pipeline() #rsg is short for 'reward schedule generator'
 
@@ -248,7 +224,6 @@ def create_main_pipeline(runloop):#,num_choices):
     pl.interface = interface
     if experiment_choice == "stop-signal":
         pl.gen_stop = gen_stop
-        pl.gen_stop_2 = gen_stop_2
 
 
     pl.add(codeblock_modifyactionchannels)
@@ -261,9 +236,7 @@ def create_main_pipeline(runloop):#,num_choices):
 
 #    if experiment_choice == 'stopsignal':
 #        stop = create_stop_pipeline(pl)
-#        stop_2 = create_stop_pipeline_2(pl)
 #        pl.add(stop)
-#        pl.add(stop_2)
 
     #to update the Q-values
     pl.trial_num = 0 #first row of Q-values df - initialization data
@@ -300,9 +273,7 @@ def create_main_pipeline(runloop):#,num_choices):
 
     if experiment_choice == 'stop-signal':
        stop = create_stop_pipeline(pl)
-       #stop_2 = create_stop_pipeline_2(pl)
        pl.add(stop)
-       #pl.add(stop_2)
 
     #Adding codeblocks to the newtork pipeline:
     pl.add(codeblock_modifycelldefaults)
