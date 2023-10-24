@@ -68,6 +68,47 @@ def helper_popconstruct(
 
     return popdata
 
+
+def update_poppathways(oldpathway,newpathway):
+    #columns=['src', 'dest', 'receptor', 'type', 'con', 'eff', 'plastic']
+    cols = list(oldpathway.columns)
+    newpathway = pd.DataFrame(newpathway,columns=cols)
+    print(newpathway)
+
+    copy_old = untrace(oldpathway.copy())
+    # Go through all the pathways sent by the user
+    for i in np.arange(len(newpathway)):
+        # The first 4 fields are unique for all pathways, check if the user want to change an existing connection or make a new one
+        dat_slice = newpathway.iloc[i].copy()
+        temp = copy_old.loc[(copy_old[cols[0]] == dat_slice[cols[0]]) & (copy_old[cols[1]] == dat_slice[cols[1]]) & (copy_old[cols[2]] == dat_slice[cols[2]]) & (copy_old[cols[3]] == dat_slice[cols[3]])].copy()
+
+        if len(temp) > 0:
+            # edit an existing connection
+            print("changing a connection")
+            ind = temp.index.tolist()[0]
+            if oldpathway.iloc[ind]["con"] != dat_slice["con"]:
+                oldpathway.at[ind,"con"] = dat_slice["con"]
+            elif oldpathway.iloc[ind]["eff"] != dat_slice["eff"]:
+                oldpathway.at[ind,"eff"] = dat_slice["eff"]
+            elif oldpathway.iloc[ind]["plastic"] != dat_slice["plastic"]:
+                oldpathway.at[ind,"plastic"] = dat_slice["plastic"]
+        else:
+            # add a new connection
+            print("add a new connection")
+            oldpathway = pd.concat([oldpathway,pd.DataFrame(dat_slice).transpose()],ignore_index=True)
+    
+    
+    oldpathway = oldpathway.reset_index()
+    return oldpathway
+    
+                
+            
+        
+        
+    
+
+
+
 # ----------------------  helper_poppathways FUNCTION  -------------------
 # helper_poppathays sets for each connection between populations the
 # corrisponding specific parameters with either the defaults or the values
@@ -163,7 +204,8 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
 
     if len(newpathways) != 0:
 #         print("newpathways not NONE")
-        simplepathways.update(newpathways)
+        simplepathways = update_poppathways(simplepathways, newpathways)
+        #simplepathways.update(newpathways)
 
     pathways = simplepathways.copy()
     pathways['biselector'] = None
