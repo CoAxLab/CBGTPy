@@ -88,9 +88,9 @@ def update_poppathways(oldpathway,newpathway):
             ind = temp.index.tolist()[0]
             if oldpathway.iloc[ind]["con"] != dat_slice["con"]:
                 oldpathway.at[ind,"con"] = dat_slice["con"]
-            elif oldpathway.iloc[ind]["eff"] != dat_slice["eff"]:
+            if oldpathway.iloc[ind]["eff"] != dat_slice["eff"]:
                 oldpathway.at[ind,"eff"] = dat_slice["eff"]
-            elif oldpathway.iloc[ind]["plastic"] != dat_slice["plastic"]:
+            if oldpathway.iloc[ind]["plastic"] != dat_slice["plastic"]:
                 oldpathway.at[ind,"plastic"] = dat_slice["plastic"]
         else:
             # add a new connection
