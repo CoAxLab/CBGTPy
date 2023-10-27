@@ -1,15 +1,6 @@
 import time
-import ray
 import pickle
 import pandas as pd
-
-if not ray.is_initialized():
-    ray.init(address='auto', _redis_password='cbgt2', include_dashboard=False)
-
-
-@ray.remote
-def worker(module, configuration):
-    return module(configuration)
 
 
 class Pipeline:
@@ -299,8 +290,19 @@ class ThreadManager:
 
 class ExecutionManager:
     # mapping from ThreadManager ID to pipeline
+    
+    importPool = None
+    importray = None
+    worker = None
 
-    def __init__(self, cores=1):
+    def __init__(self, use=None, cores=1):
+        if use is not None:
+            use = use.lower()
+            if use == 'none':
+                use = None
+        assert use is None or use == 'pathos' or use == 'ray'
+        self.use = use
+        
         self.idtothreadmanager = {}
         self.HIDcounter = 0
         self.idtopipeline = {}
@@ -317,6 +319,27 @@ class ExecutionManager:
         assert cores > 0 and isinstance(cores, int), 'cores must be > 0'
         self.maxchildren = cores
         self.workerrefs = {}
+        
+        if use == 'pathos':
+            if ExecutionManager.importPool is None:
+                from pathos.multiprocessing import Pool
+                ExecutionManager.importPool = Pool
+            
+        if use == 'ray':
+            if ExecutionManager.importray is None:
+                import ray
+
+                if not ray.is_initialized():
+                    ray.init(address='auto', _redis_password='cbgt2', include_dashboard=False)
+
+                assert ray.is_initialized(), 'ray not initialized'
+
+                @ray.remote
+                def workerFunc(module, configuration):
+                    return module(configuration)
+
+                ExecutionManager.importray = ray
+                ExecutionManager.worker = workerFunc
 
     def spawnThreadManager(self, pipeline, configuration):
         newid = self.HIDcounter
@@ -395,51 +418,61 @@ class ExecutionManager:
         self.funcqueue.append(taskfunction)
         self.envqueue.append(variables)
         return newid
-
-    def consumeQueue(self):
-        if len(self.qidqueue) == 0:
-            return
-
+    
+    def consumeQueueOne(self):
         
-        for i in range(len(self.workerrefs), min(
-                self.maxchildren, len(self.qidqueue))):
-            wid = worker.remote(self.funcqueue[i], self.envqueue[i])
-#             print("spawning workers")
-#             print("worker id",wid)
-#             print("queue ids",self.qidqueue[i],self.funcqueue[i], "thread_id:"+str(self.envqueue[i]['thread_id'])+",")
-            self.workerrefs[wid] = self.qidqueue[i]
+        if self.use is None:
+            taskfunctionresult = self.funcqueue[0](self.envqueue[0])
+            qid = self.qidqueue[0]
+            
+        elif self.use == 'pathos':
+            for i in range(len(self.workerrefs), min(
+                    self.maxchildren, len(self.qidqueue))):
+                wid = self.pool.apply_async(self.funcqueue[i], (self.envqueue[i],))
+                #wid = worker.remote(self.funcqueue[i], self.envqueue[i])
+                self.workerrefs[wid] = self.qidqueue[i]
+
+            readywid = None
+            while readywid is None:
+                for wid in list(self.workerrefs.keys()):
+                    if wid.ready():
+                        readywid = wid
+                        break
+
+            taskfunctionresult = readywid.get()
+            qid = self.workerrefs.pop(readywid)
+            
+        elif self.use == 'ray':
+            for i in range(len(self.workerrefs), min(
+                    self.maxchildren, len(self.qidqueue))):
+                wid = ExecutionManager.worker.remote(self.funcqueue[i], self.envqueue[i])
+    #             print("spawning workers")
+    #             print("worker id",wid)
+    #             print("queue ids",self.qidqueue[i],self.funcqueue[i], "thread_id:"+str(self.envqueue[i]['thread_id'])+",")
+                self.workerrefs[wid] = self.qidqueue[i]
+
+    #         print(self.workerrefs.keys())
+            ready_ids, _remaining_ids = ExecutionManager.importray.wait(
+                list(self.workerrefs.keys()), num_returns=1)
+            #print(ready_ids)
+            taskfunctionresult = ExecutionManager.importray.get(ready_ids[0])
+            qid = self.workerrefs.pop(ready_ids[0])
         
-#         print(self.workerrefs.keys())
-        ready_ids, _remaining_ids = ray.wait(
-            list(self.workerrefs.keys()), num_returns=1)
-        #print(ready_ids)
-        taskfunctionresult = ray.get(ready_ids[0])
-        qid = self.workerrefs.pop(ready_ids[0])
         self.taskfunctionresults[qid] = taskfunctionresult
         index = self.qidqueue.index(qid)
         self.qidqueue.pop(index)
         self.funcqueue.pop(index)
         self.envqueue.pop(index)
+        
+
+    def consumeQueue(self):
+        if len(self.qidqueue) == 0:
+            return
+
+        self.consumeQueueOne()
 
         while len(self.qidqueue) >= self.maxchildren:
-            for i in range(len(self.workerrefs), min(
-                    self.maxchildren, len(self.qidqueue))):
-                wid = worker.remote(self.funcqueue[i], self.envqueue[i])
-                self.workerrefs[wid] = self.qidqueue[i]
-#                 print("queue still not empty")
-#                 print("worker id",wid)
-#                 print("queue ids",self.qidqueue[i],self.funcqueue[i], "thread_id:"+str(self.envqueue[i]['thread_id'])+",")
-
-            ready_ids, _remaining_ids = ray.wait(
-                list(self.workerrefs.keys()), num_returns=1)
-
-            taskfunctionresult = ray.get(ready_ids[0])
-            qid = self.workerrefs.pop(ready_ids[0])
-            self.taskfunctionresults[qid] = taskfunctionresult
-            index = self.qidqueue.index(qid)
-            self.qidqueue.pop(index)
-            self.funcqueue.pop(index)
-            self.envqueue.pop(index)
+            self.consumeQueueOne()
             
 
     def run(self, pipelines, configurations={}):
@@ -458,13 +491,28 @@ class ExecutionManager:
             configurations = configurations * len(pipelines)
 
         rootids = []
-        for i in range(len(pipelines)):
-            rootids.append(self.spawnThreadManager(pipelines[i], configurations[i]))
+        
+        if self.use is None: # run single-threaded batches in sequence
+            for i in range(len(pipelines)):
+                rootids.append(self.spawnThreadManager(pipelines[i], configurations[i]))
+                self.cyclethrough()
+                while not self.allfinished(rootids):
+                    self.consumeQueue()
+                    self.cyclethrough()
+        else:
+            for i in range(len(pipelines)):
+                rootids.append(self.spawnThreadManager(pipelines[i], configurations[i]))
 
-        self.cyclethrough()
-        while not self.allfinished(rootids):
-            self.consumeQueue()
+            if self.use == 'pathos':
+                self.pool = ExecutionManager.importPool(processes=self.maxchildren)
+
             self.cyclethrough()
+            while not self.allfinished(rootids):
+                self.consumeQueue()
+                self.cyclethrough()
+
+            if self.use == 'pathos':
+                self.pool.close()
         
         
         results = [self.idtothreadmanager[rootid].variables for rootid in rootids]
