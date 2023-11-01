@@ -20,6 +20,32 @@ class Pipeline:
             assert callable(module), "added module must be callable, try restarting kernel"
             self.modulelist.append(CodeTaskFunctionModule(module))
         return self
+    
+    def simplify(self):
+        idx = 0
+        seq = []
+        while idx < len(self.modulelist):
+            module = self.modulelist[idx]
+            if isinstance(module, CodeTaskFunctionModule):
+                if len(seq) > 0:
+                    seq.append(module)
+                    self.modulelist.pop(idx)
+                    idx -= 1
+                elif idx < len(self.modulelist) - 1:
+                    if isinstance(self.modulelist[idx + 1], CodeTaskFunctionModule):
+                        seq.append(module)
+                        self.modulelist.pop(idx)
+                        idx -= 1
+            elif len(seq) > 0:
+                self.modulelist.insert(idx, PayloadSequenceModule(seq))
+                seq = []
+            if isinstance(module, PipelineModule):
+                module.pipeline.simplify()
+            idx += 1
+        if len(seq) > 0:
+            self.modulelist.append(PayloadSequenceModule(seq))
+            seq = []
+        
 
     def getModuleByIndex(self, index):
         try:
@@ -144,6 +170,21 @@ class FunctionModule(CodeTaskFunctionModule):
 
             return variables
 
+        return Payload
+    
+    
+class PayloadSequenceModule(CodeTaskFunctionModule):
+    def __init__(self, modseq):
+        self.payloadseq = []
+        for mod in modseq:
+            self.payloadseq.append(mod.getTaskFunction())
+        
+    def getTaskFunction(self):
+        def Payload(variables):
+            variables = variables.copy()
+            for func in self.payloadseq:
+                variables = func(variables)
+            return variables
         return Payload
 
 
@@ -475,7 +516,7 @@ class ExecutionManager:
             self.consumeQueueOne()
             
 
-    def run(self, pipelines, configurations={}):
+    def run(self, pipelines, configurations={}, simplify=True):
 
         listform = True
         if not isinstance(pipelines, list) and not isinstance(configurations, list):
@@ -489,6 +530,10 @@ class ExecutionManager:
             pipelines = pipelines * len(configurations)
         if len(configurations) == 1:
             configurations = configurations * len(pipelines)
+            
+        if simplify:
+            for pipeline in pipelines:
+                pipeline.simplify()
 
         rootids = []
         
