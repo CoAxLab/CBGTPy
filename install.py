@@ -39,7 +39,6 @@ for k in doc.keys():
 
 
 
-print(doc_new)
 for r in required:
     if r== "ray":
         doc_new['dependencies'].append({'pip':[]})
@@ -49,7 +48,6 @@ for r in required:
 
 doc_new['dependencies'].append('ipykernel')
 
-print(doc_new)
 with open('environment.yml', 'w') as file:
         yaml.dump(doc_new,file,sort_keys=False)
 
