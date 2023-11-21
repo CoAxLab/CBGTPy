@@ -21,7 +21,8 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	$conda create -n cbgtpy_env python=3.8 pyyaml
 ## Activate the conda environment
 	$source activate cbgtpy_env
-## Run the installation file
+## Run the installation file. 
+	*You will be asked which multiprocessing library do you want to install. Although "ray" is the recommended version, it may cause problems on some machines. Hence CBGTPy uses an alternative multiprocessing library  (pathos)that interfaces with default python multiprocessing APIs. Pathos is installed by default. But you can choose to not install ray by typing "n" to the prompted question.
 	$python install.py install
 ## Test by running:
 	$ipython
