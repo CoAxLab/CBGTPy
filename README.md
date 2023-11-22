@@ -50,7 +50,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 ## Start jupyter notebooks
 	$jupyter-notebook 
  	
-  	or 
+  	-or 
   		
     	$jupyter notebook
 
