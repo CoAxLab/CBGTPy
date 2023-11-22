@@ -13,7 +13,7 @@ print("The default mode (none) is single threaded mode, which may not be optimal
 
 try:
     multi_pck = input("There are two options: pathos and ray. The CBGTPy has been modified to run on both packages. Pathos is installed by default. Do you want to install ray? (n/y):  ")
-execpt NameError:
+except NameError:
     multi_pck = raw_input("There are two options: pathos and ray. The CBGTPy has been modified to run on both packages. Pathos is installed by default. Do you want to install ray? (n/y):  ")
 
 print(multi_pck)
