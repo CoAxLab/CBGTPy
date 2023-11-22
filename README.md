@@ -8,7 +8,11 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 ## Install conda on your machine
 	* Download from here https://docs.conda.io/projects/miniconda/en/latest/
-	* In the directory, where the executable file (eg. Miniconda3-latest-MacOSX-x86_64.sh) is downloaded, type the following on your command line
+	
+ 	* Change the directory to where the executable file was donwloaded
+  		$ cd <directory where executable was downloaded>
+  	
+   	*In the directory, where the executable file (eg. Miniconda3-latest-MacOSX-x86_64.sh) is downloaded, type the following on your command line
 
 		* Mac. 
 
