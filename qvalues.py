@@ -118,8 +118,10 @@ def helper_init_Q_df(actionchannels, Q_df_set=None):
                 untrace(
                     actionchannels.iloc[na]["action"]) for na in np.arange(num_actions)])
 #         print("Q_df", Q_df)
-        Q_df = Q_df.append(
-            {column: 0.5 for column in Q_df.columns}, ignore_index=True)
+        #Q_df = Q_df.append(
+        #    {column: 0.5 for column in Q_df.columns}, ignore_index=True)
+
+        Q_df = pd.concat([Q_df, pd.DataFrame({column: 0.5 for column in Q_df.columns},index=[0])], ignore_index=True)
 #         print("Q_df", Q_df)
         Q_df = untrace(ModifyViaSelector(Q_df, Q_df_set))
 #         print("Q_df", Q_df)
