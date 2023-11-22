@@ -43,6 +43,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	$ipython
 
 	-On the ipython prompt
+ 
 	$import pathos
 
 ## If there is an error, deactivate and activate the conda environment again
