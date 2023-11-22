@@ -34,9 +34,9 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	$source activate cbgtpy_env
 ## Run the installation file. 
 	*You will be asked which multiprocessing library do you want to install. Although "ray" is the recommended version, it may cause problems on some machines.
- 	Some basic benchmarking for the three options are stated below.
-        Hence CBGTPy uses an alternative multiprocessing library  (pathos)that interfaces with default python multiprocessing APIs. Pathos is installed by default. 
-	But you can choose to not install ray by typing "n" to the prompted question.
+ 	Hence CBGTPy is designed to use the default python multiprocessing APIs, that needs a third-party library (pathos). Pathos is installed by default. 
+	You can choose to install ray by typing "y" to the prompted question. If "n" is typed, ray would not be installed. 
+ 	Some basic benchmarking for the three options (a) no multiprocessing (b) with pathos (c) with ray are stated below.
   
 	$python install.py install
 ## Test by running:
