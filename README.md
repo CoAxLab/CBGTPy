@@ -21,6 +21,13 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 			$bash Miniconda3-latest-Linux-x86_64.sh
 
 
+## Download CBGTPy-main folder
+	$git clone https://github.com/CoAxLab/CBGTPy.git
+
+ 	* Change the directory
+  	$ cd CBGTPy
+  	
+
 ## Create a conda environment by typing the following on the command line 
 	$conda create -n cbgtpy_env python=3.8 pyyaml
 ## Activate the conda environment
