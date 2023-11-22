@@ -31,7 +31,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 ## Create a conda environment by typing the following on the command line 
 	$conda create -n cbgtpy_env python=3.8 pyyaml
 ## Activate the conda environment
-	$source activate cbgtpy_env
+	$conda activate cbgtpy_env
 ## Run the installation file. 
 	*You will be asked which multiprocessing library do you want to install. Although "ray" is the recommended version, it may cause problems on some machines.
  	Hence CBGTPy is designed to use the default python multiprocessing APIs, that needs a third-party library (pathos). Pathos is installed by default. 
