@@ -43,12 +43,17 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	$ipython
 
 	-On the ipython prompt
+ 
 	$import pathos
 
 ## If there is an error, deactivate and activate the conda environment again
 
 ## Start jupyter notebooks
-	$jupyter-notebook or $jupyter notebook
+	$jupyter-notebook 
+ 	
+  	or
+  		
+    $jupyter notebook
 
 ## Only if you want to delete the conda environment !!!
 	$conda remove --name cbgtpy_env --all
