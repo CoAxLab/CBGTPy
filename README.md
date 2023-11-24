@@ -28,8 +28,13 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
   	$ cd CBGTPy
   	
 
-## Create a conda environment by typing the following on the command line 
+## Create a conda environment by typing the following on the command line. Choose a environment name, eg cbgtpy_env
+	$conda create -n <env name> python=3.8 pyyaml
+	
+ 	* Eg, if the <env name> is "cbgtpy_env", then use
+ 
 	$conda create -n cbgtpy_env python=3.8 pyyaml
+ 
 ## Activate the conda environment
 	$conda activate cbgtpy_env
 ## Run the installation file. 
