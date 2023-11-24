@@ -65,6 +65,14 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
   		
     $jupyter notebook
 
+## If the libraries pathos, ray are not still visible in the jupyter notebook, then exceute these commands at the beginnning of the notebook
+	import sys
+	import yaml
+	with open('environment.yml') as f:
+	    doc = yaml.safe_load(f)
+	    
+	sys.path.append(doc['prefix']+"/lib/python3.8/site-packages/")
+
 ## Only if you want to delete the conda environment !!!
 	$conda remove --name cbgtpy_env --all
 
