@@ -52,7 +52,7 @@ def extract_recording_variables(results,list_variables,seed):
                             temp_ac["value"] = opt_inp[:,i1]
                             temp_ac["nuclei"] = [opt_pop+"-"+ac]*len(opt_inp)
                             temp_ac["Time(ms)"] = np.arange(len(opt_inp))
-                            temp = temp.append(temp_ac)
+                            temp = pd.concat([temp,temp_ac])#temp.append(temp_ac)
                             del temp_ac
                         #temp[opt_pop+"_right"] = opt_inp[:,1]
                     else:
@@ -82,7 +82,7 @@ def extract_recording_variables(results,list_variables,seed):
                             temp_ac["value"] = stop_inp[:,i1]
                             temp_ac["nuclei"] = [stop_pop+"-"+ac]*len(stop_inp)
                             temp_ac["Time(ms)"] = np.arange(len(stop_inp))
-                            temp = temp.append(temp_ac)
+                            temp = pd.concat([temp,temp_ac]) #temp.append(temp_ac)
                             del temp_ac
                         #temp[opt_pop+"_right"] = opt_inp[:,1]
                     else:

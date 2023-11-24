@@ -181,7 +181,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             #rt["Q_val->dopamine_scale"] = [dpmn_cpp_scale for j in np.arange(len(rt))]
             rt["condition"] = [condition for j in np.arange(len(rt))]
 
-            rt_distribution = rt_distribution.append(rt)
+            rt_distribution = pd.concat([rt_distribution,rt])#rt_distribution.append(rt)
 
         return firing_rates, q_df, performance, rt_distribution, total_performance
     
@@ -214,7 +214,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             rt["decisiondurationplusdelay"] = datatables[i]["decisiondurationplusdelay"].copy()
             rt["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(rt))]
 
-            rt_distribution = rt_distribution.append(rt)
+            rt_distribution = pd.concat([rt_distribution,rt])#rt_distribution.append(rt)
 
         return firing_rates, rt_distribution
         

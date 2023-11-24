@@ -3,7 +3,7 @@ import os
 import yaml
  
 
-required  = ['matplotlib','numpy','scipy','pandas', 'seaborn','cython','pathos','jupyter'] 
+required  = ['matplotlib','numpy','scipy','pandas', 'seaborn','cython','pathos','jupyterlab','autopep8'] 
 
 
 
