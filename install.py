@@ -3,7 +3,7 @@ import os
 import yaml
  
 
-required  = ['matplotlib','numpy','scipy','pandas', 'seaborn','cython','pathos','jupyterlab','autopep8'] 
+required  = ['matplotlib','numpy','scipy','pandas', 'seaborn','cython','pathos','jupyter'] 
 
 
 
@@ -54,5 +54,3 @@ with open('environment.yml', 'w') as file:
 
 prefix = doc_new['prefix']
 os.system("conda env update --prefix "+prefix+" --file environment.yml  --prune")
-
-
