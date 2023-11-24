@@ -1,13 +1,15 @@
 import os 
 #from subprocess import run
 import yaml
- 
+import sys 
 
-required  = ['matplotlib','numpy','scipy','pandas', 'seaborn','cython','pathos','jupyterlab','autopep8'] 
-
-
+required  = ['matplotlib','numpy','scipy','pandas','seaborn','cython','pathos'] 
 
 
+#print(sys.argv)
+env_name = sys.argv[1]
+print("The environment name you have chosen is :", env_name)
+print("=======================================================================")
 print("What packaged would you like to install for multiprocessing?")
 print("The default mode (none) is single threaded mode, which may not be optimal for heavy simulations \n")
 
@@ -20,7 +22,7 @@ print(multi_pck)
 if multi_pck == "y":
     required.append("ray")
 
-os.system("conda env export --name cbgtpy_env --file environment.yml")
+os.system("conda env export --name "+env_name+" --file environment.yml")
 
 # Add the rest of the packages
 with open('environment.yml') as f:
@@ -39,9 +41,11 @@ for k in doc.keys():
 
 
 
+doc_new['dependencies'].append({'pip':[]})
+doc_new['dependencies'][-1]['pip'].append('notebook')
 for r in required:
     if r== "ray":
-        doc_new['dependencies'].append({'pip':[]})
+        #doc_new['dependencies'].append({'pip':[]})
         doc_new['dependencies'][-1]['pip'].append('ray')
     else:
         doc_new['dependencies'].append(r)
@@ -53,6 +57,7 @@ with open('environment.yml', 'w') as file:
 
 
 prefix = doc_new['prefix']
-os.system("conda env update --prefix "+prefix+" --file environment.yml  --prune")
-
+#os.system("conda env update --prefix "+prefix+" --file environment.yml  --prune")
+os.system("conda env update --file environment.yml --name "+env_name+" --prune")
+#os.system("ipython kernel install --user --name=cbgtpy_env_kernel")
 
