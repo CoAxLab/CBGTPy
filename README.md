@@ -43,7 +43,12 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	You can choose to install ray by typing "y" to the prompted question. If "n" is typed, ray would not be installed. 
  	Some basic benchmarking for the three options (a) no multiprocessing (b) with pathos (c) with ray are stated below.
   
-	$python install.py install
+	$python install.py <env name>
+
+ 	* For the environment name cbgtpy_env
+
+  	$python install.py <env name>
+ 
 ## Test by running:
 	$ipython
 
