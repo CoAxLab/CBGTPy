@@ -65,7 +65,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
   		
     $jupyter notebook
 
-## If the libraries pathos, ray are not still visible in the jupyter notebook, then exceute these commands at the beginnning of the notebook
+## If the libraries pathos, ray are not still visible in the jupyter notebook, then execute these commands at the beginnning of the notebook
 	import sys
 	import yaml
 	with open('environment.yml') as f:
