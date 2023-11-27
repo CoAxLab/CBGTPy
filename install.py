@@ -2,9 +2,10 @@ import os
 #from subprocess import run
 import yaml
 import sys 
+ 
 
 
-required  = ['matplotlib','numpy','scipy','pandas','seaborn','cython','pathos'] 
+required  = ['pip','matplotlib','numpy','scipy','pandas','seaborn','cython','pathos'] 
 
 
 #print(sys.argv)
@@ -21,7 +22,7 @@ except NameError:
 
 print(multi_pck)
 if multi_pck == "y":
-    required.insert(0,"ray")
+    required.append("ray")
 
 os.system("conda env export --name "+env_name+" --file environment.yml")
 
@@ -40,11 +41,13 @@ for k in doc.keys():
 for k in doc.keys():
     doc_new[k] = doc[k]
 
+if 'dependencies' not in doc_new:
+    doc_new['dependencies'] = []
 
 doc_new['dependencies'].append({'pip':[]})
 doc_new['dependencies'][-1]['pip'].append('notebook')
 for r in required:
-    if r== "ray":
+    if r == "ray":
         #doc_new['dependencies'].append({'pip':[]})
         doc_new['dependencies'][-1]['pip'].append('ray')
     else:
