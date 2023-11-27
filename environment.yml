@@ -1,0 +1,16 @@
+name: cbgtpy_env2
+channels:
+- defaults
+prefix: C:\Users\mclapp\anaconda3\envs\cbgtpy_env2
+dependencies:
+- pip:
+  - notebook
+- pip
+- matplotlib
+- numpy
+- scipy
+- pandas
+- seaborn
+- cython
+- pathos
+- ipykernel

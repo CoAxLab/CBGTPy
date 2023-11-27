@@ -60,4 +60,3 @@ with open('environment.yml', 'w') as file:
 
 prefix = doc_new['prefix']
 os.system("conda env update --file environment.yml --name "+env_name+" --prune")
-

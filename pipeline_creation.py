@@ -253,13 +253,13 @@ def create_main_pipeline(runloop):#,num_choices):
     #Defining necessary function modules:
 
     #init_params.py: default neuronal values
-    pl.celldefaults = par.helper_cellparams()
-    pl.popspecific = par.helper_popspecific()
-    pl.receptordefaults = par.helper_receptor()
-    pl.basestim = par.helper_basestim()
-    pl.dpmndefaults = par.helper_dpmn()
-    pl.d1defaults = par.helper_d1()
-    pl.d2defaults = par.helper_d2()
+    pl.add(codeblock_modifycelldefaults)
+    pl.add(codeblock_modifypopspecific)
+    pl.add(codeblock_modifyreceptordefaults)
+    pl.add(codeblock_modifybasestim)
+    pl.add(codeblock_modifydpmndefaults)
+    pl.add(codeblock_modifyd1defaults)
+    pl.add(codeblock_modifyd2defaults)
     #pl.actionchannels = pl[par.helper_actionchannels]()
 
 
@@ -272,17 +272,10 @@ def create_main_pipeline(runloop):#,num_choices):
     pl.add(opt)
 
     if experiment_choice == 'stop-signal':
-       stop = create_stop_pipeline(pl)
-       pl.add(stop)
+        stop = create_stop_pipeline(pl)
+        pl.add(stop)
 
-    #Adding codeblocks to the newtork pipeline:
-    pl.add(codeblock_modifycelldefaults)
-    pl.add(codeblock_modifypopspecific)
-    pl.add(codeblock_modifyreceptordefaults)
-    pl.add(codeblock_modifybasestim)
-    pl.add(codeblock_modifydpmndefaults)
-    pl.add(codeblock_modifyd1defaults)
-    pl.add(codeblock_modifyd2defaults)
+    #Adding codeblocks to the network pipeline:
     pl.add(codeblock_popconstruct)
     pl.add(codeblock_poppathways)
 
