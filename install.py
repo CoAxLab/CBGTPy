@@ -1,5 +1,4 @@
 import os 
-#from subprocess import run
 import yaml
 import sys 
  
@@ -22,7 +21,7 @@ except NameError:
 
 print(multi_pck)
 if multi_pck == "y":
-    required.append("ray")
+    required.insert(0,"ray")
 
 os.system("conda env export --name "+env_name+" --file environment.yml")
 
@@ -30,7 +29,7 @@ os.system("conda env export --name "+env_name+" --file environment.yml")
 with open('environment.yml') as f:
     doc = yaml.safe_load(f)
 
-# Make a new dictionary, but where every key is a dictionary in order to include the pip list
+# Make a new dictionary, pip key is a dictionary in order to include the pip list
 doc_new = dict()
 for k in doc.keys():
     if k == "dependencies":
@@ -60,7 +59,5 @@ with open('environment.yml', 'w') as file:
 
 
 prefix = doc_new['prefix']
-#os.system("conda env update --prefix "+prefix+" --file environment.yml  --prune")
 os.system("conda env update --file environment.yml --name "+env_name+" --prune")
-#os.system("ipython kernel install --user --name=cbgtpy_env_kernel")
 
