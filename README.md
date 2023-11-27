@@ -47,7 +47,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
  	* For the environment name cbgtpy_env
 
-  	$python install.py <env name>
+  	$python install.py cbgtpy_env
  
 ## Test by running:
 	$ipython
