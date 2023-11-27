@@ -43,12 +43,13 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	You can choose to install ray by typing "y" to the prompted question. If "n" is typed, ray would not be installed. 
  	Some basic benchmarking for the three options (a) no multiprocessing (b) with pathos (c) with ray are stated below.
 	
- 	* For 5 simulations, 3 trials each on a mac machine with configuration: XXXX
+ 	* For 5 simulations, 3 trials each on an Apple M1 machine with OS Ventura 13.2.1:
  	(a) none: 664.406s (b) pathos: 331.040s (c) ray:  266.534s
   	
   	* For 5 simulations, 3 trials each on a 11th Gen Intel Core(TM) i7-11800H with Windows 10:
   	(a) none: 525s (b) pathos: 386s (c) ray: 232s
-   
+
+
 	$python install.py <env name>
 
  	* For the environment name cbgtpy_env
