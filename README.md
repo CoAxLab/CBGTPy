@@ -72,8 +72,8 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
   	* This commans should reveal the machine ip. The machine ip should be used in the following command:
    	$ray start --address='< machine ip>:6379' --redis-password='cbgt2'
     
-    	* For eg. for ip 192.168.1.167:
-     	$ray start --address='192.168.1.167:6379' --redis-password='cbgt2'
+    * For eg. for ip 192.168.1.167:
+    $ray start --address='192.168.1.167:6379' --redis-password='cbgt2'
 
 
 
