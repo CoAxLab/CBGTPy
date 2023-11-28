@@ -65,6 +65,9 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 ## If there is an error, deactivate and activate the conda environment again
 
+## If you plan to use "ray", start the ray server as described below. If not, skip this step.
+
+
 ## Start jupyter notebooks
 	$jupyter-notebook 
  	
