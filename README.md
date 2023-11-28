@@ -77,7 +77,11 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 
 
-## Start jupyter notebooks
+## From the shell prompt, start jupyter notebooks. There are three example notebooks provided which can be executed from the jupyter notebook environment.
+	* network_simulation-n-choice.ipynb (Runs a n-choice task)
+ 	* network_simulation-stop-signal.ipynb (Runs a stop signal task)
+  	* network_simulation-n-choice-optostim.ipynb (Shows an example of optogenetic stimulation during a n-choice task)
+ 
 	$jupyter-notebook 
  	
   	or
