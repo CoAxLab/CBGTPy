@@ -115,9 +115,9 @@ def extract_relevant_frames(results,seed,experiment_choice):
             Q_df_local = Q_df_local.reset_index()
             Q_df_local["data_type"] = "Q_df"
 
-            final_data = Q_df_local.append(rew_df)
-            final_data = final_data.append(chosen_action)
-            final_data = final_data.append(block)
+            final_data = pd.concat([Q_df_local,rew_df])#Q_df_local.append(rew_df)
+            final_data = pd.concat([final_data,chosen_action])#final_data.append(chosen_action)
+            final_data = pd.concat([final_data,block])#final_data.append(block)
 
             final_data["seed"] = [str(seed)+"_"+str(i)  for j in np.arange(len(final_data))]
             final_data["n_trials"] = [float(exp_params["n_trials"]) for j in np.arange(len(final_data))] 
@@ -144,7 +144,8 @@ def extract_relevant_frames(results,seed,experiment_choice):
                 df2 = grp[1].loc[grp[1]["reward"]==1.0]
                 num = (len(grp[1])/len(datatables[i]))*100
                 rr = (len(df2)/len(grp[1]))*100
-                perf = perf.append({'%_rewarded_actions':rr,"block":grp[0][0], "actions":grp[0][1],"%_action":num},ignore_index=True)
+                #perf = perf.append({'%_rewarded_actions':rr,"block":grp[0][0], "actions":grp[0][1],"%_action":num},ignore_index=True)
+                perf = pd.concat([perf,pd.DataFrame({'%_rewarded_actions':rr,"block":grp[0][0], "actions":grp[0][1],"%_action":num},index=[0])],ignore_index=True)
             perf["seed"] = [str(seed)+"_"+str(i) for j in np.arange(len(perf))]
             perf["n_trials"] = [ float(exp_params["n_trials"]) for j in np.arange(len(perf))]
             perf["volatility"] = [ exp_params["volatility"][0][0] for j in np.arange(len(perf))]
@@ -154,7 +155,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
     #         perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale for j in np.arange(len(perf))]
             perf["condition"] = [ condition for j in np.arange(len(perf))]
 
-            performance = performance.append(perf)
+            performance = pd.concat([performance,perf])
 
             total_perf = pd.DataFrame(columns=["%_correct_actions", "seed","n_trials","volatility","conflict"])
             overall_perf = (len(datatables[i].loc[datatables[i]["correctdecision"]==datatables[i]["decision"]])/len(datatables[i]))*100
@@ -167,7 +168,7 @@ def extract_relevant_frames(results,seed,experiment_choice):
             #total_perf["Q_val->dopamine_scale"] = [ dpmn_cpp_scale ]
             total_perf["condition"] = [ condition ]
 
-            total_performance = total_performance.append(total_perf)
+            total_performance = pd.concat([total_performance,total_perf]) 
 
 
             rt = pd.DataFrame()
