@@ -53,7 +53,7 @@ You can choose to install ray by typing "y" to the prompted question. If "n" is 
 Some basic benchmarking for the three options - (a) no multiprocessing (b) with pathos (c) with ray - are stated below.
 	
 * For 5 simulations, 3 trials each on an Apple M1 machine with OS Ventura 13.2.1:
- (a) none: 664.406s; (b) pathos: 331.040s; (c) ray:  266.534s.
+ (a) none: 664s; (b) pathos: 331s; (c) ray:  266s.
   	
 * For 5 simulations, 3 trials each on a 11th Gen Intel Core(TM) i7-11800H with Windows 10:
  (a) none: 525s; (b) pathos: 386s; (c) ray: 232s.
@@ -67,34 +67,37 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 ## Test by running:
 	$ ipython
 
-	* On the ipython prompt
- 
-	$ import pathos
+* On the ipython prompt
+
+ 		$ import pathos
 
 ## If there is an error, deactivate and activate the conda environment again.
 
 ## If you plan to use "ray", start the ray server as described below. If not, skip this step.
-	* On the shell prompt:
- 	$ ray start --head --port=6379 --redis-password="cbgt2"
+* On the shell prompt:
+
+		$ ray start --head --port=6379 --redis-password="cbgt2"
   
-  	* This command should reveal the machine IP. The machine IP should be used in the following command:
-   	$ ray start --address='< machine ip>:6379' --redis-password='cbgt2'
+* This command should reveal the machine IP. The machine IP should be used in the following command:
+
+  		$ ray start --address='< machine ip>:6379' --redis-password='cbgt2'
     
-    * For e.g. for IP 192.168.1.167:
-    $ ray start --address='192.168.1.167:6379' --redis-password='cbgt2'
+  For e.g. for IP 192.168.1.167:
+
+  		$ ray start --address='192.168.1.167:6379' --redis-password='cbgt2'
 
 
 
 ## From the shell prompt, start jupyter notebooks. There are three example notebooks provided which can be executed from the jupyter notebook environment.
-	* network_simulation-n-choice.ipynb (Runs a n-choice task)
- 	* network_simulation-stop-signal.ipynb (Runs a stop-signal task)
-  	* network_simulation-n-choice-optostim.ipynb (Shows an example of optogenetic stimulation during a n-choice task)
+* network_simulation-n-choice.ipynb (Runs a n-choice task)
+* network_simulation-stop-signal.ipynb (Runs a stop-signal task)
+* network_simulation-n-choice-optostim.ipynb (Shows an example of optogenetic stimulation during a n-choice task)
  
-	$ jupyter-notebook 
+		$ jupyter-notebook 
  	
   	or
   		
-        $ jupyter notebook
+        	$ jupyter notebook
 
 ## If the libraries pathos and ray are not still visible (gives an error saying they are not found) in the jupyter notebook, then execute these commands at the beginning of the notebook.
 	
