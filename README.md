@@ -7,12 +7,17 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 ## Dependencies.
    * Python 3.8+ (This only needs attention if the user is using python version < 3, eg 2.7. In case, python version > 3 is been used, the installation script will install the correct version of python and other dependencies)
+   * gcc 
    * Xcode (mac users)
    * CLT  (mac users)
 
    * Xcode and CLT (for mac users) can be installed by running this on the command line:
    
    			$ xcode-select --install
+   
+   * gcc for mac users can be installed by running this on commad line:
+
+     			$ brew install gcc
 
 
 ## Install conda on your machine.
