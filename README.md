@@ -35,33 +35,34 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 ## Create a conda environment by typing the following on the command line. Choose an environment name, e.g. cbgtpy_env.
 	$ conda create -n <env name> python=3.8 pyyaml
 	
- 	* E.g., if the <env name> is "cbgtpy_env", then use
+E.g., if the <env name> is "cbgtpy_env", then use
  
 	$ conda create -n cbgtpy_env python=3.8 pyyaml
  
 ## Activate the conda environment.
 	$ conda activate cbgtpy_env
- 	or 
-  	$ source activate cbgtpy_env
+ or 
+  	
+   	$ source activate cbgtpy_env
    
 ## Run the installation file. 
-	*You will be asked which multiprocessing library you want to install. Although "ray" is the recommended version, it may cause problems on some machines.
- 	Hence CBGTPy is designed to use the default Python multiprocessing APIs, that need a third-party library (pathos). Pathos is installed by default. 
-	You can choose to install ray by typing "y" to the prompted question. If "n" is typed, ray will not be installed. 
- 	Some basic benchmarking for the three options - (a) no multiprocessing (b) with pathos (c) with ray - are stated below.
+
+You will be asked which multiprocessing library you want to install. Although "ray" is the recommended version, it may cause problems on some machines.
+Hence CBGTPy is designed to use the default Python multiprocessing APIs, that need a third-party library (pathos). Pathos is installed by default. 
+You can choose to install ray by typing "y" to the prompted question. If "n" is typed, ray will not be installed. 
+Some basic benchmarking for the three options - (a) no multiprocessing (b) with pathos (c) with ray - are stated below.
 	
- 	* For 5 simulations, 3 trials each on an Apple M1 machine with OS Ventura 13.2.1:
- 	(a) none: 664.406s; (b) pathos: 331.040s; (c) ray:  266.534s.
+* For 5 simulations, 3 trials each on an Apple M1 machine with OS Ventura 13.2.1:
+ (a) none: 664.406s; (b) pathos: 331.040s; (c) ray:  266.534s.
   	
-  	* For 5 simulations, 3 trials each on a 11th Gen Intel Core(TM) i7-11800H with Windows 10:
-  	(a) none: 525s; (b) pathos: 386s; (c) ray: 232s.
+* For 5 simulations, 3 trials each on a 11th Gen Intel Core(TM) i7-11800H with Windows 10:
+ (a) none: 525s; (b) pathos: 386s; (c) ray: 232s.
 
+		$ python install.py <env name>
 
-	$ python install.py <env name>
+	* For the environment name cbgtpy_env
 
- 	* For the environment name cbgtpy_env
-
-  	$ python install.py cbgtpy_env
+  			$ python install.py cbgtpy_env
  
 ## Test by running:
 	$ ipython
