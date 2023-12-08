@@ -9,11 +9,11 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 ## Install conda on your machine.
 * Download from here https://docs.conda.io/projects/miniconda/en/latest/
 	
-* Change the directory to where the executable file was downloaded
+* Change the directory to where the executable file was downloaded:
 
   		$ cd <directory where executable was downloaded>
   	
-* In the directory, where the executable file (eg. Miniconda3-latest-MacOSX-x86_64.sh) is downloaded, type the following on your command line
+* In the directory, where the executable file (eg. Miniconda3-latest-MacOSX-x86_64.sh) is downloaded, type the following on your command line:
 
 	* Mac
  
@@ -27,7 +27,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 	
  	$  git clone https://github.com/CoAxLab/CBGTPy.git
 
- * Change the directory
+ * Change the directory:
 
 		$ cd CBGTPy
   	
@@ -35,7 +35,7 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 ## Create a conda environment by typing the following on the command line. Choose an environment name, e.g. cbgtpy_env.
 	$ conda create -n <env name> python=3.8 pyyaml
 	
-E.g., if the <env name> is "cbgtpy_env", then use
+E.g., if the <env name> is "cbgtpy_env", then use:
  
 	$ conda create -n cbgtpy_env python=3.8 pyyaml
  
@@ -60,14 +60,14 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 
 		$ python install.py <env name>
 
-	* For the environment name cbgtpy_env
+	* For the environment name cbgtpy_env:
 
   			$ python install.py cbgtpy_env
  
 ## Test by running:
 	$ ipython
 
-* On the ipython prompt
+* On the ipython prompt:
 
  		$ import pathos
 
