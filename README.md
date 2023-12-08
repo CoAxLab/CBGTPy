@@ -19,8 +19,8 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
  
 			$ bash Miniconda3-latest-MacOSX-x86_64.sh
  	* Linux
-
-    			$ bash Miniconda3-latest-Linux-x86_64.sh
+  
+   			$ bash Miniconda3-latest-Linux-x86_64.sh
 
 
 ## Download CBGTPy-main folder.
