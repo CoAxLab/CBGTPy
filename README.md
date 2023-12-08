@@ -11,13 +11,13 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
    * Xcode (Mac users)
    * CLT  (Mac users)
 
-   * Xcode and CLT (for mac users) can be installed by running this on the command line:
+Xcode and CLT (for Mac users) can be installed by running this on the command line:
    
-   			$ xcode-select --install
+   	$ xcode-select --install
    
-   * gcc for mac users can be installed by running this on commad line:
+gcc for Mac users can be installed by running this on commad line:
 
-     			$ brew install gcc
+     	$ brew install gcc
 
 
 ## Install conda on your machine.
