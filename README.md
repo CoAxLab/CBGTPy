@@ -112,9 +112,10 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 	$ conda remove --name cbgtpy_env --all
 
 ## Dependencies.
-  * Python 3.8+
+   * Python 3.8+
+   * jupyter-notebook 
 
-* Libraries
+* Libraries:
   * matplotlib >= 3.4.2
   * numpy >= 1.20.3
   * ray >= 2.0.0
