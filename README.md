@@ -6,10 +6,10 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 # Below are the instructions to create a conda environment, install all the dependencies required to run CBGTPy and run notebooks.
 
 ## Dependencies.
-   * Python 3.8+ (This only needs attention if the user is using python version < 3, eg 2.7. In case, python version > 3 is been used, the installation script will install the correct version of python and other dependencies)
-   * gcc 
-   * Xcode (mac users)
-   * CLT  (mac users)
+   * Python 3.8+ (This only needs attention if the user is using Python version < 3, e.g. 2.7. In case, Python version > 3 is been used, the installation script will install the correct version of Python and other dependencies)
+   * gcc (already installed in Linux by default, but not in Mac)
+   * Xcode (Mac users)
+   * CLT  (Mac users)
 
    * Xcode and CLT (for mac users) can be installed by running this on the command line:
    
