@@ -5,6 +5,11 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 # Below are the instructions to create a conda environment, install all the dependencies required to run CBGTPy and run notebooks.
 
+## Dependencies.
+   * Python 3.8+
+   * Xcode
+   * CLT  
+
 
 ## Install conda on your machine.
 * Download from here https://docs.conda.io/projects/miniconda/en/latest/
@@ -111,10 +116,6 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 ## Only if you want to delete the conda environment !!!
 	$ conda remove --name cbgtpy_env --all
 
-## Dependencies.
-   * Python 3.8+
-   * Xcode
-   * CLT  
 
 
 
