@@ -113,15 +113,9 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 
 ## Dependencies.
    * Python 3.8+
-   * jupyter-notebook 
+   * Xcode
+   * CLT  
 
-* Libraries:
-  * matplotlib >= 3.4.2
-  * numpy >= 1.20.3
-  * ray >= 2.0.0
-  * pandas >= 1.3.1
-  * scipy >= 1.6.2
-  * seaborn >= 0.11.1
 
 
 
