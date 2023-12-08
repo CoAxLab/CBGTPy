@@ -7,8 +7,9 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 ## Dependencies.
    * Python 3.8+
-   * Xcode
-   * CLT  
+   * Xcode (mac users)
+   * CLT  (mac users)
+
 
 
 ## Install conda on your machine.
