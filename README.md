@@ -15,7 +15,7 @@ Xcode and CLT (for Mac users) can be installed by running this on the command li
    
    	$ xcode-select --install
    
-gcc for Mac users can be installed by running this on commad line:
+gcc (for Mac users) can be installed by running this on commad line:
 
      	$ brew install gcc
 
