@@ -24,10 +24,12 @@ ABSTRACT: Here we introduce CBGTPy, a virtual environment for designing and test
 
 
 ## Download CBGTPy-main folder.
-	$git clone https://github.com/CoAxLab/CBGTPy.git
+	
+ 	$  git clone https://github.com/CoAxLab/CBGTPy.git
 
- 	* Change the directory
-  	$ cd CBGTPy
+ * Change the directory
+
+		$ cd CBGTPy
   	
 
 ## Create a conda environment by typing the following on the command line. Choose an environment name, e.g. cbgtpy_env.
