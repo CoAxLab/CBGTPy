@@ -1,12 +1,12 @@
 # 1. IMPORTING SCRIPTS
 
-import cbgt as cbgt
-from frontendhelpers import *
-from tracetype import *
-import qvalues as qval
-import generateepochs as gen
-import generate_opt_dataframe as gen_opt
-from agentmatrixinit import *
+import common.cbgt as cbgt
+from common.frontendhelpers import *
+from common.tracetype import *
+import common.qvalues as qval
+import common.generateepochs as gen
+import common.generate_opt_dataframe as gen_opt
+from common.agentmatrixinit import *
 import pdb
 
 experiment_choice = None
@@ -28,16 +28,16 @@ def choose_pipeline(choice):
     experiment_choice = choice
 
     if choice == 'n-choice':
-        import init_params_nchoice as par
-        import popconstruct_nchoice as popconstruct
-        import interface_nchoice as interface
+        import nchoice.init_params_nchoice as par
+        import nchoice.popconstruct_nchoice as popconstruct
+        import nchoice.interface_nchoice as interface
 
 
     if choice == 'stop-signal':
-        import init_params_stopsignal as par
-        import popconstruct_stopsignal as popconstruct
-        import interface_stopsignal as interface
-        import generate_stop_dataframe as gen_stop
+        import stopsignal.init_params_stopsignal as par
+        import stopsignal.popconstruct_stopsignal as popconstruct
+        import stopsignal.interface_stopsignal as interface
+        import stopsignal.generate_stop_dataframe as gen_stop
 
 #     return [par,popconstruct,ml]
 #     print("par in choose_pipeline",par)

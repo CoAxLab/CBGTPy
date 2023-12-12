@@ -1,5 +1,5 @@
-from frontendhelpers import *
-from init_params_nchoice import *
+from common.frontendhelpers import *
+from stopsignal.init_params_stopsignal import *
 import pandas as pd
 
 
@@ -36,7 +36,8 @@ def helper_popconstruct(
     popdata['name'] = [
         'GPi',
         'STN',
-        'GPe',
+        'GPeP',
+        'GPeA',
         'dSPN',
         'iSPN',
         'Cx',
@@ -47,7 +48,7 @@ def helper_popconstruct(
     popdata = trace(popdata, 'init')
 
     popdata = ModifyViaSelector(popdata, channels, SelName(
-        ['GPi', 'STN', 'GPe', 'dSPN', 'iSPN', 'Cx', 'Th']))
+        ['GPi', 'STN', 'GPeP','GPeA', 'dSPN', 'iSPN', 'Cx', 'Th']))
 
     popdata = ModifyViaSelector(popdata, celldefaults)
 
@@ -65,6 +66,7 @@ def helper_popconstruct(
         popdata, dpmndefaults, SelName(['dSPN', 'iSPN']))
     popdata = ModifyViaSelector(popdata, d1defaults, SelName('dSPN'))
     popdata = ModifyViaSelector(popdata, d2defaults, SelName('iSPN'))
+    #print('popdata', popdata)
 
     return popdata
 
@@ -86,9 +88,11 @@ def update_poppathways(oldpathway,newpathway):
             # edit an existing connection
             print("changing a connection")
             ind = temp.index.tolist()[0]
+            #print(oldpathway.iloc[ind]["eff"], dat_slice["eff"])
             if oldpathway.iloc[ind]["con"] != dat_slice["con"]:
                 oldpathway.at[ind,"con"] = dat_slice["con"]
             if oldpathway.iloc[ind]["eff"] != dat_slice["eff"]:
+                #print('changing eff')
                 oldpathway.at[ind,"eff"] = dat_slice["eff"]
             if oldpathway.iloc[ind]["plastic"] != dat_slice["plastic"]:
                 oldpathway.at[ind,"plastic"] = dat_slice["plastic"]
@@ -100,12 +104,8 @@ def update_poppathways(oldpathway,newpathway):
     
     oldpathway = oldpathway.reset_index()
     return oldpathway
-    
-                
-            
-        
-        
-    
+
+
 
 
 
@@ -123,13 +123,15 @@ def update_poppathways(oldpathway,newpathway):
 # the probability of connection and efficiency
 
 
-def helper_poppathways(popdata,number_of_choices,newpathways=None):
+def helper_poppathways(popdata,number_of_choices, newpathways=None):
 
     if newpathways is None:
         newpathways = pd.DataFrame()
 
     dpmn_ratio = 0.5
     dpmn_implied = 0.7
+    
+    #number_of_choices = 2
     if number_of_choices >1:
         scaling_conn = 2./float(number_of_choices)
         scaling_wts = 1
@@ -140,72 +142,83 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
         
     print("scaling_conn",scaling_conn)
     print("scaling_wts",scaling_wts)
-    # phenotype study's values
+    #Stop signal task 
     simplepathways = pd.DataFrame(
         [
-            ['Cx', 'dSPN', 'AMPA', 'syn', 1, 0.015, True],#
-            ['Cx', 'dSPN', 'NMDA', 'syn', 1, 0.02, False],#
-            ['Cx', 'iSPN', 'AMPA', 'syn', 1, 0.015, True],#
-            ['Cx', 'iSPN', 'NMDA', 'syn', 1, 0.02, False],#
-#             ['Cx', 'FSI', 'AMPA', 'all', 1, 0.198, False],#
-            ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.19*scaling_wts, False],#            
-            ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False],#
-#             ['Cx', 'Th', 'NMDA', 'syn', 1, 0.05, False],# For str lesion to work, corticothalamic regime
-            ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],# correct values for plasticity
+            ['Cx', 'dSPN', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'dSPN', 'NMDA', 'syn', 1, 0.03, False], 
+            ['Cx', 'iSPN', 'AMPA', 'syn', 1, 0.022, True], 
+            ['Cx', 'iSPN', 'NMDA', 'syn', 1, 0.028, False], 
+            ['Cx', 'FSI', 'AMPA', 'all', 1*scaling_conn, 0.085*scaling_wts, False],
+            ['Cx', 'Th', 'AMPA', 'syn', 1, 0.025, False], 
+            ['Cx', 'Th', 'NMDA', 'syn', 1, 0.029, False],
 
-            ['dSPN', 'dSPN', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['dSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['dSPN', 'GPi', 'GABA', 'syn', 1, 2.09, False],
+            ['dSPN', 'dSPN', 'GABA', 'syn', 0.45, 0.28, False],
+            ['dSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False], 
+            ['dSPN', 'GPi', 'GABA', 'syn', 1, 1.8, False], 
+            ['dSPN', 'GPeA', 'GABA', 'syn', 0.4, 0.054, False],
 
-            ['iSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],#
-            ['iSPN', 'dSPN', 'GABA', 'syn', 0.5, 0.28, False],#
-            ['iSPN', 'GPe', 'GABA', 'syn', 1, 4.07, False],#
+            ['iSPN', 'iSPN', 'GABA', 'syn', 0.45, 0.28, False],
+            ['iSPN', 'dSPN', 'GABA', 'syn', 0.5, 0.28, False], 
+            ['iSPN', 'GPeP', 'GABA', 'syn', 1, 4.07, False], 
+#             ['iSPN', 'GPeP', 'GABA', 'syn', 1, 5.0, False], 
+            ['iSPN', 'GPeA', 'GABA', 'syn', 0.4, 0.61, False],
 
+            ['FSI', 'FSI', 'GABA', 'all', 1, 2.7, False], 
+            ['FSI', 'dSPN', 'GABA', 'all', 1, 1.25, False], 
+            ['FSI', 'iSPN', 'GABA', 'all', 1, 1.15, False],
+
+            ['GPeP', 'GPeP', 'GABA', 'all', 0.4*scaling_conn, 0.45*scaling_wts, False], 
             
-            ['FSI', 'FSI', 'GABA', 'all', 1, 3.25833, False],#
-#             ['FSI', 'dSPN', 'GABA', 'all', 1, 1.77760, False],#
-#             ['FSI', 'iSPN', 'GABA', 'all', 1, 1.66987, False],#
-            ['FSI', 'dSPN', 'GABA', 'all', 1, 1.2, False],#
-            ['FSI', 'iSPN', 'GABA', 'all', 1, 1.1, False],#
+            ['GPeP', 'STN', 'GABA', 'syn', 0.1, 0.37, False], 
+            ['GPeP', 'GPi', 'GABA', 'syn', 1, 0.058, False], 
+            ['GPeP', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.1*scaling_wts, False], 
+            ['GPeP', 'GPeA', 'GABA', 'syn', 0.5, 0.30, False], #0.35
             
+            #['GPeA', 'GPeP', 'GABA', 'syn', 0.8, 0, False], # 0.05 / prob=0.667
+            ['GPeA', 'FSI', 'GABA', 'all', 0.4*scaling_conn, 0.01*scaling_wts, False], 
+            ['GPeA', 'iSPN', 'GABA', 'syn', 0.4, 0.12, False],
+            ['GPeA', 'dSPN', 'GABA', 'syn', 0.4, 0.32, False], #0.018
+            ['GPeA', 'GPeA', 'GABA', 'all', 0.4*scaling_conn, 0.15*scaling_wts, False], #0.05 
 
-            ['GPe', 'GPe', 'GABA', 'all', 0.0667*scaling_conn, 1.75*scaling_wts, False],#
-            ['GPe', 'STN', 'GABA', 'syn', 0.0667, 0.35, False],#
-            ['GPe', 'GPi', 'GABA', 'syn', 1, 0.058, False],#
 
-            ['STN', 'GPe', 'AMPA', 'syn', 0.161666, 0.07, False],#
-            ['STN', 'GPe', 'NMDA', 'syn', 0.161666, 1.51, False],#
-            ['STN', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0380*scaling_wts, False],#
+            ['STN', 'GPeP', 'AMPA', 'syn', 0.161666, 0.10, False], 
+            ['STN', 'GPeP', 'NMDA', 'syn', 0.161666, 1.51, False], 
+            ['STN', 'GPeA', 'AMPA', 'syn', 0.161666, 0.026, False], 
+            ['STN', 'GPeA', 'NMDA', 'syn', 0.161666, 0.075, False], #0.1
+            ['STN', 'GPi', 'NMDA', 'all', 1*scaling_conn, 0.0325*scaling_wts, False], 
+#             ['STN', 'GPi', 'NMDA', 'all', 1, 0.0325, False], 
 
-            ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False],#
+            ['GPi', 'Th', 'GABA', 'syn', 1, 0.3315, False], 
 
-            ['Th', 'dSPN', 'AMPA', 'syn', 1, 0.3825, False],#
-            ['Th', 'iSPN', 'AMPA', 'syn', 1, 0.3825, False],#
-            ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],#
-            ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],#
+            ['Th', 'dSPN', 'AMPA', 'syn', 1, 0.3285, False],
+            ['Th', 'iSPN', 'AMPA', 'syn', 1, 0.3285, False],
+            ['Th', 'FSI', 'AMPA', 'all', 0.8334*scaling_conn, 0.1*scaling_wts, False],
+            ['Th', 'Cx', 'NMDA', 'all', 0.8334*scaling_conn, 0.03*scaling_wts, False],
+#             ['Th', 'Cx', 'NMDA', 'all', 0.8334, 0.03, False],
 
             # ramping ctx
 
-            ['Cx', 'Cx', 'AMPA', 'syn', 0.13, 0.0127, False],#
-            ['Cx', 'Cx', 'NMDA', 'syn', 0.13, 0.08, False],#
-            ['Cx', 'CxI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],#
-            ['Cx', 'CxI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],#
+            ['Cx', 'Cx', 'AMPA', 'syn', 0.13, 0.0127, False],
+            ['Cx', 'Cx', 'NMDA', 'syn', 0.13, 0.1, False], 
+            ['Cx', 'CxI', 'AMPA', 'all', 0.0725*scaling_conn, 0.113*scaling_wts, False],
+            ['Cx', 'CxI', 'NMDA', 'all', 0.0725*scaling_conn, 0.525*scaling_wts, False],
 
-            ['CxI', 'Cx', 'GABA', 'all', 0.5, 1.05, False],#
-            ['CxI', 'CxI', 'GABA', 'all', 1, 1.075, False],#
+            ['CxI', 'Cx', 'GABA', 'all', 0.5, 1.05, False],
+            ['CxI', 'CxI', 'GABA', 'all', 1, 1.075, False],
 
-            ['Th', 'CxI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],#
+            ['Th', 'CxI', 'NMDA', 'all', 0.8334*scaling_conn, 0.015*scaling_wts, False],
 
         ],
         columns=['src', 'dest', 'receptor', 'type', 'con', 'eff', 'plastic']
     )
 
+
     simplepathways = trace(simplepathways, 'init')
 
     if len(newpathways) != 0:
-#         print("newpathways not NONE")
+
         simplepathways = update_poppathways(simplepathways, newpathways)
-        #simplepathways.update(newpathways)
 
     pathways = simplepathways.copy()
     pathways['biselector'] = None
@@ -217,7 +230,7 @@ def helper_poppathways(popdata,number_of_choices,newpathways=None):
             pathways.loc[idx, 'biselector'] = NamePathwaySelector(
                 row['src'], row['dest'])
     pathways = trace(pathways, 'auto')
-#     print(pathways.loc[pathways["src"]=="dSPN"][["src","dest","eff"]])
+
     return pathways
 
 # ----------------------  helper_connectivity FUNCTION  ------------------
@@ -245,6 +258,7 @@ def helper_connectivity(receptor, popdata, pathways):
 
     connectiongrid = constructSquareDf(untrace(popdata['name'].tolist()))
     connectiongrid = trace(connectiongrid, 'init')
+    #print('conngrid', connectiongrid)
 
     connectivity = connectiongrid.copy()
     meanEff = connectiongrid.copy()

@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import pandas as pd
-from tracetype import *
+from common.tracetype import *
 
 
 def define_stop(stop_signal_probability, actionchannels, n_trials, pop_names, stop_signal_channel, stop_signal_amplitude, stop_signal_onset, stop_signal_duration, stop_signal_present, stop_signal_population ):

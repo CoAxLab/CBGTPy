@@ -1,5 +1,5 @@
 import numpy as np
-from tracetype import *
+from common.tracetype import *
 
 def CreateSynapses(popdata, cons, effs, plasticity):
     connection = np.zeros((len(popdata),len(popdata))).tolist()
