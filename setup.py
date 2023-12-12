@@ -4,7 +4,7 @@ import os
 import glob
 
 cwd = os.getcwd()
-cwd = '/'.join(cwd.split('/')[:-1])
+cwd = os.path.dirname(cwd)
 
 extensions_nchoice = [Extension(name="agent_timestep_plasticity", 
     sources=
@@ -17,7 +17,6 @@ extensions_stop = [Extension(name="agent_timestep_stop_signal",
     [cwd+"/stopsignal/"+'agent_timestep_stop_signal.pyx',
     ],
 )]
-
 
 setup(
     name='nchoice',
@@ -38,3 +37,11 @@ for sf in so_files:
         os.replace(sf, cwd+"/nchoice/agent_timestep_plasticity.so")
     elif "stop_signal" in sf:
         os.replace(sf, cwd+"/stopsignal/agent_timestep_stop_signal.so")
+        
+pyd_files = glob.glob(cwd+"/notebooks/"+"*.pyd")
+for sf in pyd_files:
+    print(sf)
+    if "plasticity" in sf:
+        os.replace(sf, cwd+"/nchoice/agent_timestep_plasticity.pyd")
+    elif "stop_signal" in sf:
+        os.replace(sf, cwd+"/stopsignal/agent_timestep_stop_signal.pyd")
