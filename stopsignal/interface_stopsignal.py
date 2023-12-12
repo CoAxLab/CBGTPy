@@ -7,7 +7,7 @@ import stopsignal.init_params_stopsignal as par
 import stopsignal.popconstruct_stopsignal as popconstruct
 import common.qvalues as qval
 from common.agentmatrixinit import *
-from common.agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
+from stopsignal.agent_timestep_stop_signal import timestep_mutator, multitimestep_mutator
 
 # 2. TIMESTEP LOOP
 
