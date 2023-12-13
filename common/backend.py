@@ -1,6 +1,7 @@
 import time
 import pickle
 import pandas as pd
+import os
 
 
 class Pipeline:
@@ -371,7 +372,18 @@ class ExecutionManager:
                 import ray
 
                 if not ray.is_initialized():
-                    ray.init(address='auto', _redis_password='cbgt2', include_dashboard=False)
+                    cwd = os.getcwd()
+                    #print(cwd)
+                    cwd = os.path.dirname(cwd)
+                    #print(cwd)
+                    #ray.init(address='auto', _redis_password='cbgt2', include_dashboard=False, runtime_env={"working_dir":cwd})
+                    py_module_list = [
+                        cwd+"/common",
+                        cwd+"/nchoice",
+                        cwd+"/stopsignal",
+                        cwd+"/notebooks",
+                    ]
+                    ray.init(address='auto', _redis_password='cbgt2', include_dashboard=False, runtime_env={"py_modules":py_module_list})
 
                 assert ray.is_initialized(), 'ray not initialized'
 
