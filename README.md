@@ -92,7 +92,7 @@ Some basic benchmarking for the three options - (a) no multiprocessing (b) with 
 
 		$ ray start --head --port=6379 --redis-password="cbgt2"
   
-* This command should reveal the machine IP. The machine IP should be used in the following command:
+* The above line should be sufficient to start the ray server. In case is not, it would give back the machine IP. The machine IP could be used in the following command:
 
   		$ ray start --address='< machine ip>:6379' --redis-password='cbgt2'
     
