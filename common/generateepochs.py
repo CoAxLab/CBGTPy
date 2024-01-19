@@ -281,33 +281,41 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
     
     for i in np.arange(len(actionchannels)):
         reward_list.append(reward[actions[i]])
-        t_epochs_list[actions[i]] = np.zeros((n_trials))
+        t_epochs_list[actions[i]] = np.zeros((n_trials+1))
     
     #print("t_epochs_list",t_epochs_list)
 
     #print("actions",actions)
     if len(cp_idx) > 0:
         k = 0
+        print(cp_idx)
         for i in range(len(cp_idx)):
             if k == len(probs):
                 k = k%len(probs)
 
             if i < len(cp_idx)-1: 
-                block_len = cp_idx[i+1] - cp_idx[i]
+                if i == len(cp_idx)-2:
+                    block_len = cp_idx[i+1] - cp_idx[i] + 1
+                else:
+                    block_len = cp_idx[i+1] - cp_idx[i]
                 reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
                 print("reward_list", reward_list)
 
-                for ac in actions:           
-                    t_epochs_list[ac][cp_idx[i]:cp_idx[i + 1]] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
-                    block.append(np.repeat(ac, cp_idx[i+1]-cp_idx[i]))
+                for ac in [actions[0]]:           
+                    t_epochs_list[ac][cp_idx[i]:cp_idx[i]+block_len ] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
+                    #block.append(np.repeat(ac, cp_idx[i+1]-cp_idx[i]))
+                    block.append(np.repeat(ac, block_len))
                 k+=1
+                print(i)
+                print("block_len",block_len)
+                print("block",block)
             elif i == len(cp_idx)-1:
-                block_len = n_trials-1 - cp_idx[i]
+                block_len = n_trials-1 - cp_idx[i]+1
                 if block_len> 0:
                     reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
                     for ac in actions:
                         t_epochs_list[ac][cp_idx[i]:] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:]
-                        block.append(np.repeat(ac, n_trials-cp_idx[i]))
+                        block.append(np.repeat(ac, n_trials-cp_idx[i]+1))
                     k+=1               
 
             # for every change point/ block change, move one position to right while assigning reward probabilities
