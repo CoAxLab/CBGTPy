@@ -327,7 +327,7 @@ def define_epochs(n_trials, cp_idx, conflict, actionchannels,reward_mu=1, reward
         reward_list = calc_reward(conflict,block_len,reward_mu,reward_std,actions)
         print("reward_list", reward_list)
         for ac in actions:           
-            t_epochs_list[ac][:] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
+            t_epochs_list[ac][:len(reward_list[ac])] = reward_list[ac]#[cp_idx[i]-cp_idx[i-1]:cp_idx[i + 1]-cp_idx[i-1]]
             block.append(np.repeat(ac, n_trials))
         
         
