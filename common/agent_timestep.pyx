@@ -16,14 +16,18 @@ def get_fDA(DA,dpmn_type,dpmn_x_fda,dpmn_y_fda,dpmn_d2_DA_eps):
         mask_dpmn = np.array([ x<-y for x,y in zip(DA,dpmn_x_fda)])
         #if len(np.where(mask_dpmn)[0]) > 0:
         #    print("DA - before",DA)
-        fda[mask_dpmn==True] = -dpmn_y_fda[mask_dpmn==True]
-        fda[mask_dpmn==False] = (dpmn_y_fda[mask_dpmn==False]/dpmn_x_fda[mask_dpmn==False])*DA[mask_dpmn==False]
+        if (mask_dpmn==True).any():
+            fda[mask_dpmn==True] = -dpmn_y_fda[mask_dpmn==True]
+        if (mask_dpmn==False).any():
+            fda[mask_dpmn==False] = (dpmn_y_fda[mask_dpmn==False]/dpmn_x_fda[mask_dpmn==False])*DA[mask_dpmn==False]
         #if len(np.where(mask_dpmn)[0]) > 0:
         #    print("fda - after",fda)
     elif dpmn_type > 1.5:
         mask_dpmn = np.array([ x>y for x,y in zip(DA,dpmn_x_fda)])
-        fda[mask_dpmn==True] = dpmn_y_fda[mask_dpmn==True]*dpmn_d2_DA_eps[mask_dpmn==True] 
-        fda[mask_dpmn==False] = (dpmn_y_fda[mask_dpmn==False]/dpmn_x_fda[mask_dpmn==False])*DA[mask_dpmn==False]*dpmn_d2_DA_eps[mask_dpmn==False]
+        if (mask_dpmn==True).any():
+            fda[mask_dpmn==True] = dpmn_y_fda[mask_dpmn==True]*dpmn_d2_DA_eps[mask_dpmn==True] 
+        if (mask_dpmn==False).any():
+            fda[mask_dpmn==False] = (dpmn_y_fda[mask_dpmn==False]/dpmn_x_fda[mask_dpmn==False])*DA[mask_dpmn==False]*dpmn_d2_DA_eps[mask_dpmn==False]
     
     #print("fda",fda)
     return fda   

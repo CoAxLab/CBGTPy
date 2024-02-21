@@ -543,6 +543,9 @@ class ExecutionManager:
         if len(configurations) == 1:
             configurations = configurations * len(pipelines)
             
+        for i,configuration in enumerate(configurations):
+            configuration['config_id'] = i
+            
         if simplify:
             for pipeline in pipelines:
                 pipeline.simplify()
