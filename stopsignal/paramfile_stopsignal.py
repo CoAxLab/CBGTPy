@@ -116,7 +116,7 @@ dpmndefaults = {'dpmn_tauDOP': 2,
                 'dpmn_XPRE': 0.0,
                 'dpmn_XPOST': 0.0}
 
-d1defaults = {'dpmn_type': 1,
+dSPNdefaults = {'dpmn_type': 1,
               # ??? 80 in original paper, balladron 12, decrease them
               'dpmn_alphaw': (55 / 3.0) * 1.9,
               # 'dpmn_alphaw': (55 / 3.0)*3,  # ??? 80 in original paper, balladron 12, decrease them
@@ -126,7 +126,7 @@ d1defaults = {'dpmn_type': 1,
               'dpmn_b': 0.1,
               'dpmn_c': 0.05, }
 
-d2defaults = {'dpmn_type': 2,
+iSPNdefaults = {'dpmn_type': 2,
               # -55 in original paper, balladron = -11
               'dpmn_alphaw': (-45 / 3.0) * 1.9,
               # 'dpmn_alphaw': (-45 / 3.0)*3, # -55 in original paper, balladron = -11
