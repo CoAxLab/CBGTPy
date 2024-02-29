@@ -70,10 +70,10 @@ def codeblock_modifydpmndefaults(self):
     self.dpmndefaults = self.par.helper_dpmn(self.dpmns)
 
 def codeblock_modifyd1defaults(self):
-    self.d1defaults = self.par.helper_d1(self.d1)
+    self.d1defaults = self.par.helper_d1(self.dSPN_params)
 
 def codeblock_modifyd2defaults(self):
-    self.d2defaults = self.par.helper_d2(self.d2)
+    self.d2defaults = self.par.helper_d2(self.iSPN_params)
 
 def codeblock_modifyactionchannels(self):
 #     print("par in modifyactionchannels, thread_id",self.thread_id,par)
