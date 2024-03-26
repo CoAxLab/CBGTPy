@@ -12,6 +12,8 @@ from stopsignal.agent_timestep_stop_signal import timestep_mutator, multitimeste
 # 2. TIMESTEP LOOP
 
 def mega_loop(self):
+    np.random.seed(seed=(self.seed + self.config_id))
+    
     self.AMPA_con,self.AMPA_eff = CreateSynapses(self.popdata,self.connectivity_AMPA,self.meaneff_AMPA,self.plastic_AMPA)
     self.GABA_con,self.GABA_eff = CreateSynapses(self.popdata,self.connectivity_GABA,self.meaneff_GABA,self.plastic_GABA)
     self.NMDA_con,self.NMDA_eff = CreateSynapses(self.popdata,self.connectivity_NMDA,self.meaneff_NMDA,self.plastic_NMDA)

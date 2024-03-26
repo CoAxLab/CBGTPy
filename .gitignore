@@ -1,0 +1,10 @@
+
+*.pyc
+*.pyd
+*.exp
+*.lib
+*.obj
+/notebooks/.ipynb_checkpoints
+*.c
+/nchoice/.ipynb_checkpoints
+/stopsignal/.ipynb_checkpoints
