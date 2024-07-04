@@ -60,7 +60,7 @@ def mega_loop(self):
     #print("agent.stop_popids", agent.stop_popids)
     #print("agent.opt_popids",agent.opt_popids)
 
-    agent.optstim_backup_basestim = [ np.zeros(len(agent.opt_popids[i])) for i in opt_iter]
+
     agent.stopstim_backup_basestim = [ np.zeros(len(agent.stop_popids[i])) for i in stop_iter]
 
     agent.stopstim_applied = [ np.zeros(len(actionchannels)) for i in stop_iter]
@@ -99,14 +99,14 @@ def mega_loop(self):
         #agent.ramping_stopstim_target_2[action_idx] = np.mean(agent.FreqExt_AMPA[popid])
 
     #Opto
-    for i in opt_iter:
-        for action_idx in range(len(agent.opt_popids[i])):
-            popid = agent.opt_popids[i][action_idx]
-            agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]
+#     for i in opt_iter:
+#         for action_idx in range(len(agent.opt_popids[i])):
+#             popid = agent.opt_popids[i][action_idx]
+#             agent.FreqExt_AMPA_basestim[popid] = agent.FreqExt_AMPA[popid]
 
-        for action_idx in range(len(agent.opt_popids[i])):
-            popid = agent.opt_popids[i][action_idx]
-            agent.optstim_backup_basestim[i][action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
+#         for action_idx in range(len(agent.opt_popids[i])):
+#             popid = agent.opt_popids[i][action_idx]
+#             agent.optstim_backup_basestim[i][action_idx] = np.mean(agent.FreqExt_AMPA_basestim[popid])
 
     #Stop
     for i in stop_iter:
@@ -210,7 +210,8 @@ def mega_loop(self):
                         for action_idx in range(len(agent.opt_popids[i])):
                             if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
                                 popid = agent.opt_popids[i][action_idx]
-                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                                #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                                agent.ExtS_Opto[popid] = np.resize(opt_amp[i],np.shape(agent.ExtS_Opto[popid]))
             
                 elif isinstance(self.opt_duration_dfs[i].iloc[0][0],str):
                     if self.trial_num in self.opt_list_trials_list[i]:
@@ -225,7 +226,8 @@ def mega_loop(self):
                                     #for action_idx in range(len(agent.opt_popids[i])):
                                     if self.opt_channels_dfs[i].iloc[self.trial_num][action_idx]:
                                         popid = agent.opt_popids[i][action_idx]
-                                        agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                                        #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid] + opt_amp[i]
+                                        agent.ExtS_Opto[popid] = np.resize(opt_amp[i],np.shape(agent.ExtS_Opto[popid]))
                 else:
                     raise Exception("duration not passed correctly: It should be a numeric or string in format: phase 0")
                         
@@ -249,7 +251,8 @@ def mega_loop(self):
 
         if "optogenetic_input" in self.record_variables:
             for i in opt_iter:
-                agent.opt_inp[i].append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids[i]])
+                #agent.opt_inp[i].append([ agent.FreqExt_AMPA[popid].mean()  for popid in agent.opt_popids[i]])
+                agent.opt_inp[i].append([ agent.ExtS_Opto[popid].mean()  for popid in agent.opt_popids[i]])
 
 
         if "stop_input" in self.record_variables:
@@ -383,7 +386,8 @@ def mega_loop(self):
                     if agent.opttimer[i] >= trial_wise_opt_duration[i] + opt_onset[i]:
                         for action_idx in range(len(agent.opt_popids[i])):
                             popid = agent.opt_popids[i][action_idx]
-                            agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                            agent.ExtS_Opto[popid][:] = 0
                             
                 elif isinstance(self.opt_duration_dfs[i].iloc[0][0],str):
                     if self.trial_num in self.opt_list_trials_list[i]:
@@ -394,8 +398,8 @@ def mega_loop(self):
                             which_phase = which_phase_df[action_idx].split(' ')
                             if agent.phase != int(which_phase[1]): # Stop stimulation if the phase is over
                                 popid = agent.opt_popids[i][action_idx]
-                                agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
-                            
+                                #agent.FreqExt_AMPA[popid] = agent.FreqExt_AMPA_basestim[popid]
+                                agent.ExtS_Opto[popid][:] = 0
                             
                             
                             

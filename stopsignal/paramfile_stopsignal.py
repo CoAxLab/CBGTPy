@@ -42,7 +42,10 @@ receptordefaults = {'Tau_AMPA': 2,
                     'Tau_GABA': 5,
                     'RevPot_GABA': -70,
                     'Tau_NMDA': 100,
-                    'RevPot_NMDA': 0, }
+                    'RevPot_NMDA': 0, 
+                    'RevPot_ChR2': 0, # verify the exact values
+                    'RevPot_NpHR':-400
+                   }
 
 basestim = {'FSI': {
             'FreqExt_AMPA': 4.8,  # 3.0,

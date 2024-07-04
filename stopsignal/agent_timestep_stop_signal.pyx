@@ -100,6 +100,11 @@ def timestep_mutator(a,popdata):
         a.V[popid] = a.V[popid] + a.cond[popid] * a.dt * (a.RevPot_AMPA[popid] - a.Vaux[popid]) * .001 * (a.LS_AMPA[popid] + a.ExtS_AMPA[popid]) / a.C[popid]
         a.V[popid] = a.V[popid] + a.cond[popid] * a.dt * (a.RevPot_GABA[popid] - a.Vaux[popid]) * .001 * (a.LS_GABA[popid] + a.ExtS_GABA[popid]) / a.C[popid]
 
+        a.V[popid] = a.V[popid] + a.cond[popid] * a.dt * (a.RevPot_ChR2[popid] - a.Vaux[popid]) * (a.ExtS_Opto[popid]>0) * .001 * a.ExtS_Opto[popid] / a.C[popid]
+        #if a.ExtS_Opto[popid][0] < 0:
+        a.V[popid] = a.V[popid] + a.cond[popid] * a.dt * (a.RevPot_NpHR[popid] - a.Vaux[popid]) * (a.ExtS_Opto[popid]<0) * .001 * -a.ExtS_Opto[popid] / a.C[popid]        
+        
+        
     for popid in range(len(popdata)):
         newspikes[popid] = list(np.nonzero(a.V[popid] > a.Threshold[popid])[0])
         for neuron in newspikes[popid]:
